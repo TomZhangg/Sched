@@ -1,6 +1,6 @@
 %{ open Ast %}
 
-%token SEMI CREATE SCHED LT GT
+%token SEMI CREATE INSERT ITEM SCHED LT GT
 %token DAY WEEK MONTH YEAR
 %token <string> DATELIT
 %token <string> ID
@@ -26,8 +26,8 @@ create_stmt:
   CREATE SCHED sched_spec SEMI  { Schedule($3) }
 
 insert_stmt:
-  INSERT SCHED expr INTO SCHED COLLECTION expr
-  INSERT SCHED Item expr INTO SCHED expr (* TODO: recurring schedule *)
+  INSERT SCHED id INTO SCHED COLLECTION id { stc_src_dst($3, $7) }
+| INSERT SCHED ITEM id INTO SCHED id { its_src_dst($4, $7) }(* TODO: recurring schedule *)
 
 sched_spec:
   named_sched_spec      { $1 }

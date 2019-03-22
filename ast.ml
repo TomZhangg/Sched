@@ -78,14 +78,21 @@ let pp_create_stmt lvl create_stmt =
         idnt ^ "<create-sched-statement>\n" ^ sub_tree
 
 type insert_stmt = 
-    Schedule_src_dst of expr * sched_spec
-  (* TODO: Add Collection and Item create statements *)
+    stc_src_dst of expr * expr
+  | its_src_dst
+  (* TODO: Add Collection and Item insert statements *)
 let pp_insert_stmt lvl insert_stmt =
   match insert_stmt with
-    Schedule_src_dst(spec1*spec2) ->
+    stc_src_dst(src*dst) ->
       let idnt = indent lvl in
-      let sub_tree2 = pp_sched_spec (lvl + 1) spec in
-        idnt ^ "<insert-sched-statement>\n" ^ sub_tree
+      let expr1 = pp_id (lvl + 1) src in
+      let expr2 = pp_id (lvl + 1) dst in
+        idnt ^ "<insert-sched-to-coll-statement>\n" ^ expr1 ^ "\n" ^ expr2
+  | its_src_dst ->
+      let idnt = indent lvl in
+      let expr1 = pp_id (lvl + 1) src in
+      let expr2 = pp_id (lvl + 1) dst in
+        idnt ^ "<insert-item-to-sched-statement>\n" ^ expr1 ^ "\n" ^ expr2
 
 type stmt =
   create_stmt
@@ -97,7 +104,7 @@ let pp_stmt lvl stmt =
       let idnt = indent lvl in
       let sub_tree = pp_create_stmt (lvl + 1) create_stmt in
         idnt ^ "<create-statement>\n" ^ sub_tree
-    insert_stmt ->
+  | insert_stmt ->
       let idnt = indent lvl in
       let sub_tree = pp_insert_stmt (lvl + 1) insert_stmt in
         idnt ^ "<insert-statement>\n" ^ sub_tree
