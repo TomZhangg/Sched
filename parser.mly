@@ -1,6 +1,8 @@
 %{ open Ast %}
 
-%token SEMI CREATE SCHED DAY
+%token SEMI CREATE SCHED LT GT
+%token DAY WEEK MONTH YEAR
+%token <string> DATELIT
 %token <string> ID
 %token EOF
 
@@ -20,10 +22,27 @@ stmt:
   create_stmt   { $1 }
 
 create_stmt:
-  CREATE SCHED schedtyp ID schedspec SEMI  { Create(Sched, $3, Id($4), $5) }
+  CREATE SCHED sched_spec SEMI  { Schedule($3) }
 
-schedspec:
-  /* nothing */ { Empty }
+sched_spec:
+  named_sched_spec      { $1 }
+| anon_sched_spec       { $1 }
 
-schedtyp:
+named_sched_spec:
+  sched_kind start_date_opt id  { Named($1, $2, $3) }
+
+anon_sched_spec:
+  sched_kind start_date_opt     { Anon($1, $2) }
+
+sched_kind:
   DAY   { Day }
+| WEEK  { Week }
+| MONTH { Month }
+| YEAR  { Year }
+
+start_date_opt:
+  /* nothing */ { None }
+| DATELIT          { Some (TimeLit($1)) }
+
+id:
+  ID    { Id($1) }

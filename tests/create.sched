@@ -1,1 +1,8 @@
+#( Create a schedule that is named with schedule kind day and no inline item options )#
 Create Schedule Day trump_nov_7; #( Creates a new schedule for one day named trump_nov_7 )#
+
+Create Schedule Week trump_weak;
+#( Testing new start_date_opt )#
+Create Schedule Month <2000-01-01>;
+
+Create Schedule Year <2021-01-21> relief;
