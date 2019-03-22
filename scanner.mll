@@ -10,7 +10,10 @@ rule token = parse
 | "#("          { comment 1 lexbuf }      (* Comments *)
 | ';'           { SEMI }
 | "Create"      { CREATE }
+| "Insert"      { INSERT }
 | "Schedule"    { SCHED }
+| "Schedule Collection" { COLLECTION }
+| "Into"        { INTO }
 | "Day"         { DAY }
 | "Week"        { WEEK }
 | "Month"       { MONTH }

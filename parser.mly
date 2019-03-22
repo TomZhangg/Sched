@@ -20,9 +20,14 @@ stmts:
 
 stmt:
   create_stmt   { $1 }
+  insert_stmt   { $1 }
 
 create_stmt:
   CREATE SCHED sched_spec SEMI  { Schedule($3) }
+
+insert_stmt:
+  INSERT SCHED expr INTO SCHED COLLECTION expr
+  INSERT SCHED Item expr INTO SCHED expr (* TODO: recurring schedule *)
 
 sched_spec:
   named_sched_spec      { $1 }
