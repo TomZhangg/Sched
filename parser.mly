@@ -23,11 +23,17 @@ stmt:
 | insert_stmt   { $1 }
 
 create_stmt:
-  CREATE SCHED sched_spec SEMI  { Schedule($3) }
+  CREATE SCHED sched_spec SEMI  { create_stmt($3) }
 
 insert_stmt:
-  INSERT SCHED id INTO SCHED COLLECTION id { Stc_src_dst($3, $7) }
-| INSERT SCHED ITEM id INTO SCHED id { Its_src_dst($4, $7) }
+  insert_stc { $1 }
+| insert_its { $1 }
+
+insert_stc:
+  INSERT SCHED id INTO SCHED COLLECTION id { IS(STC,$3, $7) }
+
+insert_its:
+  INSERT SCHED ITEM id INTO SCHED id { IS(ITS,$4, $7) }
 
 sched_spec:
   named_sched_spec      { $1 }

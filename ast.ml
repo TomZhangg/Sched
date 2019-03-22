@@ -4,6 +4,9 @@ let rec indent lvl =
 type typ = Sched | SchedItem | SchedCollection
 
 type sched_kind = Day | Week | Month | Year
+
+type src_dst = STC | ITS
+
 let pp_sched_kind lvl kind =
   let prefix = (indent lvl) ^ "<sched-kind>: " in
     match kind with
@@ -77,18 +80,18 @@ let pp_create_stmt lvl create_stmt =
       let sub_tree = pp_sched_spec (lvl + 1) spec in
         idnt ^ "<create-sched-statement>\n" ^ sub_tree
 
+
 type insert_stmt = 
-    Stc_src_dst of (id * id)
-  | Its_src_dst of (id * id)
+    src_dst * id * id
   (* TODO: Add Collection and Item insert statements *)
 let pp_insert_stmt lvl insert_stmt =
   match insert_stmt with
-    Stc_src_dst(src,dst) ->
+    (STC,src,dst) ->
       let idnt = indent lvl in
       let expr1 = pp_id (lvl + 1) src in
       let expr2 = pp_id (lvl + 1) dst in
         idnt ^ "<insert-sched-to-coll-statement>\n" ^ expr1 ^ "\n" ^ expr2
-  | Its_src_dst(src,dst) ->
+  | (ITS,src,dst) ->
       let idnt = indent lvl in
       let expr1 = pp_id (lvl + 1) src in
       let expr2 = pp_id (lvl + 1) dst in
