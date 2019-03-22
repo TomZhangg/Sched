@@ -1,6 +1,6 @@
 %{ open Ast %}
 
-%token SEMI CREATE SCHED LT GT
+%token SEMI CREATE INSERT ITEM SCHED INTO COLLECTION LT GT
 %token DAY WEEK MONTH YEAR
 %token <string> DATELIT
 %token <string> ID
@@ -19,10 +19,21 @@ stmts:
 | stmt stmts { $1 :: $2 }
 
 stmt:
-  create_stmt   { $1 }
+  create_stmt   { CS($1) }
+| insert_stmt   { $1 }
 
 create_stmt:
   CREATE SCHED sched_spec SEMI  { Schedule($3) }
+
+insert_stmt:
+  insert_stc { IS($1) }
+| insert_its { IS($1) }
+
+insert_stc:
+  INSERT SCHED id INTO SCHED COLLECTION id SEMI{ Ids(STC,$3, $7) }
+
+insert_its:
+  INSERT SCHED ITEM id INTO SCHED id SEMI{ Ids(ITS,$4, $7) }
 
 sched_spec:
   named_sched_spec      { $1 }
