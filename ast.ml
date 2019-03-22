@@ -82,16 +82,16 @@ let pp_create_stmt lvl create_stmt =
 
 
 type insert_stmt = 
-    src_dst * id * id
+    Ids of src_dst * id * id
   (* TODO: Add Collection and Item insert statements *)
 let pp_insert_stmt lvl insert_stmt =
   match insert_stmt with
-    (STC,src,dst) ->
+    Ids (STC,src,dst) ->
       let idnt = indent lvl in
       let expr1 = pp_id (lvl + 1) src in
       let expr2 = pp_id (lvl + 1) dst in
         idnt ^ "<insert-sched-to-coll-statement>\n" ^ expr1 ^ "\n" ^ expr2
-  | (ITS,src,dst) ->
+  | Ids (ITS,src,dst) ->
       let idnt = indent lvl in
       let expr1 = pp_id (lvl + 1) src in
       let expr2 = pp_id (lvl + 1) dst in
