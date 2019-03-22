@@ -12,7 +12,8 @@ rule token = parse
 | "Create"      { CREATE }
 | "Insert"      { INSERT }
 | "Schedule"    { SCHED }
-| "Collection" { COLLECTION }
+| "Item"        { ITEM }
+| "Collection"  { COLLECTION }
 | "Into"        { INTO }
 | "Day"         { DAY }
 | "Week"        { WEEK }
