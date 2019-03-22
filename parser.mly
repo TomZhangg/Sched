@@ -19,11 +19,11 @@ stmts:
 | stmt stmts { $1 :: $2 }
 
 stmt:
-  create_stmt   { $1 }
+  create_stmt   { CS($1) }
 | insert_stmt   { $1 }
 
 create_stmt:
-  CREATE SCHED sched_spec SEMI  { create_stmt($3) }
+  CREATE SCHED sched_spec SEMI  { Schedule($3) }
 
 insert_stmt:
   insert_stc { $1 }
