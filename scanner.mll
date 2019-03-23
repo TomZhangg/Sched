@@ -21,6 +21,7 @@ rule token = parse
 | "Year"        { YEAR }
 | '<' year '-' month '-' day '>' as lit  { DATELIT(lit) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']*     as lxm { ID(lxm) }
+| ['0'-'9']+ as lxm { INT(int_of_string lxm) }
 | eof           { EOF }
 
 and comment lvl = parse
