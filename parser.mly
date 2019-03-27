@@ -4,13 +4,7 @@
 %token DAY WEEK MONTH YEAR
 %token <string> DATELIT
 %token <string> ID
-%token TIMES DIVIDE ADD SUBTRACT MOD
 %token EOF
-
-
-%left ADD SUBTRACT
-%left TIMES DIVIDE MOD
-
 
 
 %start program
@@ -64,20 +58,4 @@ start_date_opt:
 
 id:
   ID    { Id($1) }
-
-expr:
-  expr ADD    expr  { Binop($1, Add, $3) }
-| expr SUBTRACT expr  { Binop($1, Subtract, $3) }
-| expr TIMES    expr  { Binop($1, Times, $3) }
-| expr DIVIDE   expr  { Binop($1, Divide, $3) }
-| expr MOD    expr  { Binop($1, Mod, $3) }
-
-
-
-
-
-
-
-
-
 
