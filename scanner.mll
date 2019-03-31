@@ -15,6 +15,9 @@ rule token = parse
 | "Item"        { ITEM }
 | "Collection"  { COLLECTION }
 | "Into"        { INTO }
+| "Set"         { SET }
+| "Of"          { OF }
+| "To"          { TO }
 | "Day"         { DAY }
 | "Week"        { WEEK }
 | "Month"       { MONTH }

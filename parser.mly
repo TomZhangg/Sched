@@ -1,6 +1,6 @@
 %{ open Ast %}
 
-%token SEMI CREATE INSERT ITEM SCHED INTO COLLECTION LT GT
+%token SEMI CREATE INSERT ITEM SCHED INTO COLLECTION SET OF TO LT GT
 %token DAY WEEK MONTH YEAR
 %token <string> DATELIT
 %token <string> ID
@@ -22,6 +22,7 @@ stmts:
 stmt:
   create_stmt   { CS($1) }
 | insert_stmt   { $1 }
+| set_stmt      { $1 }
 
 create_stmt:
   CREATE SCHED sched_spec SEMI  { Schedule($3) }
@@ -58,4 +59,3 @@ start_date_opt:
 
 id:
   ID    { Id($1) }
-
