@@ -5,6 +5,13 @@ type typ = Sched | SchedItem | SchedCollection
 
 type sched_kind = Day | Week | Month | Year
 
+type item_kind = Event | Deadline (* Add <id> *)
+let pp_item_kind lvl kind =
+  let prefix = (indent lvl) ^ "<item-kind>: " in
+    match kind with
+      Event -> prefix ^ "Event"
+    | Deadline -> prefix ^ "Deadline"
+
 type src_dst = STC | ITS
 
 let pp_sched_kind lvl kind =
@@ -29,9 +36,8 @@ let string_of_expr expr =
   | TimeLit(str) -> "TimeLit(" ^ str ^ ")"
 
 type date = expr
-let pp_date lvl date =
-  let idnt = indent lvl in
-    idnt ^ string_of_expr date
+
+type time = expr
 
 type id = expr
 let pp_id lvl id =
@@ -41,37 +47,104 @@ let pp_id lvl id =
 type start_date_opt =
   Some of expr
 | None
-
 let pp_start_date_opt lvl start_date_opt =
   let idnt = indent lvl in
   match start_date_opt with
     Some date -> idnt ^ "<start-date-opt>: " ^ (string_of_expr date)
   | None -> idnt ^ "<start-date-opt> None"
 
+type dt_info_opt =
+  Some of time
+| None
+let pp_dt_info_opt lvl opt =
+  let idnt = indent lvl in
+  match opt with
+    Some time -> idnt ^ "<date-time-info-opt>: " ^ (string_of_expr time)
+  | None -> idnt ^ " <date-time-info-opt>: None"
+
+type attr = expr * expr
+type attrs = attr list
+
+type attrs_opt =
+  Some of attrs
+| None
+let pp_attrs_opt lvl opt =
+  let idnt = indent lvl in
+  match opt with
+    Some attrs ->
+      let sub_idnt = indent (lvl + 1) in
+      let sub_tree_list =
+        (List.map (fun (e1, e2) -> sub_idnt ^
+                                   "Type: " ^ (string_of_expr e1) ^ ", Name: " ^
+                                   (string_of_expr e2)) attrs) in
+        String.concat "\n" ((idnt ^ "<attrs-opt>:")::sub_tree_list)
+  | None -> idnt ^ "<attrs-opt>: None"
+
+type item_spec =
+  Named of item_kind * dt_info_opt * id * attrs_opt
+| Anon of item_kind * dt_info_opt * attrs_opt
+let pp_item_spec lvl item_spec =
+  let idnt = indent lvl in
+  match item_spec with
+    Named(kind, opt, id, attrs_opt) ->
+      let kind_sub_tree = pp_item_kind (lvl + 1) kind in
+      let opt_sub_tree = pp_dt_info_opt (lvl + 1) opt in
+      let id_sub_tree = pp_id (lvl + 1) id in
+      let attrs_sub_tree = pp_attrs_opt (lvl + 1) attrs_opt in
+        String.concat "\n" [idnt ^ "<named-item-spec>";
+                            kind_sub_tree;
+                            opt_sub_tree;
+                            id_sub_tree;
+                            attrs_sub_tree]
+  | Anon(kind, opt, attrs_opt) ->
+      let kind_sub_tree = pp_item_kind (lvl + 1) kind in
+      let opt_sub_tree = pp_dt_info_opt (lvl + 1) opt in
+      let attrs_sub_tree = pp_attrs_opt (lvl + 1) attrs_opt in
+        String.concat "\n" [idnt ^ "<anon-item-spec>";
+                            opt_sub_tree;
+                            kind_sub_tree;
+                            attrs_sub_tree]
+
+(* TODO: The list of item_spec has to be semantically checked. *)
+type il_items_opt =
+  Some of item_spec list
+| None
+let pp_items_opt lvl opt =
+  let idnt = indent lvl in
+  match opt with
+    None -> idnt ^ "<inline-items>: None"
+  | Some items ->
+    let sub_items_list = List.map (pp_item_spec (lvl + 1)) items in
+    String.concat "\n" ((idnt ^ "<inline-items>:")::sub_items_list)
+
 type sched_spec =
-  Named of sched_kind * start_date_opt * id (* TODO: inline_items_opt *)
-  (* TODO: Add anonymous schedule spec. *)
-| Anon of sched_kind * start_date_opt (* TODO: Add inline_items_opt *)
+  Named of sched_kind * start_date_opt * id * il_items_opt
+| Anon of sched_kind * start_date_opt * il_items_opt
 let pp_sched_spec lvl sched_spec =
   let idnt = indent lvl in
   match sched_spec with
-    Named(kind, opt, id) ->
+    Named(kind, opt, id, items) ->
       let kind_sub_tree = pp_sched_kind (lvl + 1) kind in
       let opt_sub_tree = pp_start_date_opt (lvl + 1) opt in
       let id_sub_tree = pp_id (lvl + 1) id in
+      let items_sub_tree = pp_items_opt (lvl + 1) items in
         String.concat "\n" [idnt ^ "<named-sched-spec>";
                             kind_sub_tree;
                             opt_sub_tree;
-                            id_sub_tree]
-  | Anon(kind, opt) ->
+                            id_sub_tree;
+                            items_sub_tree]
+  | Anon(kind, opt, items) ->
       let kind_sub_tree = pp_sched_kind (lvl + 1) kind in
       let opt_sub_tree = pp_start_date_opt (lvl + 1) opt in
+      let items_sub_tree = pp_items_opt (lvl + 1) items in
         String.concat "\n" [idnt ^ "<anon-sched-spec>";
                             kind_sub_tree;
-                            opt_sub_tree]
+                            opt_sub_tree;
+                            items_sub_tree]
 
 type create_stmt =
   Schedule of sched_spec
+| Item of item_spec
   (* TODO: Add Item insert statements *)
 let pp_create_stmt lvl create_stmt =
   match create_stmt with
@@ -79,6 +152,10 @@ let pp_create_stmt lvl create_stmt =
       let idnt = indent lvl in
       let sub_tree = pp_sched_spec (lvl + 1) spec in
         idnt ^ "<create-sched-statement>\n" ^ sub_tree
+  | Item(spec) ->
+      let idnt = indent lvl in
+      let sub_tree = pp_item_spec (lvl + 1) spec in
+        idnt ^ "<create-item-statement>\n" ^ sub_tree
 
 
 type insert_stmt = 
