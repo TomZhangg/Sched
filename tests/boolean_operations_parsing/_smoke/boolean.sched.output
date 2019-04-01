@@ -3,6 +3,6 @@ BoolLit(true) && BoolLit(true);
 !BoolLit(true) || !Id(x) || Id(y);
 BoolLit(true) || BoolLit(false) && BoolLit(true);
 BoolLit(true) && Id(x) && Id(y) || BoolLit(false);
-Bool x = BoolLit(true);
+bool x = BoolLit(true);
 Id(x) == BoolLit(true);
 Id(x) == BoolLit(false) && BoolLit(true);

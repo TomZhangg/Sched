@@ -44,7 +44,7 @@ let string_of_typ t =
     Sched
   | SchedItem
   | SchedCollection
-  | Bool -> "Bool"
+  | Bool -> "bool"
   | String -> "str"
 
 
