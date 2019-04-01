@@ -1,0 +1,15 @@
+True;
+
+True && True;
+
+!True || !x || y;
+
+True || False && True;
+
+True && x && y || False;
+
+bool x = True;
+
+x == True;
+
+x == False && True;

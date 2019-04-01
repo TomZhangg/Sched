@@ -9,6 +9,12 @@ rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
 | "#("          { comment 1 lexbuf }      (* Comments *)
 | ';'           { SEMI }
+| '='           { ASSIGN }
+| "=="          { EQ }
+| "!="          { NEQ }
+| "&&"          { AND }
+| "||"          { OR }
+| "!"           { NOT }
 | "Create"      { CREATE }
 | "Insert"      { INSERT }
 | "Schedule"    { SCHED }
@@ -19,6 +25,9 @@ rule token = parse
 | "Week"        { WEEK }
 | "Month"       { MONTH }
 | "Year"        { YEAR }
+| "bool"        { BOOL }
+| "True"        { BLIT(true)  }
+| "False"       { BLIT(false) }
 | '<' year '-' month '-' day '>' as lit  { DATELIT(lit) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']*     as lxm { ID(lxm) }
 | eof           { EOF }
