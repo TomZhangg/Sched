@@ -97,15 +97,17 @@ let pp_insert_stmt lvl insert_stmt =
       let expr2 = pp_id (lvl + 1) dst in
         idnt ^ "<insert-item-to-sched-statement>\n" ^ expr1 ^ "\n" ^ expr2
 
-type set_stmt
-    SS of attribute_id * id
+type set_stmt =
+  AIE of id * id * expr
 let pp_set_stmt lvl set_stmt =
   match set_stmt with
-    SS aid * id ->
+    AIE (aid,id,texpr) ->
       let idnt = indent lvl in
       let expr1 = pp_id (lvl + 1) aid in
       let expr2 = pp_id (lvl + 1) id in
-        idnt ^ "<insert-sched-to-coll-statement>\n" ^ expr1 ^ "\n" ^ expr2
+      let expr3 = string_of_expr texpr in
+      idnt ^ "<attribute id>"
+      ^ expr1 ^ "\n" ^ idnt ^ "<destination id>" ^ expr2 ^ "\n" ^ idnt ^ "<expression>: " ^ expr3
 
 type stmt =
   CS of create_stmt
@@ -124,8 +126,8 @@ let pp_stmt lvl stmt =
       idnt ^ "<insert-statement>\n" ^ sub_tree
   | SS set_stmt ->
     let idnt = indent lvl in
-    let sub_tree = pp_set_stmt (lvl + 1) insert_stmt in
-      ident ^ "<set-statement>\n" ^ sub_tree
+    let sub_tree = pp_set_stmt (lvl + 1) set_stmt in
+      idnt ^ "<set-statement>\n" ^ sub_tree
 
 type program = stmt list
 let pp_program prog =
