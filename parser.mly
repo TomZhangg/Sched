@@ -1,6 +1,6 @@
 %{ open Ast %}
 
-%token SEMI COL COMMA CREATE INSERT ITEM ITEMS SCHED INTO COLLECTION LT GT
+%token SEMI COL COMMA CREATE INSERT ITEM ITEMS SCHED INTO COLLECTION SET OF TO LT GT
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
 %token <string> DATELIT
@@ -23,21 +23,25 @@ stmts:
 
 stmt:
   create_stmt   { CS($1) }
-| insert_stmt   { $1 }
+| insert_stmt   { IS($1) }
+| set_stmt      { SS($1) }
 
 create_stmt:
   CREATE SCHED sched_spec SEMI  { Schedule($3) }
 | CREATE ITEM item_spec SEMI    { Item($3) }
 
 insert_stmt:
-  insert_stc { IS($1) }
-| insert_its { IS($1) }
+  insert_stc { $1 }
+| insert_its { $1 }
 
 insert_stc:
   INSERT SCHED id INTO SCHED COLLECTION id SEMI{ Ids(STC,$3, $7) }
 
 insert_its:
   INSERT SCHED ITEM id INTO SCHED id SEMI{ Ids(ITS,$4, $7) }
+
+set_stmt:
+  SET id OF id TO expr SEMI{ AIE($2, $4, $6) }
 
 sched_spec:
   named_sched_spec      { $1 }
@@ -95,6 +99,8 @@ attrs:
 | COMMA attrs { $2 }
 | ID COL ID attrs { (Id($1), Id($3))::$4 }
 
+expr:
+  id { $1 }
+
 id:
   ID    { Id($1) }
-
