@@ -14,6 +14,12 @@ rule token = parse
 | ';'           { SEMI }
 | ':'           { COL }
 | ','           { COMMA }
+| '='           { ASSIGN }
+| "=="          { EQ }
+| "!="          { NEQ }
+| "&&"          { AND }
+| "||"          { OR }
+| "!"           { NOT }
 | "Create"      { CREATE }
 | "Insert"      { INSERT }
 | "Schedule"    { SCHED }
@@ -30,6 +36,9 @@ rule token = parse
 | "Year"        { YEAR }
 | "Event"       { EVENT }
 | "Deadline"    { DEADLINE }
+| "bool"        { BOOL }
+| "True"        { BLIT(true)  }
+| "False"       { BLIT(false) }
 | '<' year '-' month '-' day '>' as lit  { DATELIT(lit) }
 | '<' year '-' month '-' day 'T' hour ':' minute ':' second '>' as lit  { TIMELIT(lit) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']*     as lxm { ID(lxm) }

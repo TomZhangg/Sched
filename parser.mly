@@ -1,16 +1,25 @@
 %{ open Ast %}
 
 %token SEMI COL COMMA CREATE INSERT ITEM ITEMS SCHED INTO COLLECTION SET OF TO LT GT
+%token ASSIGN NOT EQ NEQ AND OR
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
+%token BOOL
 %token <string> DATELIT
 %token <string> TIMELIT
 %token <string> ID
+%token <bool> BLIT
 %token EOF
 
 
 %start program
 %type <Ast.program> program
+
+%right ASSIGN
+%left OR
+%left AND
+%left EQ NEQ
+%right NOT
 
 %%
 
@@ -25,6 +34,20 @@ stmt:
   create_stmt   { CS($1) }
 | insert_stmt   { IS($1) }
 | set_stmt      { SS($1) }
+| expr SEMI     { Expr $1 }
+
+typ:
+  | BOOL  { Bool  }
+
+expr:
+  BLIT               { BoolLit($1)            }
+| ID                 { Id($1) }
+| expr EQ     expr   { Binop($1, Equal, $3)   }
+| expr NEQ    expr   { Binop($1, Neq,   $3)   }
+| expr AND    expr   { Binop($1, And,   $3)   }
+| expr OR     expr   { Binop($1, Or,    $3)   }
+| NOT expr           { Unop(Not, $2)          }
+| typ ID ASSIGN expr { Assign($1, $2, $4)     }
 
 create_stmt:
   CREATE SCHED sched_spec SEMI  { Schedule($3) }

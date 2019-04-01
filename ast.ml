@@ -1,7 +1,13 @@
 let rec indent lvl =
   if lvl = 0 then "" else "  " ^ indent (lvl - 1)
 
-type typ = Sched | SchedItem | SchedCollection
+type op = Equal | Neq | And | Or
+
+type uop = Not
+
+type typ = Sched | SchedItem | SchedCollection | Bool
+
+type bind = typ * string
 
 type sched_kind = Day | Week | Month | Year
 
@@ -22,18 +28,48 @@ let pp_sched_kind lvl kind =
     | Month -> prefix ^ "Month"
     | Year -> prefix ^ "Year"
 
+let string_of_op o =
+  match o with
+    Equal -> "=="
+  | Neq -> "!="
+  | And -> "&&"
+  | Or -> "||"
+
+let string_of_uop o =
+  match o with
+  Not -> "!"
+
+let string_of_typ t =
+  match t with
+    Sched
+  | SchedItem
+  | SchedCollection
+  | Bool -> "Bool"
+
+
+
 type expr =
   Id of string
 | StringLit of string
 | IntLit of int
 | TimeLit of string
+| BoolLit of bool
+| Binop of expr * op * expr
+| Unop of uop * expr
+| Assign of typ * string * expr
 
-let string_of_expr expr =
+let rec string_of_expr expr =
   match expr with
     Id(str) -> "Id(" ^ str ^ ")"
   | StringLit(str) -> "StringLit(" ^ str ^ ")"
   | IntLit(x) -> "IntLit(" ^ (string_of_int x) ^ ")"
   | TimeLit(str) -> "TimeLit(" ^ str ^ ")"
+  | BoolLit(true) -> "BoolLit(" ^ "true" ^ ")"
+  | BoolLit(false) -> "BoolLit(" ^ "false" ^ ")"
+  | Binop(e1, o, e2) ->
+      string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
+  | Unop(o, e) -> string_of_uop o ^ string_of_expr e
+  | Assign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e
 
 type date = expr
 
@@ -190,6 +226,7 @@ type stmt =
   CS of create_stmt
   | IS of insert_stmt
   | SS of set_stmt
+  | Expr of expr
 
 let pp_stmt lvl stmt =
   match stmt with
@@ -205,6 +242,7 @@ let pp_stmt lvl stmt =
     let idnt = indent lvl in
     let sub_tree = pp_set_stmt (lvl + 1) set_stmt in
       idnt ^ "<set-statement>\n" ^ sub_tree
+  | Expr(expr) -> string_of_expr expr ^ ";"
 
 type program = stmt list
 let pp_program prog =
