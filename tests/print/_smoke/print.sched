@@ -1,0 +1,11 @@
+str x = "hi";
+
+print(x);
+
+print("hello world");
+
+print(True);
+
+print(True && True);
+
+foo(x, y, True);

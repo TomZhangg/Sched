@@ -1,14 +1,15 @@
 %{ open Ast %}
 
 %token SEMI COL COMMA CREATE INSERT ITEM ITEMS SCHED INTO COLLECTION SET OF TO LT GT
-%token ASSIGN NOT EQ NEQ AND OR
+%token ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN PRINT
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
-%token BOOL
+%token BOOL STRING
 %token <string> DATELIT
 %token <string> TIMELIT
 %token <string> ID
 %token <bool> BLIT
+%token <string> SLIT
 %token EOF
 
 
@@ -38,9 +39,11 @@ stmt:
 
 typ:
   | BOOL  { Bool  }
+  | STRING { String }
 
 expr:
   BLIT               { BoolLit($1)            }
+| SLIT               { StrLit ($1) }
 | ID                 { Id($1) }
 | expr EQ     expr   { Binop($1, Equal, $3)   }
 | expr NEQ    expr   { Binop($1, Neq,   $3)   }
@@ -48,6 +51,17 @@ expr:
 | expr OR     expr   { Binop($1, Or,    $3)   }
 | NOT expr           { Unop(Not, $2)          }
 | typ ID ASSIGN expr { Assign($1, $2, $4)     }
+| ID LPAREN args_opt RPAREN { Call($1, $3)  }
+| PRINT LPAREN expr RPAREN { Print($3)  }
+| LPAREN expr RPAREN { $2                   }
+
+args_opt:
+    /* nothing */ { [] }
+  | args_list  { List.rev $1 }
+
+args_list:
+    expr                    { [$1] }
+  | args_list COMMA expr { $3 :: $1 }
 
 create_stmt:
   CREATE SCHED sched_spec SEMI  { Schedule($3) }

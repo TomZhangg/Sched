@@ -5,7 +5,7 @@ type op = Equal | Neq | And | Or
 
 type uop = Not
 
-type typ = Sched | SchedItem | SchedCollection | Bool
+type typ = Sched | SchedItem | SchedCollection | Bool | String
 
 type bind = typ * string
 
@@ -45,23 +45,26 @@ let string_of_typ t =
   | SchedItem
   | SchedCollection
   | Bool -> "Bool"
+  | String -> "str"
 
 
 
 type expr =
   Id of string
-| StringLit of string
 | IntLit of int
 | TimeLit of string
 | BoolLit of bool
+| StrLit of string
 | Binop of expr * op * expr
 | Unop of uop * expr
 | Assign of typ * string * expr
+| Call of string * expr list
+| Print of expr
 
 let rec string_of_expr expr =
   match expr with
     Id(str) -> "Id(" ^ str ^ ")"
-  | StringLit(str) -> "StringLit(" ^ str ^ ")"
+  | StrLit(str) -> "StrLit(" ^ str ^ ")"
   | IntLit(x) -> "IntLit(" ^ (string_of_int x) ^ ")"
   | TimeLit(str) -> "TimeLit(" ^ str ^ ")"
   | BoolLit(true) -> "BoolLit(" ^ "true" ^ ")"
@@ -70,6 +73,9 @@ let rec string_of_expr expr =
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(o, e) -> string_of_uop o ^ string_of_expr e
   | Assign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e
+  | Call(f, el) ->
+      f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+  | Print(el) -> "print" ^ "(" ^ string_of_expr el ^ ")"
 
 type date = expr
 
