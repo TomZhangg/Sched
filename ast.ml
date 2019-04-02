@@ -1,7 +1,7 @@
 let rec indent lvl =
   if lvl = 0 then "" else "  " ^ indent (lvl - 1)
 
-type op = Equal | Neq | And | Or
+type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod
 
 type uop = Not
 
@@ -34,6 +34,12 @@ let string_of_op o =
   | Neq -> "!="
   | And -> "&&"
   | Or -> "||"
+  | Add -> "+"
+  | Sub -> "-"
+  | Mult -> "*"
+  | Div -> "/"
+  | Mod -> "%"
+
 
 let string_of_uop o =
   match o with

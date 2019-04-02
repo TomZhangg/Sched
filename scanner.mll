@@ -22,6 +22,11 @@ rule token = parse
 | "&&"          { AND }
 | "||"          { OR }
 | "!"           { NOT }
+| "+"			{ PLUS }
+| "-"			{ MINUS }
+| "/"			{ DIVIDE }
+| "*"			{ TIMES }
+| "%"			{ MOD }
 | "Create"      { CREATE }
 | "Insert"      { INSERT }
 | "Schedule"    { SCHED }

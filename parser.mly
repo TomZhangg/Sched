@@ -2,6 +2,7 @@
 
 %token SEMI COL COMMA CREATE INSERT ITEM ITEMS SCHED INTO COLLECTION SET OF TO LT GT
 %token ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN PRINT
+%token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
 %token BOOL STRING
@@ -10,6 +11,7 @@
 %token <string> ID
 %token <bool> BLIT
 %token <string> SLIT
+%token <int> LITERAL
 %token EOF
 
 
@@ -19,8 +21,13 @@
 %right ASSIGN
 %left OR
 %left AND
+%left MOD
+%left PLUS MINUS
+%left TIMES DIVIDE
 %left EQ NEQ
 %right NOT
+
+
 
 %%
 
@@ -49,6 +56,11 @@ expr:
 | expr NEQ    expr   { Binop($1, Neq,   $3)   }
 | expr AND    expr   { Binop($1, And,   $3)   }
 | expr OR     expr   { Binop($1, Or,    $3)   }
+| expr PLUS   expr   { Binop($1, Add,   $3)   }
+| expr MINUS  expr   { Binop($1, Sub,   $3)   }
+| expr TIMES  expr   { Binop($1, Mult,  $3)   }
+| expr DIVIDE expr   { Binop($1, Div,   $3)   }
+| expr MOD    expr   { Binop($1, Mod,   $3)   }
 | NOT expr           { Unop(Not, $2)          }
 | typ ID ASSIGN expr { Assign($1, $2, $4)     }
 | ID LPAREN args_opt RPAREN { Call($1, $3)  }
