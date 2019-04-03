@@ -6,3 +6,14 @@ Create Schedule Week trump_weak;
 Create Schedule Month <2000-01-01>;
 
 Create Schedule Year <2021-01-21> relief;
+
+Create Item Event;
+
+Create Item Deadline must_finish;
+
+#( Time Lits are going to take a lot to add. )#
+Create Item Event <2019-06-21T18:53:00> summer_solstice time: happening, schedule: trump_weak;
+
+Create Schedule Year <2021-01-21> relief Schedule Items Event <2021-01-22T00:00:00> duration: all_day;
+
+Create Schedule Month <2000-01-01> Schedule Items Event name: bugout;

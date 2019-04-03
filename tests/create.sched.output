@@ -4,20 +4,69 @@
       <sched-kind>: Day
       <start-date-opt> None
       <id>: Id(trump_nov_7)
+      <inline-items>: None
 <create-statement>
   <create-sched-statement>
     <named-sched-spec>
       <sched-kind>: Week
       <start-date-opt> None
       <id>: Id(trump_weak)
+      <inline-items>: None
 <create-statement>
   <create-sched-statement>
     <anon-sched-spec>
       <sched-kind>: Month
       <start-date-opt>: TimeLit(<2000-01-01>)
+      <inline-items>: None
 <create-statement>
   <create-sched-statement>
     <named-sched-spec>
       <sched-kind>: Year
       <start-date-opt>: TimeLit(<2021-01-21>)
       <id>: Id(relief)
+      <inline-items>: None
+<create-statement>
+  <create-item-statement>
+    <anon-item-spec>
+       <date-time-info-opt>: None
+      <item-kind>: Event
+      <attrs-opt>: None
+<create-statement>
+  <create-item-statement>
+    <named-item-spec>
+      <item-kind>: Deadline
+       <date-time-info-opt>: None
+      <id>: Id(must_finish)
+      <attrs-opt>: None
+<create-statement>
+  <create-item-statement>
+    <named-item-spec>
+      <item-kind>: Event
+      <date-time-info-opt>: TimeLit(<2019-06-21T18:53:00>)
+      <id>: Id(summer_solstice)
+      <attrs-opt>:
+        Type: Id(time), Name: Id(happening)
+        Type: Id(schedule), Name: Id(trump_weak)
+<create-statement>
+  <create-sched-statement>
+    <named-sched-spec>
+      <sched-kind>: Year
+      <start-date-opt>: TimeLit(<2021-01-21>)
+      <id>: Id(relief)
+      <inline-items>:
+        <anon-item-spec>
+          <date-time-info-opt>: TimeLit(<2021-01-22T00:00:00>)
+          <item-kind>: Event
+          <attrs-opt>:
+            Type: Id(duration), Name: Id(all_day)
+<create-statement>
+  <create-sched-statement>
+    <anon-sched-spec>
+      <sched-kind>: Month
+      <start-date-opt>: TimeLit(<2000-01-01>)
+      <inline-items>:
+        <anon-item-spec>
+           <date-time-info-opt>: None
+          <item-kind>: Event
+          <attrs-opt>:
+            Type: Id(name), Name: Id(bugout)
