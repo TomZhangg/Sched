@@ -136,8 +136,5 @@ attrs:
 | COMMA attrs { $2 }
 | ID COL ID attrs { (Id($1), Id($3))::$4 }
 
-expr:
-  id { $1 }
-
 id:
   ID    { Id($1) }
