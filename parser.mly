@@ -5,13 +5,13 @@
 %token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
-%token BOOL STRING
+%token BOOL STRING INT
 %token <string> DATELIT
 %token <string> TIMELIT
 %token <string> ID
 %token <bool> BLIT
 %token <string> SLIT
-%token <int> LITERAL
+%token <int> ILIT
 %token EOF
 
 
@@ -47,11 +47,13 @@ stmt:
 typ:
   | BOOL  { Bool  }
   | STRING { String }
+  | INT    { Int }
 
 expr:
   BLIT               { BoolLit($1)            }
 | SLIT               { StrLit ($1) }
 | ID                 { Id($1) }
+| ILIT                { IntLit($1)}
 | expr EQ     expr   { Binop($1, Equal, $3)   }
 | expr NEQ    expr   { Binop($1, Neq,   $3)   }
 | expr AND    expr   { Binop($1, And,   $3)   }

@@ -24,8 +24,8 @@ rule token = parse
 | "!"           { NOT }
 | "+"			{ PLUS }
 | "-"			{ MINUS }
-| "/"			{ DIVIDE }
 | "*"			{ TIMES }
+| "/"			{ DIVIDE }
 | "%"			{ MOD }
 | "Create"      { CREATE }
 | "Insert"      { INSERT }
@@ -44,10 +44,12 @@ rule token = parse
 | "Event"       { EVENT }
 | "Deadline"    { DEADLINE }
 | "bool"        { BOOL }
+| "int"			{ INT }
 | "str"         { STRING }
 | "True"        { BLIT(true)  }
 | "False"       { BLIT(false) }
 | "print"       { PRINT }
+| digits+ as lxm { ILIT(int_of_string lxm) }
 | '"'([^'"']*)'"' as s { SLIT(s) }
 | '<' year '-' month '-' day '>' as lit  { DATELIT(lit) }
 | '<' year '-' month '-' day 'T' hour ':' minute ':' second '>' as lit  { TIMELIT(lit) }
