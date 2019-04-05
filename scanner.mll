@@ -42,7 +42,6 @@ rule token = parse
 | "str"         { STRING }
 | "True"        { BLIT(true)  }
 | "False"       { BLIT(false) }
-| "print"       { PRINT }
 | '"'([^'"']*)'"' as s { SLIT(s) }
 | '<' year '-' month '-' day '>' as lit  { DATELIT(lit) }
 | '<' year '-' month '-' day 'T' hour ':' minute ':' second '>' as lit  { TIMELIT(lit) }

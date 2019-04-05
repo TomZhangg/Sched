@@ -59,7 +59,6 @@ type expr =
 | Unop of uop * expr
 | Assign of typ * string * expr
 | Call of string * expr list
-| Print of expr
 
 let rec string_of_expr expr =
   match expr with
@@ -75,7 +74,6 @@ let rec string_of_expr expr =
   | Assign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-  | Print(el) -> "print" ^ "(" ^ string_of_expr el ^ ")"
 
 type date = expr
 
