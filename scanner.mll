@@ -44,6 +44,7 @@ rule token = parse
 | "False"       { BLIT(false) }
 | "print"       { PRINT }
 | '"'([^'"']*)'"' as s { SLIT(s) }
+| "func"        { FUNC }
 | '<' year '-' month '-' day '>' as lit  { DATELIT(lit) }
 | '<' year '-' month '-' day 'T' hour ':' minute ':' second '>' as lit  { TIMELIT(lit) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']*     as lxm { ID(lxm) }
@@ -53,3 +54,6 @@ and comment lvl = parse
   ")#"  { if lvl = 1 then token lexbuf else comment (lvl - 1) lexbuf }
 | "#("  { comment (lvl + 1) lexbuf }
 | _     { comment lvl lexbuf }
+
+and func = Parser
+  ""
