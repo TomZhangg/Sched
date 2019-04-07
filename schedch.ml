@@ -33,4 +33,5 @@ let () =
       match check_opt with
         Some (stmts, st) -> print_endline (Sast.string_of_sprogram stmts)
       | None -> raise (Failure "Semantic check failed.")
+    | LLVM_IR -> print_string (Llvm.string_of_llmodule (Codegen.translate sast))
     | _ -> raise (Option_not_implemented (string_of_action !action))
