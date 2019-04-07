@@ -5,7 +5,7 @@ type op = Equal | Neq | And | Or
 
 type uop = Not
 
-type typ = Sched | SchedItem | SchedCollection | Bool | String
+type typ = Sched | SchedItem | SchedCollection | Bool | String | Void
 
 type bind = typ * string
 
@@ -46,6 +46,7 @@ let string_of_typ t =
   | SchedCollection
   | Bool -> "bool"
   | String -> "str"
+  | Void -> "void"
 
 
 
