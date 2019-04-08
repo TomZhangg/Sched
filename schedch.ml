@@ -30,7 +30,22 @@ let () =
       Ast -> print_string (Ast.pp_program ast)
     | Sast ->
       let check_opt = Semant.check ast Semant.init_st in
-      match check_opt with
-        Some (stmts, st) -> print_endline (Sast.string_of_sprogram stmts)
-      | None -> raise (Failure "Semantic check failed.")
+      (match check_opt with
+         Some (stmts, st) -> print_endline (Sast.string_of_sprogram stmts)
+       | None -> raise (Failure "Semantic check failed."))
+    | LLVM_IR ->
+      let check_opt = Semant.check ast Semant.init_st in
+      (match check_opt with
+         Some (stmts, st) ->
+           let llmodule = Codegen.translate stmts in
+             print_string (Llvm.string_of_llmodule llmodule)
+       | None -> raise (Failure "Semantic check failed."))
+    | Compile ->
+      let check_opt = Semant.check ast Semant.init_st in
+      (match check_opt with
+         Some (stmts, st) ->
+           let m = Codegen.translate stmts in
+             Llvm_analysis.assert_valid_module m;
+             print_string (Llvm.string_of_llmodule m)
+       | None -> raise (Failure "Semantic check failed."))
     | _ -> raise (Option_not_implemented (string_of_action !action))
