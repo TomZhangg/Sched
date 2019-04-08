@@ -1,0 +1,5 @@
+<function-definition>
+  <id>: Id(asdf)
+  <parameters>: Id(a), Id(s), Id(d), Id(f)
+  <body>: asdf();
+asdf(Id(a), Id(s), Id(d), Id(f));
