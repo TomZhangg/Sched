@@ -9,7 +9,8 @@ let minute = (digits)digits
 let second = (digits)digits
 
 rule token = parse
-  [' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
+  [' ' '\r' '\n'] { token lexbuf } (* Whitespace *)
+| '\t'          { INDENT }
 | "#("          { comment 1 lexbuf }      (* Comments *)
 | '('           { LPAREN }
 | ')'           { RPAREN }

@@ -1,7 +1,7 @@
 %{ open Ast %}
 
-%token SEMI COL COMMA CREATE INSERT ITEM ITEMS SCHED INTO COLLECTION SET OF TO LT GT
-%token ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN
+%token SEMI COL COMMA CREATE INSERT ITEM ITEMS SCHED INTO COLLECTION SET OF TO LT GT INDENT
+%token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
 %token BOOL STRING
@@ -36,6 +36,11 @@ stmt:
 | insert_stmt   { IS($1) }
 | set_stmt      { SS($1) }
 | expr SEMI     { Expr $1 }
+| FUNC ID LPAREN args_opt RPAREN COL indent_stmts { Def($2, $4, $7)}
+
+indent_stmts:
+  INDENT stmt   { $2 }
+| INDENT stmt indent_stmts { $2 :: $3 }
 
 typ:
   | BOOL  { Bool  }

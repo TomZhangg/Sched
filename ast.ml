@@ -227,11 +227,17 @@ let pp_set_stmt lvl set_stmt =
       idnt ^ "<attribute id>"
       ^ expr1 ^ "\n" ^ idnt ^ "<destination id>" ^ expr2 ^ "\n" ^ idnt ^ "<expression>: " ^ expr3
 
+type args = id list
+
 type stmt =
   CS of create_stmt
   | IS of insert_stmt
   | SS of set_stmt
   | Expr of expr
+  | DEF of def
+
+type def =
+  DEC of id * args * stmt
 
 let pp_stmt lvl stmt =
   match stmt with
@@ -248,6 +254,15 @@ let pp_stmt lvl stmt =
     let sub_tree = pp_set_stmt (lvl + 1) set_stmt in
       idnt ^ "<set-statement>\n" ^ sub_tree
   | Expr(expr) -> string_of_expr expr ^ ";"
+  | DEC(i,a,b) ->
+    let idnt = indent lvl in
+    let idnt2 = indent (lvl+1) in
+    let id_pp = pp_id (lvl + 1) i in
+    let sub_tree = pp_stmt (lvl + 1) b in
+    idnt ^ "<function-definition>\n"
+    ^ id_pp ^ "\n"
+    ^ idnt2 ^(List.map string_of_expr el) ^ "\n"
+    ^ sub_tree
 
 type program = stmt list
 let pp_program prog =
