@@ -258,8 +258,8 @@ let rec pp_stmt lvl stmt =
     let sub_tree = (String.concat "\n" (List.map (fun stmt -> pp_stmt (lvl + 1) stmt) b)) in
     idnt ^ "<function-definition>\n"
     ^ id_pp ^ "\n"
-    ^ idnt2 ^ String.concat ", " (List.map string_of_expr a) ^ "\n"
-    ^ sub_tree
+    ^ idnt2 ^ "<parameters>: " ^String.concat ", " (List.map string_of_expr a) ^ "\n"
+    ^ idnt2 ^ "<body>: " ^ sub_tree
 
 type program = stmt list
 let pp_program prog =

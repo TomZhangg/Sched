@@ -36,7 +36,7 @@ stmt:
 | insert_stmt   { IS($1) }
 | set_stmt      { SS($1) }
 | expr SEMI     { Expr $1 }
-| FUNC id LPAREN args_opt RPAREN COL indent_stmts { DEC($2, $4, $7)}
+| FUNC id LPAREN params RPAREN COL indent_stmts { DEC($2, $4, $7)}
 
 indent_stmts:
   INDENT stmt   { [$2] }
@@ -139,6 +139,14 @@ attrs:
   /* nothing */ { [] }
 | COMMA attrs { $2 }
 | ID COL ID attrs { (Id($1), Id($3))::$4 }
+
+params:
+  /* nothing */ { [] }
+| param_list  { List.rev $1 }
+
+param_list:
+  id                    { [$1] }
+| param_list COMMA id { $3 :: $1 }
 
 id:
   ID    { Id($1) }
