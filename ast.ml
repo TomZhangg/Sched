@@ -227,19 +227,16 @@ let pp_set_stmt lvl set_stmt =
       idnt ^ "<attribute id>"
       ^ expr1 ^ "\n" ^ idnt ^ "<destination id>" ^ expr2 ^ "\n" ^ idnt ^ "<expression>: " ^ expr3
 
-type args = id list
+type args = expr list
 
 type stmt =
   CS of create_stmt
   | IS of insert_stmt
   | SS of set_stmt
   | Expr of expr
-  | DEF of def
+  | DEC of id * args * stmt list
 
-type def =
-  DEC of id * args * stmt
-
-let pp_stmt lvl stmt =
+let rec pp_stmt lvl stmt =
   match stmt with
     CS create_stmt ->
       let idnt = indent lvl in
@@ -258,10 +255,10 @@ let pp_stmt lvl stmt =
     let idnt = indent lvl in
     let idnt2 = indent (lvl+1) in
     let id_pp = pp_id (lvl + 1) i in
-    let sub_tree = pp_stmt (lvl + 1) b in
+    let sub_tree = (String.concat "\n" (List.map (fun stmt -> pp_stmt (lvl + 1) stmt) b)) in
     idnt ^ "<function-definition>\n"
     ^ id_pp ^ "\n"
-    ^ idnt2 ^(List.map string_of_expr el) ^ "\n"
+    ^ idnt2 ^ String.concat ", " (List.map string_of_expr a) ^ "\n"
     ^ sub_tree
 
 type program = stmt list

@@ -54,6 +54,3 @@ and comment lvl = parse
   ")#"  { if lvl = 1 then token lexbuf else comment (lvl - 1) lexbuf }
 | "#("  { comment (lvl + 1) lexbuf }
 | _     { comment lvl lexbuf }
-
-and func = Parser
-  ""

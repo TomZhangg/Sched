@@ -36,10 +36,10 @@ stmt:
 | insert_stmt   { IS($1) }
 | set_stmt      { SS($1) }
 | expr SEMI     { Expr $1 }
-| FUNC ID LPAREN args_opt RPAREN COL indent_stmts { Def($2, $4, $7)}
+| FUNC id LPAREN args_opt RPAREN COL indent_stmts { DEC($2, $4, $7)}
 
 indent_stmts:
-  INDENT stmt   { $2 }
+  INDENT stmt   { [$2] }
 | INDENT stmt indent_stmts { $2 :: $3 }
 
 typ:
