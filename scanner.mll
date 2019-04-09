@@ -9,7 +9,8 @@ let minute = (digits)digits
 let second = (digits)digits
 
 rule token = parse
-  [' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
+  [' ' '\r' '\n'] { token lexbuf } (* Whitespace *)
+| '\t'          { INDENT }
 | "#("          { comment 1 lexbuf }      (* Comments *)
 | '('           { LPAREN }
 | ')'           { RPAREN }
@@ -42,8 +43,8 @@ rule token = parse
 | "str"         { STRING }
 | "True"        { BLIT(true)  }
 | "False"       { BLIT(false) }
-| "print"       { PRINT }
 | '"'([^'"']*)'"' as s { SLIT(s) }
+| "func"        { FUNC }
 | '<' year '-' month '-' day '>' as lit  { DATELIT(lit) }
 | '<' year '-' month '-' day 'T' hour ':' minute ':' second '>' as lit  { TIMELIT(lit) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']*     as lxm { ID(lxm) }

@@ -5,7 +5,7 @@ type op = Equal | Neq | And | Or
 
 type uop = Not
 
-type typ = Sched | SchedItem | SchedCollection | Bool | String
+type typ = Sched | SchedItem | SchedCollection | Bool | String | Void
 
 type bind = typ * string
 
@@ -46,6 +46,7 @@ let string_of_typ t =
   | SchedCollection
   | Bool -> "bool"
   | String -> "str"
+  | Void -> "void"
 
 
 
@@ -59,7 +60,6 @@ type expr =
 | Unop of uop * expr
 | Assign of typ * string * expr
 | Call of string * expr list
-| Print of expr
 
 let rec string_of_expr expr =
   match expr with
@@ -75,7 +75,6 @@ let rec string_of_expr expr =
   | Assign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-  | Print(el) -> "print" ^ "(" ^ string_of_expr el ^ ")"
 
 type date = expr
 
@@ -228,13 +227,16 @@ let pp_set_stmt lvl set_stmt =
       idnt ^ "<attribute id>"
       ^ expr1 ^ "\n" ^ idnt ^ "<destination id>" ^ expr2 ^ "\n" ^ idnt ^ "<expression>: " ^ expr3
 
+type args = expr list
+
 type stmt =
   CS of create_stmt
   | IS of insert_stmt
   | SS of set_stmt
   | Expr of expr
+  | DEC of id * args * stmt list
 
-let pp_stmt lvl stmt =
+let rec pp_stmt lvl stmt =
   match stmt with
     CS create_stmt ->
       let idnt = indent lvl in
@@ -249,6 +251,15 @@ let pp_stmt lvl stmt =
     let sub_tree = pp_set_stmt (lvl + 1) set_stmt in
       idnt ^ "<set-statement>\n" ^ sub_tree
   | Expr(expr) -> string_of_expr expr ^ ";"
+  | DEC(i,a,b) ->
+    let idnt = indent lvl in
+    let idnt2 = indent (lvl+1) in
+    let id_pp = pp_id (lvl + 1) i in
+    let sub_tree = (String.concat "\n" (List.map (fun stmt -> pp_stmt (lvl + 1) stmt) b)) in
+    idnt ^ "<function-definition>\n"
+    ^ id_pp ^ "\n"
+    ^ idnt2 ^ "<parameters>: " ^String.concat ", " (List.map string_of_expr a) ^ "\n"
+    ^ idnt2 ^ "<body>: " ^ sub_tree
 
 type program = stmt list
 let pp_program prog =
