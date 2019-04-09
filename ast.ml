@@ -5,11 +5,7 @@ type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod
 
 type uop = Not
 
-<<<<<<< HEAD
-type typ = Sched | SchedItem | SchedCollection | Bool | String | Int
-=======
-type typ = Sched | SchedItem | SchedCollection | Bool | String | Void
->>>>>>> master
+type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void
 
 type bind = typ * string
 
@@ -56,11 +52,9 @@ let string_of_typ t =
   | SchedCollection
   | Bool -> "bool"
   | String -> "str"
-<<<<<<< HEAD
   | Int -> "int"
-=======
   | Void -> "void"
->>>>>>> master
+
 
 
 

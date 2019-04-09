@@ -49,11 +49,8 @@ rule token = parse
 | "str"         { STRING }
 | "True"        { BLIT(true)  }
 | "False"       { BLIT(false) }
-<<<<<<< HEAD
 | "print"       { PRINT }
 | digits+ as lxm { ILIT(int_of_string lxm) }
-=======
->>>>>>> master
 | '"'([^'"']*)'"' as s { SLIT(s) }
 | "func"        { FUNC }
 | '<' year '-' month '-' day '>' as lit  { DATELIT(lit) }
