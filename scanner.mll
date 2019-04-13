@@ -30,6 +30,7 @@ rule token = parse
 | "%"			{ MOD }
 | "Create"      { CREATE }
 | "Insert"      { INSERT }
+| "Drop"		{ DROP }
 | "Schedule"    { SCHED }
 | "Item"        { ITEM }
 | "Items"       { ITEMS }

@@ -18,7 +18,7 @@ let pp_item_kind lvl kind =
       Event -> prefix ^ "Event"
     | Deadline -> prefix ^ "Deadline"
 
-type src_dst = STC | ITS
+type src_dst = STC | ITS | SFC | IFS
 
 let pp_sched_kind lvl kind =
   let prefix = (indent lvl) ^ "<sched-kind>: " in
@@ -223,6 +223,22 @@ let pp_insert_stmt lvl insert_stmt =
       let expr2 = pp_id (lvl + 1) dst in
         idnt ^ "<insert-item-to-sched-statement>\n" ^ expr1 ^ "\n" ^ expr2
 
+type drop_stmt = 
+Ids of src_dst * id * id
+  (* TODO: Add Collection and Item insert statements *)
+let pp_drop_stmt lvl drop_stmt =
+  match drop_stmt with
+    Ids (SFC,src,dst) ->
+      let idnt = indent lvl in
+      let expr1 = pp_id (lvl + 1) src in
+      let expr2 = pp_id (lvl + 1) dst in
+        idnt ^ "<drop-sched-from-coll-statement>\n" ^ expr1 ^ "\n" ^ expr2
+  | Ids (IFS,src,dst) ->
+      let idnt = indent lvl in
+      let expr1 = pp_id (lvl + 1) src in
+      let expr2 = pp_id (lvl + 1) dst in
+        idnt ^ "<drop-item-from-sched-statement>\n" ^ expr1 ^ "\n" ^ expr2
+
 type set_stmt =
   AIE of id * id * expr
 let pp_set_stmt lvl set_stmt =
@@ -241,6 +257,7 @@ type stmt =
   CS of create_stmt
   | IS of insert_stmt
   | SS of set_stmt
+  | DS of drop_stmt
   | Expr of expr
   | DEC of id * args * stmt list
 
@@ -258,6 +275,10 @@ let rec pp_stmt lvl stmt =
     let idnt = indent lvl in
     let sub_tree = pp_set_stmt (lvl + 1) set_stmt in
       idnt ^ "<set-statement>\n" ^ sub_tree
+  | DS drop_stmt ->
+    let idnt = indent lvl in
+    let sub_tree = pp_drop_stmt (lvl + 1) drop_stmt in
+    idnt ^ "<drop-statement>\n" ^ sub_tree
   | Expr(expr) -> string_of_expr expr ^ ";"
   | DEC(i,a,b) ->
     let idnt = indent lvl in

@@ -1,7 +1,7 @@
 %{ open Ast %}
 
 
-%token SEMI COL COMMA CREATE INSERT ITEM ITEMS SCHED INTO COLLECTION SET OF TO LT GT INDENT
+%token SEMI COL COMMA CREATE INSERT DROP ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT
 %token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN PRINT
 %token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
@@ -43,6 +43,7 @@ stmt:
   create_stmt   { CS($1) }
 | insert_stmt   { IS($1) }
 | set_stmt      { SS($1) }
+| drop_stmt     { DS($1) }
 | expr SEMI     { Expr $1 }
 | FUNC id LPAREN params RPAREN COL indent_stmts { DEC($2, $4, $7)}
 
@@ -95,6 +96,16 @@ insert_stc:
 
 insert_its:
   INSERT SCHED ITEM id INTO SCHED id SEMI{ Ids(ITS,$4, $7) }
+
+drop_stmt:
+  drop_sfc { $1 }
+| drop_ifs { $1 }
+
+drop_sfc:
+  DROP SCHED id FROM SCHED COLLECTION id SEMI{ Ids(SFC,$3, $7) }
+
+drop_ifs:
+  DROP SCHED ITEM id FROM SCHED id SEMI{ Ids(IFS,$4, $7) }
 
 set_stmt:
   SET id OF id TO expr SEMI{ AIE($2, $4, $6) }
