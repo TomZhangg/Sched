@@ -225,7 +225,6 @@ let pp_insert_stmt lvl insert_stmt =
 
 type drop_stmt = 
 Ids of src_dst * id * id
-  (* TODO: Add Collection and Item insert statements *)
 let pp_drop_stmt lvl drop_stmt =
   match drop_stmt with
     Ids (SFC,src,dst) ->

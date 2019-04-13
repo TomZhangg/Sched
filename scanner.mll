@@ -36,6 +36,7 @@ rule token = parse
 | "Items"       { ITEMS }
 | "Collection"  { COLLECTION }
 | "Into"        { INTO }
+| "From"		{ FROM }
 | "Set"         { SET }
 | "Of"          { OF }
 | "To"          { TO }
