@@ -41,6 +41,7 @@ stmt:
 indent_stmts:
   INDENT stmt   { [$2] }
 | INDENT stmt indent_stmts { $2 :: $3 }
+| INDENT indent_stmts { $2 }
 
 typ:
   | BOOL  { Bool  }
