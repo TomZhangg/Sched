@@ -23,13 +23,20 @@ rule token = parse
 | "&&"          { AND }
 | "||"          { OR }
 | "!"           { NOT }
+| "+"			{ PLUS }
+| "-"			{ MINUS }
+| "*"			{ TIMES }
+| "/"			{ DIVIDE }
+| "%"			{ MOD }
 | "Create"      { CREATE }
 | "Insert"      { INSERT }
+| "Drop"		{ DROP }
 | "Schedule"    { SCHED }
 | "Item"        { ITEM }
 | "Items"       { ITEMS }
 | "Collection"  { COLLECTION }
 | "Into"        { INTO }
+| "From"		{ FROM }
 | "Set"         { SET }
 | "Of"          { OF }
 | "To"          { TO }
@@ -40,9 +47,12 @@ rule token = parse
 | "Event"       { EVENT }
 | "Deadline"    { DEADLINE }
 | "bool"        { BOOL }
+| "int"			{ INT }
 | "str"         { STRING }
 | "True"        { BLIT(true)  }
 | "False"       { BLIT(false) }
+| "print"       { PRINT }
+| digits+ as lxm { ILIT(int_of_string lxm) }
 | '"'([^'"']*)'"' as s { SLIT(s) }
 | "func"        { FUNC }
 | '<' year '-' month '-' day '>' as lit  { DATELIT(lit) }

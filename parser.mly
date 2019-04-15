@@ -1,15 +1,18 @@
 %{ open Ast %}
 
-%token SEMI COL COMMA CREATE INSERT ITEM ITEMS SCHED INTO COLLECTION SET OF TO LT GT INDENT
-%token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN
+
+%token SEMI COL COMMA CREATE INSERT DROP ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT
+%token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN PRINT
+%token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
-%token BOOL STRING
+%token BOOL STRING INT
 %token <string> DATELIT
 %token <string> TIMELIT
 %token <string> ID
 %token <bool> BLIT
 %token <string> SLIT
+%token <int> ILIT
 %token EOF
 
 
@@ -19,8 +22,13 @@
 %right ASSIGN
 %left OR
 %left AND
+%left MOD
+%left PLUS MINUS
+%left TIMES DIVIDE
 %left EQ NEQ
 %right NOT
+
+
 
 %%
 
@@ -35,6 +43,7 @@ stmt:
   create_stmt   { CS($1) }
 | insert_stmt   { IS($1) }
 | set_stmt      { SS($1) }
+| drop_stmt     { DS($1) }
 | expr SEMI     { Expr $1 }
 | FUNC id LPAREN params RPAREN COL indent_stmts { DEC($2, $4, $7)}
 
@@ -46,15 +55,22 @@ indent_stmts:
 typ:
   | BOOL  { Bool  }
   | STRING { String }
+  | INT    { Int }
 
 expr:
   BLIT               { BoolLit($1)            }
 | SLIT               { StrLit ($1) }
 | ID                 { Id($1) }
+| ILIT                { IntLit($1)}
 | expr EQ     expr   { Binop($1, Equal, $3)   }
 | expr NEQ    expr   { Binop($1, Neq,   $3)   }
 | expr AND    expr   { Binop($1, And,   $3)   }
 | expr OR     expr   { Binop($1, Or,    $3)   }
+| expr PLUS   expr   { Binop($1, Add,   $3)   }
+| expr MINUS  expr   { Binop($1, Sub,   $3)   }
+| expr TIMES  expr   { Binop($1, Mult,  $3)   }
+| expr DIVIDE expr   { Binop($1, Div,   $3)   }
+| expr MOD    expr   { Binop($1, Mod,   $3)   }
 | NOT expr           { Unop(Not, $2)          }
 | typ ID ASSIGN expr { Assign($1, $2, $4)     }
 | ID LPAREN args_opt RPAREN { Call($1, $3)  }
@@ -81,6 +97,16 @@ insert_stc:
 
 insert_its:
   INSERT SCHED ITEM id INTO SCHED id SEMI{ Ids(ITS,$4, $7) }
+
+drop_stmt:
+  drop_sfc { $1 }
+| drop_ifs { $1 }
+
+drop_sfc:
+  DROP SCHED id FROM SCHED COLLECTION id SEMI{ Ids(SFC,$3, $7) }
+
+drop_ifs:
+  DROP SCHED ITEM id FROM SCHED id SEMI{ Ids(IFS,$4, $7) }
 
 set_stmt:
   SET id OF id TO expr SEMI{ AIE($2, $4, $6) }
