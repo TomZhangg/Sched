@@ -12,6 +12,8 @@ and sx =
   SId of string
 | SCall of string * sexpr list
 | SStrLit of string
+| SBoolLit of bool
+
 let rec string_of_sexpr lvl sxpr =
   let idnt = indent lvl in
   let (tp, sxx) = sxpr in
@@ -25,6 +27,8 @@ let rec string_of_sexpr lvl sxpr =
     let lines = List.map (string_of_sexpr (lvl + 1)) sxprs in
     String.concat "\n" ([prefix; snd_line] @ lines @ [suffix])
   | SStrLit(lit) -> idnt ^ "typ: " ^ tp_string ^ ", sx: " ^ lit
+	| SBoolLit(true) -> "true"
+	| SBoolLit(false) -> "false"
   | _ -> raise (Failure "string_of_sexpr case not implemented yet.")
 
 type sstmt =
