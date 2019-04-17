@@ -17,9 +17,12 @@ let translate sprogram =
   let context = L.global_context () in
   (* Create the LLVM compilation module into which
      we will generate code *)
-  let the_module = L.create_module context "Schedch"
-  and i8_t = L.i8_type context
-  and i32_t = L.i32_type context in
+  let the_module  = L.create_module context "Schedch"
+  and i1_t        = L.i1_type       context
+  and i8_t        = L.i8_type       context
+  and i32_t       = L.i32_type      context
+  and float_t     = L.double_type   context
+  and void_t      = L.void_type     context in
 
   (* Return the LLVM type for a Schedch type *)
   (* TODO: Add types here.
@@ -27,6 +30,12 @@ let translate sprogram =
           ...
   in
   *)
+  let ltype_of_typ = function
+    A.Int   -> i32_t
+  | A.Bool  -> i1_t
+  | A.Float -> float_t
+  | A.Void  -> void_t
+in
 
   (* Declare printf(), which the print built-in function will call *)
   let printf_t = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
@@ -48,11 +57,28 @@ let translate sprogram =
   let rec sxpr builder = function
       (A.String, SStrLit s) -> L.build_global_stringptr s "" builder
       (* A String literal should result in a defined constant being
-     * added to the LLVM module and a pointer to that constant. *)
-    | (A.Void, SCall("print", [sx])) ->
-        let sx' = sxpr builder sx in
-        L.build_call printf_func [| str_format_str ; sx' |] "printf" builder
-    | _ -> raise (Failure "sxpr codegen type not implemented yet.")
+       * added to the LLVM module and a pointer to that constant. *)
+      | SBinop (e1, op, e2) ->
+     	  let e1' = expr builder e1
+     	  and e2' = expr builder e2 in
+     	  (match op with
+     	    A.Add     -> L.build_add
+     	  | A.Sub     -> L.build_sub
+     	  | A.Mult    -> L.build_mul
+               | A.Div     -> L.build_sdiv
+     	  | A.And     -> L.build_and
+     	  | A.Or      -> L.build_or
+     	  | A.Equal   -> L.build_icmp L.Icmp.Eq
+     	  | A.Neq     -> L.build_icmp L.Icmp.Ne
+     	  | A.Less    -> L.build_icmp L.Icmp.Slt
+     	  | A.Leq     -> L.build_icmp L.Icmp.Sle
+     	  | A.Greater -> L.build_icmp L.Icmp.Sgt
+     	  | A.Geq     -> L.build_icmp L.Icmp.Sge
+   	    ) e1' e2' "tmp" builder
+      | (A.Void, SCall("print", [sx])) ->
+          let sx' = sxpr builder sx in
+          L.build_call printf_func [| str_format_str ; sx' |] "printf" builder
+      | _ -> raise (Failure "sxpr codegen type not implemented yet.")
   in
 
   let rec sstmt builder = function

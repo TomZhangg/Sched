@@ -30,8 +30,9 @@ let rec string_of_sexpr lvl sxpr =
   | SStrLit(lit) -> idnt ^ "typ: " ^ tp_string ^ ", sx: " ^ lit
 	| SBoolLit(true) -> "true"
 	| SBoolLit(false) -> "false"
-	| SBinop (e1, o, e2) ->
-			string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
+  | SBinop((i1,e1), o, (i2,e2)) ->
+    (string_of_sexpr (lvl + 1) (i1, e1)) ^ " " ^ (string_of_op o) ^ " " ^
+    (string_of_sexpr (lvl + 1) (i2, e2))
   | _ -> raise (Failure "string_of_sexpr case not implemented yet.")
 
 type sstmt =
@@ -91,4 +92,3 @@ type screate_stmt =
 | SSS of sset_stmt
 
 *)
-

@@ -7,6 +7,7 @@ module StringMap = Map.Make(String)
 
 exception Check_not_implemented of string
 
+
 let rec check_expr (xpr : expr)
                    (sym_tab : 'a StringMap.t)
                    : (sexpr * 'a StringMap.t) option =
@@ -52,10 +53,21 @@ let rec check_expr (xpr : expr)
     Some((String, SStrLit(lit)), sym_tab)
 	| BoolLit l -> Some((Bool, SBoolLit l), sym_tab)
 	| Binop (e1, op, e2) ->
-		let Some((t1, e1'), st) = check_expr e1 and
-		Some((t2, e2'), st) = check_expr e2 in
+    let Some((t1, e1'), st) = check_expr e1 sym_tab in
+    let Some((t2, e2'), st) = check_expr e2 sym_tab in
 		let same = t1 = t2 in
-		let ty = match op with
+    let ty = match op with
+      Add | Sub | Mult | Div when same && t1 = Int   -> Int
+    | Add | Sub | Mult | Div when same && t1 = Float -> Float
+    | Equal | Neq            when same               -> Bool
+    | Less | Leq | Greater | Geq
+      when same && (t1 = Int || t1 = Float) -> Bool
+    | And | Or when same && t1 = Bool -> Bool
+    | _ -> raise (
+        Failure ("illegal binary operator " ^
+                 string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
+                 string_of_typ t2 ^ " in " ^ string_of_expr e))
+    in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab)
   | _ -> raise (Check_not_implemented "Ast.expr type")
 
 let rec check_stmt (stmt : stmt)
