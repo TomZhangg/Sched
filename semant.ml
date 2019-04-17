@@ -8,6 +8,7 @@ module StringMap = Map.Make(String)
 exception Check_not_implemented of string
 
 
+
 let rec check_expr (xpr : expr)
                    (sym_tab : 'a StringMap.t)
                    : (sexpr * 'a StringMap.t) option =
@@ -51,11 +52,15 @@ let rec check_expr (xpr : expr)
   | StrLit(lit) ->
     (* Need to check that the type for this expression is a String. *)
     Some((String, SStrLit(lit)), sym_tab)
-	| BoolLit l -> Some((Bool, SBoolLit l), sym_tab)
-	| Binop (e1, op, e2) ->
-    let Some((t1, e1'), st) = check_expr e1 sym_tab in
-    let Some((t2, e2'), st) = check_expr e2 sym_tab in
-		let same = t1 = t2 in
+  | BoolLit l -> Some((Bool, SBoolLit l), sym_tab)
+  | Binop (e1, op, e2) ->
+    let x = check_expr e1 sym_tab in
+    let y = check_expr e2 sym_tab in
+    match x with
+      Some ((t1, e1'), _) ->
+        match y with
+          Some((t2, e2'), _) ->
+          let same = t1 = t2 in
     let ty = match op with
       Add | Sub | Mult | Div when same && t1 = Int   -> Int
     | Add | Sub | Mult | Div when same && t1 = Float -> Float
