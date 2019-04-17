@@ -1,8 +1,9 @@
 func asdf(a,s,d,f):
-begin
 	asdf();
 	func fdsa():
-	begin
+		asdf();
+	end
+	func fdsa():
 		asdf();
 	end
 end

@@ -4,6 +4,10 @@
   <body>: asdf();
   <function-definition>
     <id>: Id(fdsa)
-    <parameters>: 
+    <parameters>:
+    <body>: asdf();
+  <function-definition>
+    <id>: Id(fdsa)
+    <parameters>:
     <body>: asdf();
 asdf(Id(a), Id(s), Id(d), Id(f));

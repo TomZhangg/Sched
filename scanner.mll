@@ -11,7 +11,6 @@ let second = (digits)digits
 rule token = parse
   [' ' '\r' '\n'] { token lexbuf } (* Whitespace *)
 | '\t'          { token lexbuf }
-| "begin"				{ BEGIN }
 | "end"					{ END }
 | "#("          { comment 1 lexbuf }      (* Comments *)
 | '('           { LPAREN }

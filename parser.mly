@@ -45,7 +45,7 @@ stmt:
 | set_stmt      { SS($1) }
 | drop_stmt     { DS($1) }
 | expr SEMI     { Expr $1 }
-| FUNC id LPAREN params RPAREN COL BEGIN stmts END { DEC($2, $4, $8)}
+| FUNC id LPAREN params RPAREN COL stmts END { DEC($2, $4, $7)}
 
 typ:
   | BOOL  { Bool  }
