@@ -2,7 +2,7 @@
 
 
 %token SEMI COL COMMA CREATE INSERT DROP ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT
-%token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN PRINT
+%token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN PRINT BEGIN END
 %token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
@@ -45,12 +45,7 @@ stmt:
 | set_stmt      { SS($1) }
 | drop_stmt     { DS($1) }
 | expr SEMI     { Expr $1 }
-| FUNC id LPAREN params RPAREN COL indent_stmts { DEC($2, $4, $7)}
-
-indent_stmts:
-  INDENT stmt   { [$2] }
-| INDENT stmt indent_stmts { $2 :: $3 }
-| INDENT indent_stmts { $2 }
+| FUNC id LPAREN params RPAREN COL BEGIN stmts END { DEC($2, $4, $8)}
 
 typ:
   | BOOL  { Bool  }
