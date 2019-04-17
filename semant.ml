@@ -50,6 +50,12 @@ let rec check_expr (xpr : expr)
   | StrLit(lit) ->
     (* Need to check that the type for this expression is a String. *)
     Some((String, SStrLit(lit)), sym_tab)
+	| BoolLit l -> Some((Bool, SBoolLit l), sym_tab)
+	| Binop (e1, op, e2) ->
+		let Some((t1, e1'), st) = check_expr e1 and
+		Some((t2, e2'), st) = check_expr e2 in
+		let same = t1 = t2 in
+		let ty = match op with
   | _ -> raise (Check_not_implemented "Ast.expr type")
 
 let rec check_stmt (stmt : stmt)
