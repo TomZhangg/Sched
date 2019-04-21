@@ -58,6 +58,7 @@ in
       (A.String, SStrLit s) -> L.build_global_stringptr s "" builder
       (* A String literal should result in a defined constant being
        * added to the LLVM module and a pointer to that constant. *)
+    | (A.Bool, SBoolLit b)  -> L.const_int i1_t (if b then 1 else 0)
     | (A.Int, SBinop (e1, op, e2)) ->
      	  let e1' = sxpr builder e1
      	  and e2' = sxpr builder e2 in
@@ -74,7 +75,20 @@ in
      	  | A.Leq     -> L.build_icmp L.Icmp.Sle
      	  | A.Greater -> L.build_icmp L.Icmp.Sgt
      	  | A.Geq     -> L.build_icmp L.Icmp.Sge *)
-   	    ) e1' e2' "tmp" builder
+        ) e1' e2' "tmp" builder
+    | (A.Bool, SBinop (e1, op, e2)) ->
+         	  let e1' = sxpr builder e1
+         	  and e2' = sxpr builder e2 in
+         	  (match op with
+         	  | A.And     -> L.build_and
+         	  | A.Or      -> L.build_or
+         	  | A.Equal   -> L.build_icmp L.Icmp.Eq
+         	  | A.Neq     -> L.build_icmp L.Icmp.Ne
+         	  (* | A.Less    -> L.build_icmp L.Icmp.Slt
+         	  | A.Leq     -> L.build_icmp L.Icmp.Sle
+         	  | A.Greater -> L.build_icmp L.Icmp.Sgt
+         	  | A.Geq     -> L.build_icmp L.Icmp.Sge *)
+       	    ) e1' e2' "tmp" builder
       | (A.Void, SCall("print", [sx])) ->
           let sx' = sxpr builder sx in
           L.build_call printf_func [| str_format_str ; sx' |] "printf" builder
