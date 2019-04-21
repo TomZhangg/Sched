@@ -51,7 +51,6 @@ rule token = parse
 | "str"         { STRING }
 | "True"        { BLIT(true)  }
 | "False"       { BLIT(false) }
-| "print"       { PRINT }
 | digits+ as lxm { ILIT(int_of_string lxm) }
 | '"'([^'"']*)'"' as s { SLIT(s) }
 | "func"        { FUNC }
