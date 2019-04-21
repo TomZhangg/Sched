@@ -2,4 +2,8 @@
   <id>: Id(asdf)
   <parameters>: Id(a), Id(s), Id(d), Id(f)
   <body>: asdf();
+  <function-definition>
+    <id>: Id(fdsa)
+    <parameters>: 
+    <body>: asdf();
 asdf(Id(a), Id(s), Id(d), Id(f));

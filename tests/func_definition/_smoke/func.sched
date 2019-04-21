@@ -1,4 +1,6 @@
 func asdf(a,s,d,f):
 	asdf();
+	func fdsa():
+		asdf();
 
 asdf(a,s,d,f);
