@@ -53,7 +53,7 @@ let rec check_expr (xpr : expr)
     (* Need to check that the type for this expression is a String. *)
     Some((String, SStrLit(lit)), sym_tab)
   | BoolLit l -> Some((Bool, SBoolLit l), sym_tab)
-  | Binop (e1, op, e2) ->
+  | Binop (e1, op, e2) as e ->
     let x = check_expr e1 sym_tab in
     let y = check_expr e2 sym_tab in
     match x with
@@ -63,10 +63,10 @@ let rec check_expr (xpr : expr)
           let same = t1 = t2 in
     let ty = match op with
       Add | Sub | Mult | Div when same && t1 = Int   -> Int
-    | Add | Sub | Mult | Div when same && t1 = Float -> Float
+    (* | Add | Sub | Mult | Div when same && t1 = Float -> Float *)
     | Equal | Neq            when same               -> Bool
-    | Less | Leq | Greater | Geq
-      when same && (t1 = Int || t1 = Float) -> Bool
+    (* | Less | Leq | Greater | Geq
+      when same && (t1 = Int || t1 = Float) -> Bool *)
     | And | Or when same && t1 = Bool -> Bool
     | _ -> raise (
         Failure ("illegal binary operator " ^
