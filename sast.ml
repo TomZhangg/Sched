@@ -14,6 +14,7 @@ and sx =
 | SStrLit of string
 | SBoolLit of bool
 | SBinop of sexpr * op * sexpr
+| SAssign of string * sexpr
 
 let rec string_of_sexpr lvl sxpr =
   let idnt = indent lvl in
@@ -33,6 +34,7 @@ let rec string_of_sexpr lvl sxpr =
   | SBinop((i1,e1), o, (i2,e2)) ->
     (string_of_sexpr (lvl + 1) (i1, e1)) ^ " " ^ (string_of_op o) ^ " " ^
     (string_of_sexpr (lvl + 1) (i2, e2))
+  | SAssign(v, e) -> idnt ^ v ^ " = " ^ string_of_sexpr lvl e
   | _ -> raise (Failure "string_of_sexpr case not implemented yet.")
 
 type sstmt =
