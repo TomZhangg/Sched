@@ -55,7 +55,7 @@ let rec check_expr (xpr : expr)
   | BoolLit l -> Some((Bool, SBoolLit l), sym_tab)
   | IntLit l -> Some((Int, SIntLit l), sym_tab)
   | FLit l -> Some((Float, SFLit l), sym_tab)
-  | Binop (e1, op, e2) as e ->
+  | Binop (e1, op, e2) as e -> (
     let x = check_expr e1 sym_tab in
     let y = check_expr e2 sym_tab in
     match x with
@@ -74,9 +74,9 @@ let rec check_expr (xpr : expr)
         Failure ("illegal binary operator " ^
                  string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
                  string_of_typ t2 ^ " in " ^ string_of_expr e))
-    in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab)
-  (*| Unop(op, e) as ex -> 
-    let x = check_expr e sym_tab in
+    in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab)       )
+  | Unop(op, e) as ex -> 
+    ( let x = check_expr e sym_tab in
     match x with 
        Some ((t, e'), _) ->
        let ty = match op with
@@ -85,7 +85,7 @@ let rec check_expr (xpr : expr)
           | _ -> raise (Failure ("illegal unary operator " ^ 
                                  string_of_uop op ^ string_of_typ t ^
                                  " in " ^ string_of_expr ex))
-    in Some((ty, SUnop(op, (t, e'))), sym_tab)   *)
+    in Some((ty, SUnop(op, (t, e'))), sym_tab)   )
   | _ -> raise (Check_not_implemented "Ast.expr type")
 
 let rec check_stmt (stmt : stmt)

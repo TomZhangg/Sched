@@ -20,6 +20,9 @@ make
 ./schedch.native -s tests/float_op_semantics_codegen/_smoke/binop.sched > tests/float_op_semantics_codegen/_smoke/binop.sched.s_out.tmp
 ./schedch.native -s tests/int_op_semantics_codegen/_smoke/binop.sched > tests/int_op_semantics_codegen/_smoke/binop.sched.s_out.tmp
 ./schedch.native -l tests/bool_op_semantics\&codegen/_smoke/binop.sched > tests/bool_op_semantics\&codegen/_smoke/binop.sched.l_out.tmp
+./schedch.native -s tests/float_op_semantics_codegen/_smoke/unop.sched > tests/float_op_semantics_codegen/_smoke/unop.sched.s_out.tmp
+./schedch.native -s tests/int_op_semantics_codegen/_smoke/unop.sched > tests/int_op_semantics_codegen/_smoke/unop.sched.s_out.tmp
+
 
 cmp --silent tests/create.sched.output tests/create.sched.out.tmp && echo '### SUCCESS: Files Are Identical! ###' &&
 cmp --silent tests/insert_statement_parsing/_smoke/insert.sched.out.tmp tests/insert_statement_parsing/_smoke/insert.sched.out && echo '### SUCCESS: Files Are Identical! ###' &&
@@ -34,6 +37,8 @@ cmp --silent tests/bool_op_semantics\&codegen/_smoke/binop.sched.s_out.tmp tests
 cmp --silent tests/bool_op_semantics\&codegen/_smoke/binop.sched.l_out.tmp tests/bool_op_semantics\&codegen/_smoke/binop.sched.l_out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 cmp --silent tests/int_op_semantics_codegen/_smoke/binop.sched.s_out.tmp tests/int_op_semantics_codegen/_smoke/binop.sched.s_out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 cmp --silent tests/float_op_semantics_codegen/_smoke/binop.sched.s_out.tmp tests/float_op_semantics_codegen/_smoke/binop.sched.s_out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
+cmp --silent tests/int_op_semantics_codegen/_smoke/unop.sched.s_out.tmp tests/int_op_semantics_codegen/_smoke/unop.sched.s_out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
+cmp --silent tests/float_op_semantics_codegen/_smoke/unop.sched.s_out.tmp tests/float_op_semantics_codegen/_smoke/unop.sched.s_out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 
 
 
