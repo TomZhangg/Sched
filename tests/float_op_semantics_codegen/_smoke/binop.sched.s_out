@@ -1,0 +1,21 @@
+SExpr(
+    typ: float, sx: 1.5 +     typ: float, sx: 1.58
+)
+SExpr(
+    typ: float, sx: 1.5E-4 +     typ: float, sx: 0.01
+)
+SExpr(
+    typ: float, sx: 1.55E+2 +     typ: float, sx: 2.6
+)
+SExpr(
+        typ: float, sx: 5.1234 -         typ: float, sx: 4.E-3 -       typ: float, sx: 3.14 -     typ: float, sx: 1.0
+)
+SExpr(
+    typ: float, sx: 5.1 *     typ: float, sx: 3.2
+)
+SExpr(
+      typ: float, sx: 6.9 /       typ: float, sx: 3.45 /     typ: float, sx: 2.0
+)
+SExpr(
+    typ: float, sx: 6.0 %     typ: float, sx: 3.0
+)

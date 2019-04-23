@@ -3,7 +3,7 @@ let rec indent lvl =
 
 type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod
 
-type uop = Not
+type uop = Not | Neg
 
 type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void | Float
 
@@ -44,6 +44,7 @@ let string_of_op o =
 let string_of_uop o =
   match o with
   Not -> "!"
+  | Neg -> "-"
 
 let string_of_typ t =
   match t with
@@ -82,6 +83,7 @@ let rec string_of_expr expr =
   | BoolLit(false) -> "BoolLit(" ^ "false" ^ ")"
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
+  | Unop(o, e) -> string_of_uop o ^ string_of_expr e
   | Unop(o, e) -> string_of_uop o ^ string_of_expr e
   | Assign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e
   | Call(f, el) ->

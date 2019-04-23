@@ -1,0 +1,15 @@
+SExpr(
+    typ: int, sx: 1 +     typ: int, sx: 5
+)
+SExpr(
+        typ: int, sx: 5 -         typ: int, sx: 43 -       typ: int, sx: 314 -     typ: int, sx: 1
+)
+SExpr(
+    typ: float, sx: 5.1 *     typ: float, sx: 3.2
+)
+SExpr(
+      typ: int, sx: 6 /       typ: int, sx: 3 /     typ: int, sx: 2
+)
+SExpr(
+    typ: int, sx: 6 %     typ: int, sx: 3
+)
