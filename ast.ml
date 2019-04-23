@@ -5,7 +5,7 @@ type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod
 
 type uop = Not
 
-type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void
+type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void | Float
 
 type bind = typ * string
 
@@ -54,24 +54,27 @@ let string_of_typ t =
   | String -> "str"
   | Int -> "int"
   | Void -> "void"
+  | Float -> "float"
 
 
 
 
 type expr =
   Id of string
-| IntLit of int
-| TimeLit of string
-| BoolLit of bool
-| StrLit of string
-| Binop of expr * op * expr
-| Unop of uop * expr
-| Assign of typ * string * expr
-| Call of string * expr list
+  | IntLit of int
+  | FLit of string
+  | TimeLit of string
+  | BoolLit of bool
+  | StrLit of string
+  | Binop of expr * op * expr
+  | Unop of uop * expr
+  | Assign of typ * string * expr
+  | Call of string * expr list
 
 let rec string_of_expr expr =
   match expr with
     Id(str) -> "Id(" ^ str ^ ")"
+  | FLit(str) -> "FLit(" ^ str ^ ")"
   | StrLit(str) -> "StrLit(" ^ str ^ ")"
   | IntLit(x) -> "IntLit(" ^ (string_of_int x) ^ ")"
   | TimeLit(str) -> "TimeLit(" ^ str ^ ")"
@@ -223,7 +226,7 @@ let pp_insert_stmt lvl insert_stmt =
       let expr2 = pp_id (lvl + 1) dst in
         idnt ^ "<insert-item-to-sched-statement>\n" ^ expr1 ^ "\n" ^ expr2
 
-type drop_stmt = 
+type drop_stmt =
 Ids of src_dst * id * id
 let pp_drop_stmt lvl drop_stmt =
   match drop_stmt with
@@ -292,3 +295,4 @@ let rec pp_stmt lvl stmt =
 type program = stmt list
 let pp_program prog =
   (String.concat "\n" (List.map (fun stmt -> pp_stmt 0 stmt) prog)) ^ "\n"
+

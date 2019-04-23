@@ -1,17 +1,19 @@
 %{ open Ast %}
 
+%{ open Ast %}
+
 
 %token SEMI COL COMMA CREATE INSERT DROP ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT
 %token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN
 %token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
-%token BOOL STRING INT
+%token BOOL STRING INT FLOAT
 %token <string> DATELIT
 %token <string> TIMELIT
 %token <string> ID
 %token <bool> BLIT
-%token <string> SLIT
+%token <string> SLIT FLIT
 %token <int> ILIT
 %token EOF
 
@@ -56,12 +58,14 @@ typ:
   | BOOL  { Bool  }
   | STRING { String }
   | INT    { Int }
+  | FLOAT  { Float }
 
 expr:
   BLIT               { BoolLit($1)            }
 | SLIT               { StrLit ($1) }
 | ID                 { Id($1) }
-| ILIT                { IntLit($1)}
+| ILIT               { IntLit($1)}
+| FLIT               { FLit($1)           }
 | expr EQ     expr   { Binop($1, Equal, $3)   }
 | expr NEQ    expr   { Binop($1, Neq,   $3)   }
 | expr AND    expr   { Binop($1, And,   $3)   }
@@ -177,3 +181,4 @@ param_list:
 
 id:
   ID    { Id($1) }
+

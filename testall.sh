@@ -10,6 +10,7 @@ make
 ./schedch.native -a tests/func_definition/_smoke/func.sched > tests/func_definition/_smoke/func.sched.out.tmp
 ./schedch.native -a tests/int_arithmetic_parsing/_smoke/intarith.sched > tests/int_arithmetic_parsing/_smoke/intarith.sched.out.tmp
 ./schedch.native -a tests/drop_statement_parsing/_smoke/drop.sched > tests/drop_statement_parsing/_smoke/drop.sched.out.tmp
+./schedch.native -a tests/float_operations_parsing/_smoke/float.sched > tests/float_operations_parsing/_smoke/float.sched.out.tmp
 
 ./schedch.native -s tests/print_sast.sched > tests/print_sast.sched.out.tmp
 ./schedch.native -c tests/print_sast.sched > tests/print_sast.ll && llc tests/print_sast.ll > tests/print_sast.s &&\
@@ -24,6 +25,7 @@ cmp --silent tests/set_statement_parsing/_smoke/set.sched.out.tmp tests/set_stat
 cmp --silent tests/func_definition/_smoke/func.sched.out.tmp tests/func_definition/_smoke/func.sched.out && echo '### SUCCESS: Files Are Identical! ###' &&
 cmp --silent tests/boolean_operations_parsing/_smoke/boolean.sched.out.tmp tests/boolean_operations_parsing/_smoke/boolean.sched.output && echo '### SUCCESS: Files Are Identical! ###' &&
 cmp --silent tests/print/_smoke/print.sched.out.tmp tests/print/_smoke/print.sched.output && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
+cmp --silent tests/float_operations_parsing/_smoke/float.sched.out.tmp tests/float_operations_parsing/_smoke/float.sched.output && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 cmp --silent tests/print_sast.sched.out.tmp tests/print_sast.sched.out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 cmp --silent tests/print_sast.exe.out.tmp tests/print_sast.exe.out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 cmp --silent tests/bool_op_semantics\&codegen/_smoke/binop.sched.s_out.tmp tests/bool_op_semantics\&codegen/_smoke/binop.sched.s_out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
