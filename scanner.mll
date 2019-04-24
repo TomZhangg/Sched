@@ -20,6 +20,10 @@ rule token = parse
 | '='           { ASSIGN }
 | "=="          { EQ }
 | "!="          { NEQ }
+| '<'           { LT }
+| "<="          { LEQ }
+| ">"           { GT }
+| ">="          { GEQ }
 | "&&"          { AND }
 | "||"          { OR }
 | "!"           { NOT }
