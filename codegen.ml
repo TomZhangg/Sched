@@ -67,12 +67,24 @@ in
          	  (match op with
          	  | A.And     -> L.build_and
          	  | A.Or      -> L.build_or
-         	  | A.Equal   -> L.build_icmp L.Icmp.Eq
-         	  | A.Neq     -> L.build_icmp L.Icmp.Ne
-         	  (* | A.Less    -> L.build_icmp L.Icmp.Slt
-         	  | A.Leq     -> L.build_icmp L.Icmp.Sle
-         	  | A.Greater -> L.build_icmp L.Icmp.Sgt
-         	  | A.Geq     -> L.build_icmp L.Icmp.Sge *)
+         	  | A.Equal   -> ( match e1 with 
+                  	  (A.Int, _) -> L.build_icmp L.Icmp.Eq
+                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Oeq )
+         	  | A.Neq     -> ( match e1 with 
+                  	  (A.Int, _) -> L.build_icmp L.Icmp.Ne
+                        | (A.Float, _) -> L.build_fcmp L.Fcmp.One )
+		  | A.Less    -> ( match e1 with 
+                  	  (A.Int, _) -> L.build_icmp L.Icmp.Slt
+                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Olt )	
+         	  | A.Leq     -> ( match e1 with 
+                  	  (A.Int, _) -> L.build_icmp L.Icmp.Sle
+                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Ole )
+         	  | A.Greater -> ( match e1 with 
+                  	  (A.Int, _) -> L.build_icmp L.Icmp.Sgt
+                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Ogt )
+         	  | A.Geq     -> ( match e1 with 
+                  	  (A.Int, _) -> L.build_icmp L.Icmp.Sge
+                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Oge )
        	    ) e1' e2' "tmp" builder
     | (A.Int, SBinop (e1, op, e2)) ->
      	  let e1' = sxpr builder e1
@@ -82,11 +94,9 @@ in
      	  | A.Sub     -> L.build_sub
      	  | A.Mult    -> L.build_mul
           | A.Div     -> L.build_sdiv
-     	  | A.And     -> L.build_and
-     	  | A.Or      -> L.build_or
-     	  | A.Equal   -> L.build_icmp L.Icmp.Eq
+     	  (*| A.Equal   -> L.build_icmp L.Icmp.Eq
      	  | A.Neq     -> L.build_icmp L.Icmp.Ne
-     	  (* | A.Less    -> L.build_icmp L.Icmp.Slt
+     	  | A.Less    -> L.build_icmp L.Icmp.Slt
      	  | A.Leq     -> L.build_icmp L.Icmp.Sle
      	  | A.Greater -> L.build_icmp L.Icmp.Sgt
      	  | A.Geq     -> L.build_icmp L.Icmp.Sge *)
@@ -95,18 +105,16 @@ in
      	  let e1' = sxpr builder e1
      	  and e2' = sxpr builder e2 in
      	  (match op with
-     	    A.Add     -> L.build_add
-     	  | A.Sub     -> L.build_sub
-     	  | A.Mult    -> L.build_mul
-          | A.Div     -> L.build_sdiv
-     	  | A.And     -> L.build_and
-     	  | A.Or      -> L.build_or
-     	  | A.Equal   -> L.build_icmp L.Icmp.Eq
-     	  | A.Neq     -> L.build_icmp L.Icmp.Ne
-     	  (* | A.Less    -> L.build_icmp L.Icmp.Slt
-     	  | A.Leq     -> L.build_icmp L.Icmp.Sle
-     	  | A.Greater -> L.build_icmp L.Icmp.Sgt
-     	  | A.Geq     -> L.build_icmp L.Icmp.Sge *)
+     	    A.Add     -> L.build_fadd
+     	  | A.Sub     -> L.build_fsub
+     	  | A.Mult    -> L.build_fmul
+          | A.Div     -> L.build_fdiv
+     	  (*| A.Equal   -> L.build_fcmp L.Fcmp.Oeq
+     	  | A.Neq     -> L.build_fcmp L.Fcmp.One
+     	  | A.Less    -> L.build_fcmp L.Fcmp.Olt
+     	  | A.Leq     -> L.build_fcmp L.Fcmp.Ole
+     	  | A.Greater -> L.build_fcmp L.Fcmp.Ogt
+     	  | A.Geq     -> L.build_fcmp L.Fcmp.Oge *)
         ) e1' e2' "tmp" builder
     | (A.Float, SUnop (op, e)) ->
           let e' = sxpr builder e in

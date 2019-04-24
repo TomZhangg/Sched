@@ -67,8 +67,8 @@ let rec check_expr (xpr : expr)
       Add | Sub | Mult | Div | Mod when same && t1 = Int   -> Int
     | Add | Sub | Mult | Div | Mod when same && t1 = Float -> Float
     | Equal | Neq            when same               -> Bool
-    (*| Less | Leq | Greater | Geq
-      when same && (t1 = Int || t1 = Float) -> Bool*)
+    | Less | Leq | Greater | Geq
+      when same && (t1 = Int || t1 = Float) -> Bool
     | And | Or when same && t1 = Bool -> Bool
     | _ -> raise (
         Failure ("illegal binary operator " ^
