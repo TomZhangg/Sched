@@ -20,6 +20,10 @@ rule token = parse
 | '='           { ASSIGN }
 | "=="          { EQ }
 | "!="          { NEQ }
+| '<'           { LT }
+| "<="          { LEQ }
+| ">"           { GT }
+| ">="          { GEQ }
 | "&&"          { AND }
 | "||"          { OR }
 | "!"           { NOT }
@@ -68,4 +72,5 @@ and comment lvl = parse
   ")#"  { if lvl = 1 then token lexbuf else comment (lvl - 1) lexbuf }
 | "#("  { comment (lvl + 1) lexbuf }
 | _     { comment lvl lexbuf }
+
 

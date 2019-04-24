@@ -1,7 +1,7 @@
 let rec indent lvl =
   if lvl = 0 then "" else "  " ^ indent (lvl - 1)
 
-type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod
+type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod | Less | Leq | Greater | Geq
 
 type uop = Not | Neg
 
@@ -34,6 +34,10 @@ let string_of_op o =
   | Neq -> "!="
   | And -> "&&"
   | Or -> "||"
+  | Less -> "<"
+  | Leq -> "<="
+  | Greater -> ">"
+  | Geq -> ">="
   | Add -> "+"
   | Sub -> "-"
   | Mult -> "*"
@@ -297,4 +301,5 @@ let rec pp_stmt lvl stmt =
 type program = stmt list
 let pp_program prog =
   (String.concat "\n" (List.map (fun stmt -> pp_stmt 0 stmt) prog)) ^ "\n"
+
 
