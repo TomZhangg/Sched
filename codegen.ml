@@ -33,7 +33,7 @@ let translate sprogram =
   let ltype_of_typ = function
     A.Int   -> i32_t
   | A.Bool  -> i1_t
-  (* | A.Float -> float_t *)
+  | A.Float -> float_t 
   | A.Void  -> void_t
 in
 
@@ -59,23 +59,8 @@ in
       (* A String literal should result in a defined constant being
        * added to the LLVM module and a pointer to that constant. *)
     | (A.Bool, SBoolLit b)  -> L.const_int i1_t (if b then 1 else 0)
-    | (A.Int, SBinop (e1, op, e2)) ->
-     	  let e1' = sxpr builder e1
-     	  and e2' = sxpr builder e2 in
-     	  (match op with
-     	    A.Add     -> L.build_add
-     	  | A.Sub     -> L.build_sub
-     	  | A.Mult    -> L.build_mul
-        | A.Div     -> L.build_sdiv
-     	  | A.And     -> L.build_and
-     	  | A.Or      -> L.build_or
-     	  | A.Equal   -> L.build_icmp L.Icmp.Eq
-     	  | A.Neq     -> L.build_icmp L.Icmp.Ne
-     	  (* | A.Less    -> L.build_icmp L.Icmp.Slt
-     	  | A.Leq     -> L.build_icmp L.Icmp.Sle
-     	  | A.Greater -> L.build_icmp L.Icmp.Sgt
-     	  | A.Geq     -> L.build_icmp L.Icmp.Sge *)
-        ) e1' e2' "tmp" builder
+    | (A.Int, SIntLit i) -> L.const_int i32_t i
+    | (A.Float, SFLit l) -> L.const_float_of_string float_t l
     | (A.Bool, SBinop (e1, op, e2)) ->
          	  let e1' = sxpr builder e1
          	  and e2' = sxpr builder e2 in
@@ -89,6 +74,52 @@ in
          	  | A.Greater -> L.build_icmp L.Icmp.Sgt
          	  | A.Geq     -> L.build_icmp L.Icmp.Sge *)
        	    ) e1' e2' "tmp" builder
+    | (A.Int, SBinop (e1, op, e2)) ->
+     	  let e1' = sxpr builder e1
+     	  and e2' = sxpr builder e2 in
+     	  (match op with
+     	    A.Add     -> L.build_add
+     	  | A.Sub     -> L.build_sub
+     	  | A.Mult    -> L.build_mul
+          | A.Div     -> L.build_sdiv
+     	  | A.And     -> L.build_and
+     	  | A.Or      -> L.build_or
+     	  | A.Equal   -> L.build_icmp L.Icmp.Eq
+     	  | A.Neq     -> L.build_icmp L.Icmp.Ne
+     	  (* | A.Less    -> L.build_icmp L.Icmp.Slt
+     	  | A.Leq     -> L.build_icmp L.Icmp.Sle
+     	  | A.Greater -> L.build_icmp L.Icmp.Sgt
+     	  | A.Geq     -> L.build_icmp L.Icmp.Sge *)
+        ) e1' e2' "tmp" builder
+    | (A.Float, SBinop (e1, op, e2)) ->
+     	  let e1' = sxpr builder e1
+     	  and e2' = sxpr builder e2 in
+     	  (match op with
+     	    A.Add     -> L.build_add
+     	  | A.Sub     -> L.build_sub
+     	  | A.Mult    -> L.build_mul
+          | A.Div     -> L.build_sdiv
+     	  | A.And     -> L.build_and
+     	  | A.Or      -> L.build_or
+     	  | A.Equal   -> L.build_icmp L.Icmp.Eq
+     	  | A.Neq     -> L.build_icmp L.Icmp.Ne
+     	  (* | A.Less    -> L.build_icmp L.Icmp.Slt
+     	  | A.Leq     -> L.build_icmp L.Icmp.Sle
+     	  | A.Greater -> L.build_icmp L.Icmp.Sgt
+     	  | A.Geq     -> L.build_icmp L.Icmp.Sge *)
+        ) e1' e2' "tmp" builder
+    | (A.Float, SUnop (op, e)) ->
+          let e' = sxpr builder e in
+	  (match op with
+	  A.Neg                  -> L.build_fneg) e' "tmp" builder
+    | (A.Int, SUnop (op, e)) ->
+          let e' = sxpr builder e in
+	  (match op with
+	  A.Neg                  -> L.build_neg) e' "tmp" builder
+    | (A.Bool, SUnop (op, e)) ->
+          let e' = sxpr builder e in
+	  (match op with
+          A.Not                  -> L.build_not) e' "tmp" builder
       | (A.Void, SCall("print", [sx])) ->
           let sx' = sxpr builder sx in
           L.build_call printf_func [| str_format_str ; sx' |] "printf" builder

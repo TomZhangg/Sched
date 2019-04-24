@@ -10,6 +10,3 @@ SExpr(
 SExpr(
       typ: int, sx: 6 /       typ: int, sx: 3 /     typ: int, sx: 2
 )
-SExpr(
-    typ: int, sx: 6 %     typ: int, sx: 3
-)

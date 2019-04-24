@@ -16,6 +16,3 @@ SExpr(
 SExpr(
       typ: float, sx: 6.9 /       typ: float, sx: 3.45 /     typ: float, sx: 2.0
 )
-SExpr(
-    typ: float, sx: 6.0 %     typ: float, sx: 3.0
-)

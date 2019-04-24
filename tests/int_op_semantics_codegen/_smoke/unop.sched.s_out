@@ -19,6 +19,3 @@ SExpr(
 SExpr(
       typ: int, sx: 69 / (-)         typ: int, sx: 345 / (-)       typ: int, sx: 20
 )
-SExpr(
-    typ: int, sx: 60 % (-)       typ: int, sx: 30
-)
