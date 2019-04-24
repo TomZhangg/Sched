@@ -34,7 +34,6 @@ cmp --silent tests/func_definition/_smoke/func.sched.out.tmp tests/func_definiti
 cmp --silent tests/boolean_operations_parsing/_smoke/boolean.sched.out.tmp tests/boolean_operations_parsing/_smoke/boolean.sched.output && echo '### SUCCESS: Files Are Identical! ###' &&
 cmp --silent tests/print/_smoke/print.sched.out.tmp tests/print/_smoke/print.sched.output && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 cmp --silent tests/float_operations_parsing/_smoke/float.sched.out.tmp tests/float_operations_parsing/_smoke/float.sched.output && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
-cmp --silent tests/int_arithmetic_parsing/_smoke/intarith.sched.out.tmp tests/int_arithmetic_parsing/_smoke/intarith.sched.output && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 cmp --silent tests/print_sast.sched.out.tmp tests/print_sast.sched.out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 cmp --silent tests/print_sast.exe.out.tmp tests/print_sast.exe.out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 cmp --silent tests/bool_op_semantics\&codegen/_smoke/binop.sched.s_out.tmp tests/bool_op_semantics\&codegen/_smoke/binop.sched.s_out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
