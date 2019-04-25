@@ -1,7 +1,7 @@
 %{ open Ast %}
 
 
-%token SEMI COL COMMA CREATE INSERT DROP ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT LEQ GEQ
+%token SEMI COL COMMA CREATE INSERT DROP ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT LEQ GEQ LBRACE RBRACE IF ELSE
 %token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN
 %token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
@@ -19,6 +19,8 @@
 %start program
 %type <Ast.program> program
 
+%nonassoc NOELSE
+%nonassoc ELSE
 %right ASSIGN
 %left OR
 %left AND
@@ -47,6 +49,9 @@ stmt:
 | drop_stmt     { DS($1) }
 | expr SEMI     { Expr $1 }
 | FUNC id LPAREN params RPAREN COL indent_stmts { DEC($2, $4, $7)}
+| LBRACE stmts RBRACE                 { Block($2)    }
+| IF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5, Block([])) }
+| IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7)        }
 
 indent_stmts:
   INDENT stmt   { [$2] }

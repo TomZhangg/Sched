@@ -14,6 +14,8 @@ rule token = parse
 | "#("          { comment 1 lexbuf }      (* Comments *)
 | '('           { LPAREN }
 | ')'           { RPAREN }
+| '{'           { LBRACE }
+| '}'           { RBRACE }
 | ';'           { SEMI }
 | ':'           { COL }
 | ','           { COMMA }
@@ -32,6 +34,8 @@ rule token = parse
 | "*"			{ TIMES }
 | "/"			{ DIVIDE }
 | "%"			{ MOD }
+| "if"          { IF }
+| "else"        { ELSE }
 | "Create"      { CREATE }
 | "Insert"      { INSERT }
 | "Drop"		{ DROP }

@@ -268,6 +268,8 @@ type stmt =
   | DS of drop_stmt
   | Expr of expr
   | DEC of id * args * stmt list
+  | Block of stmt list
+  | If of expr * stmt * stmt
 
 let rec pp_stmt lvl stmt =
   match stmt with
@@ -297,6 +299,11 @@ let rec pp_stmt lvl stmt =
     ^ id_pp ^ "\n"
     ^ idnt2 ^ "<parameters>: " ^String.concat ", " (List.map string_of_expr a) ^ "\n"
     ^ idnt2 ^ "<body>: " ^ sub_tree
+  | Block(sl) -> "{\n" ^ (String.concat "" (List.map (fun stmt -> pp_stmt lvl stmt) sl)) ^ "}\n"
+  | If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")\n" ^ (pp_stmt lvl s)
+  | If(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")\n" ^
+      (pp_stmt lvl s1) ^ "else\n" ^ (pp_stmt lvl s2)
+  
 
 type program = stmt list
 let pp_program prog =
