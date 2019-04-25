@@ -259,6 +259,18 @@ let pp_set_stmt lvl set_stmt =
       idnt ^ "<attribute id>"
       ^ expr1 ^ "\n" ^ idnt ^ "<destination id>" ^ expr2 ^ "\n" ^ idnt ^ "<expression>: " ^ expr3
 
+type copy_stmt =
+  Ids of id * id
+let pp_copy_stmt lvl copy_stmt =
+  match copy_stmt with
+    Ids (aid, bid) ->
+      let idnt = indent lvl in
+      let expr1 = pp_id (lvl + 1) aid in
+      let expr2 = pp_id (lvl + 2) bid in
+        idnt ^ "<copy-aid-of-bid-statement>" ^ expr1 ^ "\n" ^ expr2
+
+  
+
 type args = expr list
 
 type stmt =
@@ -266,6 +278,7 @@ type stmt =
   | IS of insert_stmt
   | SS of set_stmt
   | DS of drop_stmt
+  | CPS of copy_stmt
   | Expr of expr
   | DEC of id * args * stmt list
   | Block of stmt list
@@ -289,6 +302,10 @@ let rec pp_stmt lvl stmt =
     let idnt = indent lvl in
     let sub_tree = pp_drop_stmt (lvl + 1) drop_stmt in
     idnt ^ "<drop-statement>\n" ^ sub_tree
+  | CPS copy_stmt ->
+    let idnt = indent lvl in
+    let sub_tree = pp_copy_stmt (lvl + 1) copy_stmt in
+    idnt ^ "<copy-statement>\n" ^ sub_tree
   | Expr(expr) -> string_of_expr expr ^ ";"
   | DEC(i,a,b) ->
     let idnt = indent lvl in

@@ -39,6 +39,7 @@ rule token = parse
 | "Create"      { CREATE }
 | "Insert"      { INSERT }
 | "Drop"		{ DROP }
+| "Copy"		{ COPY }
 | "Schedule"    { SCHED }
 | "Item"        { ITEM }
 | "Items"       { ITEMS }
