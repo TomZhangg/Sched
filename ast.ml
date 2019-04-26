@@ -7,7 +7,8 @@ type uop = Not
 
 type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void
 
-type bind = typ * string
+type bind = Bind of typ * string
+
 
 type sched_kind = Day | Week | Month | Year
 
@@ -55,7 +56,9 @@ let string_of_typ t =
   | Int -> "int"
   | Void -> "void"
 
-
+let	string_of_bind b =
+		match b with
+			Bind(a,b) -> "type: " ^ string_of_typ a ^ "  name: "^ b
 
 
 type expr =
@@ -66,8 +69,9 @@ type expr =
 | StrLit of string
 | Binop of expr * op * expr
 | Unop of uop * expr
-| Assign of typ * string * expr
+| Assign of string * expr
 | Call of string * expr list
+| BIND of bind
 
 let rec string_of_expr expr =
   match expr with
@@ -80,9 +84,10 @@ let rec string_of_expr expr =
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(o, e) -> string_of_uop o ^ string_of_expr e
-  | Assign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e
+  | Assign(s, e) -> s ^ " = " ^ string_of_expr e
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+	| BIND b -> string_of_bind b
 
 type date = expr
 
@@ -223,7 +228,7 @@ let pp_insert_stmt lvl insert_stmt =
       let expr2 = pp_id (lvl + 1) dst in
         idnt ^ "<insert-item-to-sched-statement>\n" ^ expr1 ^ "\n" ^ expr2
 
-type drop_stmt = 
+type drop_stmt =
 Ids of src_dst * id * id
 let pp_drop_stmt lvl drop_stmt =
   match drop_stmt with

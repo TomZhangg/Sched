@@ -72,7 +72,8 @@ expr:
 | expr DIVIDE expr   { Binop($1, Div,   $3)   }
 | expr MOD    expr   { Binop($1, Mod,   $3)   }
 | NOT expr           { Unop(Not, $2)          }
-| typ ID ASSIGN expr { Assign($1, $2, $4)     }
+| typ ID						 { BIND(Bind($1,$2))}
+| typ ID ASSIGN expr { BIND(Bind($1,$2)); Assign($2, $4)     }
 | ID LPAREN args_opt RPAREN { Call($1, $3)  }
 | LPAREN expr RPAREN { $2                   }
 
@@ -172,8 +173,8 @@ params:
 | param_list  { List.rev $1 }
 
 param_list:
-  id                    { [$1] }
-| param_list COMMA id { $3 :: $1 }
+  typ ID                    { [BIND(Bind($1,$2))] }
+| param_list COMMA typ ID { BIND(Bind($3,$4)) :: $1 }
 
 id:
   ID    { Id($1) }

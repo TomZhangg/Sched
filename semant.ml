@@ -40,9 +40,10 @@ let rec check_expr (xpr : expr)
           match sarg_opt with
             Some(sxpr, st) ->
               let (styp, sx) = sxpr in
-              let (ftyp, fid) = formal in
-              let argsp = sxpr::args in
-              if styp = ftyp then (true, argsp) else (false, argsp)
+							(match formal with
+								Bind(ftyp,fid) ->
+	              let argsp = sxpr::args in
+	              if styp = ftyp then (true, argsp) else (false, argsp))
           | None -> (false, [])
       in
       let zipped = List.combine fdecl.sformals sarg_opts in
@@ -56,7 +57,7 @@ let rec check_expr (xpr : expr)
   | Binop (e1, op, e2) as e ->
     let x = check_expr e1 sym_tab in
     let y = check_expr e2 sym_tab in
-    match x with
+    (match x with
       Some ((t1, e1'), _) ->
         match y with
           Some((t2, e2'), _) ->
@@ -72,7 +73,7 @@ let rec check_expr (xpr : expr)
         Failure ("illegal binary operator " ^
                  string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
                  string_of_typ t2 ^ " in " ^ string_of_expr e))
-    in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab)
+    in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab))
   | _ -> raise (Check_not_implemented "Ast.expr type")
 
 let rec check_stmt (stmt : stmt)
@@ -117,7 +118,7 @@ let rec check (prog : program)
 let print_fdecl = {
   styp = Void;
   sfname = "print";
-  sformals = [(String, "text")];
+  sformals = [Bind(String, "text")];
   slocals = [];
   sbody = [];
 }
