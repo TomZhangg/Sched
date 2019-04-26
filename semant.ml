@@ -7,12 +7,7 @@ module StringMap = Map.Make(String)
 
 exception Check_not_implemented of string
 
-let type_of_identifier var st =
-  try StringMap.find var st
-  with Not_found -> raise (Failure ("undeclared identifier " ^ var))
 
-let check_assign lvaluet rvaluet err =
-  if lvaluet = rvaluet then lvaluet else raise (Failure err)
 
 let rec check_expr (xpr : expr)
                    (sym_tab : 'a StringMap.t)
@@ -78,14 +73,6 @@ let rec check_expr (xpr : expr)
                  string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
                  string_of_typ t2 ^ " in " ^ string_of_expr e))
     in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab)
-  | Assign(var, e) as ex ->
-    let r = check_expr e in
-    match r with
-      (rt, e') ->
-        let lt = type_of_identifier var sym_tab in
-        let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
-                  string_of_typ rt ^ " in " ^ string_of_expr ex
-        in Some((check_assign lt rt err, SAssign(var, (rt, e'))), sym_tab)
   | _ -> raise (Check_not_implemented "Ast.expr type")
 
 let rec check_stmt (stmt : stmt)
