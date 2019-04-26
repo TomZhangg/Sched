@@ -4,6 +4,9 @@
 5 * 3;
 6 / 3 / 2;
 6 % 3;
-int x = 10;
-int y = 10 + 3 + 4;
-int z = x + y;
+int x;
+x = 10;
+int y;
+y = 10+3+4;
+int z;
+z = x + y;

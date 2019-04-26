@@ -73,7 +73,8 @@ expr:
 | expr MOD    expr   { Binop($1, Mod,   $3)   }
 | NOT expr           { Unop(Not, $2)          }
 | typ ID						 { BIND(Bind($1,$2))}
-| typ ID ASSIGN expr { BIND(Bind($1,$2)); Assign($2, $4)     }
+| ID ASSIGN expr		 { Assign($1,$3)}
+/* | typ ID ASSIGN expr { BIND(Bind($1,$2)); Assign($2, $4)     } */
 | ID LPAREN args_opt RPAREN { Call($1, $3)  }
 | LPAREN expr RPAREN { $2                   }
 

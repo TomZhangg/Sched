@@ -1,4 +1,4 @@
-func asdf(a,s,d,f):
+func asdf(int a,str s,bool d):
 	asdf();
 	func fdsa():
 		asdf();

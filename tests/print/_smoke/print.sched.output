@@ -1,4 +1,6 @@
-str x = StrLit("hi");
+(str, x);
+x = StrLit("hi");
+(str, y);
 print(Id(x));
 print(StrLit("hello world"));
 print(BoolLit(true));

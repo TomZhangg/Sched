@@ -58,7 +58,7 @@ let string_of_typ t =
 
 let	string_of_bind b =
 		match b with
-			Bind(a,b) -> "type: " ^ string_of_typ a ^ "  name: "^ b
+			Bind(a,b) -> "(" ^ string_of_typ a ^ ", "^ b ^ ")"
 
 
 type expr =
