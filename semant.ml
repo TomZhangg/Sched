@@ -75,7 +75,7 @@ let rec check_expr (xpr : expr)
         Failure ("illegal binary operator " ^
                  string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
                  string_of_typ t2 ^ " in " ^ string_of_expr e))
-    in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab)       )
+    in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab))       )
   | Unop(op, e) as ex ->
     ( let x = check_expr e sym_tab in
     match x with
