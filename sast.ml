@@ -17,6 +17,20 @@ and sx =
 | SIntLit of int
 | SBinop of sexpr * op * sexpr
 | SUnop of uop * sexpr
+| SAssign of string * sexpr
+| SBIND of typ * string
+| SBinAssign of (typ * string) * sexpr
+
+type sfunc_decl = {
+	    styp : typ;
+	    sfname : string;
+	    sformals : bind list;
+	    slocals : bind list;
+	    sbody : sstmt list;
+}
+and sstmt =
+  SExpr of sexpr
+  | SFunc of sfunc_decl (* (name, return type), list of formals, list of locals, body) *)
 
 let rec string_of_sexpr lvl sxpr =
   let idnt = indent lvl in
@@ -39,10 +53,13 @@ let rec string_of_sexpr lvl sxpr =
     (string_of_sexpr (lvl + 1) (i1, e1)) ^ " " ^ (string_of_op o) ^ " " ^
     (string_of_sexpr (lvl + 1) (i2, e2))
   | SUnop(o, (i,e)) -> "(" ^ (string_of_uop o) ^ ")" ^ " " ^ (string_of_sexpr (lvl + 1) (i, e))
+  | SAssign(s, e) -> s ^ " = " ^ string_of_sexpr (lvl+1) e
+	| SBIND (t,s) -> "(" ^ string_of_typ t ^ ", " ^ s ^ ")"
+	| SBinAssign (b,a) ->
+			(match b with (t,s)->
+				"(" ^ string_of_typ t ^ ", " ^ s ^ ")" ^ string_of_sexpr (lvl+1) a)
   | _ -> raise (Failure "string_of_sexpr case not implemented yet.")
 
-type sstmt =
-  SExpr of sexpr
 let string_of_sstmt lvl sstmt =
   let idnt = indent lvl in
   match sstmt with
@@ -54,13 +71,7 @@ let string_of_sstmt lvl sstmt =
                           suffix]
   | _ -> raise (Failure "string_of_sstmt case not implemented yet.")
 
-type sfunc_decl = {
-    styp : typ;
-    sfname : string;
-    sformals : bind list;
-    slocals : bind list;
-    sbody : sstmt list;
-}
+
 
 type sprogram = sstmt list
 

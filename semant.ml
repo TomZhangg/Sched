@@ -8,6 +8,12 @@ module StringMap = Map.Make(String)
 exception Check_not_implemented of string
 
 
+let type_of_identifier s sym_tab=
+	try StringMap.find s sym_tab
+	with Not_found -> raise (Failure ("undeclared identifier " ^ s))
+
+let check_assign lvaluet rvaluet err =
+	       if lvaluet = rvaluet then lvaluet else raise (Failure err)
 
 let rec check_expr (xpr : expr)
                    (sym_tab : 'a StringMap.t)
@@ -56,6 +62,19 @@ let rec check_expr (xpr : expr)
   | BoolLit l -> Some((Bool, SBoolLit l), sym_tab)
   | IntLit l -> Some((Int, SIntLit l), sym_tab)
   | FLit l -> Some((Float, SFLit l), sym_tab)
+	| BIND b ->
+		(match b with
+			Bind(t,s) ->
+			let new_tab = StringMap.add s (t, None) sym_tab in
+			Some((Void, SBIND(t,s)), new_tab))
+	| Assign (var,e) as ex ->
+		let lt = type_of_identifier var
+		and r = check_expr e in
+			(match r with Some((rt, e'), st) ->
+				let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
+				string_of_typ rt ^ " in " ^ string_of_expr ex
+		in Some((check_assign lt rt err, SAssign(var, (rt, e'))), sym_tab))
+	(* | BinAssign (b,a) *)
   | Binop (e1, op, e2) as e -> (
     let x = check_expr e1 sym_tab in
     let y = check_expr e2 sym_tab in
