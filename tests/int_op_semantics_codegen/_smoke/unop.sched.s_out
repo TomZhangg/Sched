@@ -1,0 +1,21 @@
+SExpr(
+(-)     typ: int, sx: 101234
+)
+SExpr(
+(-)       typ: int, sx: 15 + (-)       typ: int, sx: 158
+)
+SExpr(
+(-)       typ: int, sx: 1500 + (-)       typ: int, sx: 1
+)
+SExpr(
+(-)       typ: int, sx: 1552 +     typ: int, sx: 26
+)
+SExpr(
+(-)           typ: int, sx: 51234 - (-)           typ: int, sx: 43 -       typ: int, sx: 314 - (-)       typ: int, sx: 1
+)
+SExpr(
+    typ: int, sx: 51 * (-)       typ: int, sx: 32
+)
+SExpr(
+      typ: int, sx: 69 / (-)         typ: int, sx: 345 / (-)       typ: int, sx: 20
+)

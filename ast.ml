@@ -1,11 +1,11 @@
 let rec indent lvl =
   if lvl = 0 then "" else "  " ^ indent (lvl - 1)
 
-type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod
+type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod | Less | Leq | Greater | Geq
 
-type uop = Not
+type uop = Not | Neg
 
-type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void
+type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void | Float
 
 type bind = Bind of typ * string
 
@@ -35,6 +35,10 @@ let string_of_op o =
   | Neq -> "!="
   | And -> "&&"
   | Or -> "||"
+  | Less -> "<"
+  | Leq -> "<="
+  | Greater -> ">"
+  | Geq -> ">="
   | Add -> "+"
   | Sub -> "-"
   | Mult -> "*"
@@ -45,6 +49,7 @@ let string_of_op o =
 let string_of_uop o =
   match o with
   Not -> "!"
+  | Neg -> "-"
 
 let string_of_typ t =
   match t with
@@ -55,6 +60,7 @@ let string_of_typ t =
   | String -> "str"
   | Int -> "int"
   | Void -> "void"
+  | Float -> "float"
 
 let	string_of_bind b =
 		match b with
@@ -64,6 +70,7 @@ let	string_of_bind b =
 type expr =
   Id of string
 | IntLit of int
+| FLit of string
 | TimeLit of string
 | BoolLit of bool
 | StrLit of string
@@ -76,6 +83,7 @@ type expr =
 let rec string_of_expr expr =
   match expr with
     Id(str) -> "Id(" ^ str ^ ")"
+  | FLit(str) -> "FLit(" ^ str ^ ")"
   | StrLit(str) -> "StrLit(" ^ str ^ ")"
   | IntLit(x) -> "IntLit(" ^ (string_of_int x) ^ ")"
   | TimeLit(str) -> "TimeLit(" ^ str ^ ")"
@@ -85,6 +93,7 @@ let rec string_of_expr expr =
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(o, e) -> string_of_uop o ^ string_of_expr e
   | Assign(s, e) -> s ^ " = " ^ string_of_expr e
+	| Unop(o, e) -> string_of_uop o ^ string_of_expr e
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
 	| BIND b -> string_of_bind b
@@ -255,6 +264,18 @@ let pp_set_stmt lvl set_stmt =
       idnt ^ "<attribute id>"
       ^ expr1 ^ "\n" ^ idnt ^ "<destination id>" ^ expr2 ^ "\n" ^ idnt ^ "<expression>: " ^ expr3
 
+type copy_stmt =
+  Ids of id * id
+let pp_copy_stmt lvl copy_stmt =
+  match copy_stmt with
+    Ids (aid, bid) ->
+      let idnt = indent lvl in
+      let expr1 = pp_id (lvl + 1) aid in
+      let expr2 = pp_id (lvl + 2) bid in
+        idnt ^ "<copy-aid-of-bid-statement>" ^ expr1 ^ "\n" ^ expr2
+
+
+
 type args = expr list
 
 type stmt =
@@ -262,8 +283,11 @@ type stmt =
   | IS of insert_stmt
   | SS of set_stmt
   | DS of drop_stmt
+  | CPS of copy_stmt
   | Expr of expr
   | DEC of id * args * stmt list
+  | Block of stmt list
+  | If of expr * stmt * stmt
 
 let rec pp_stmt lvl stmt =
   match stmt with
@@ -283,6 +307,10 @@ let rec pp_stmt lvl stmt =
     let idnt = indent lvl in
     let sub_tree = pp_drop_stmt (lvl + 1) drop_stmt in
     idnt ^ "<drop-statement>\n" ^ sub_tree
+  | CPS copy_stmt ->
+    let idnt = indent lvl in
+    let sub_tree = pp_copy_stmt (lvl + 1) copy_stmt in
+    idnt ^ "<copy-statement>\n" ^ sub_tree
   | Expr(expr) -> string_of_expr expr ^ ";"
   | DEC(i,a,b) ->
     let idnt = indent lvl in
@@ -293,6 +321,11 @@ let rec pp_stmt lvl stmt =
     ^ id_pp ^ "\n"
     ^ idnt2 ^ "<parameters>: " ^String.concat ", " (List.map string_of_expr a) ^ "\n"
     ^ idnt2 ^ "<body>: " ^ sub_tree
+  | Block(sl) -> "{\n" ^ (String.concat "" (List.map (fun stmt -> pp_stmt lvl stmt) sl)) ^ "}\n"
+  | If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")\n" ^ (pp_stmt lvl s)
+  | If(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")\n" ^
+      (pp_stmt lvl s1) ^ "else\n" ^ (pp_stmt lvl s2)
+
 
 type program = stmt list
 let pp_program prog =

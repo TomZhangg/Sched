@@ -13,7 +13,10 @@ and sx =
 | SCall of string * sexpr list
 | SStrLit of string
 | SBoolLit of bool
+| SFLit of string
+| SIntLit of int
 | SBinop of sexpr * op * sexpr
+| SUnop of uop * sexpr
 
 let rec string_of_sexpr lvl sxpr =
   let idnt = indent lvl in
@@ -30,9 +33,12 @@ let rec string_of_sexpr lvl sxpr =
   | SStrLit(lit) -> idnt ^ "typ: " ^ tp_string ^ ", sx: " ^ lit
 	| SBoolLit(true) -> "true"
 	| SBoolLit(false) -> "false"
+  | SIntLit(lit) -> idnt ^ "typ: " ^ tp_string ^ ", sx: " ^ string_of_int lit
+  | SFLit(lit) -> idnt ^ "typ: " ^ tp_string ^ ", sx: " ^ lit
   | SBinop((i1,e1), o, (i2,e2)) ->
     (string_of_sexpr (lvl + 1) (i1, e1)) ^ " " ^ (string_of_op o) ^ " " ^
     (string_of_sexpr (lvl + 1) (i2, e2))
+  | SUnop(o, (i,e)) -> "(" ^ (string_of_uop o) ^ ")" ^ " " ^ (string_of_sexpr (lvl + 1) (i, e))
   | _ -> raise (Failure "string_of_sexpr case not implemented yet.")
 
 type sstmt =
