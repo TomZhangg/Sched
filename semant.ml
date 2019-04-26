@@ -75,22 +75,18 @@ let rec check_expr (xpr : expr)
         Failure ("illegal binary operator " ^
                  string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
                  string_of_typ t2 ^ " in " ^ string_of_expr e))
-<<<<<<< HEAD
-    in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab))
-=======
     in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab)       )
-  | Unop(op, e) as ex -> 
+  | Unop(op, e) as ex ->
     ( let x = check_expr e sym_tab in
-    match x with 
+    match x with
        Some ((t, e'), _) ->
        let ty = match op with
             Neg when t = Int || t = Float -> t
           | Not when t = Bool -> Bool
-          | _ -> raise (Failure ("illegal unary operator " ^ 
+          | _ -> raise (Failure ("illegal unary operator " ^
                                  string_of_uop op ^ string_of_typ t ^
                                  " in " ^ string_of_expr ex))
     in Some((ty, SUnop(op, (t, e'))), sym_tab)   )
->>>>>>> master
   | _ -> raise (Check_not_implemented "Ast.expr type")
 
 let rec check_stmt (stmt : stmt)
