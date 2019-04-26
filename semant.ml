@@ -65,7 +65,7 @@ let rec check_expr (xpr : expr)
 	| BIND b ->
 		(match b with
 			Bind(t,s) ->
-			let new_tab = StringMap.add s (t, None) sym_tab in
+			let new_tab = StringMap.add s (t, SExpr(Void, SNoexpr)) sym_tab in
 			Some((Void, SBIND(t,s)), new_tab))
 	| Assign (var,e) as ex ->
 		let lt = type_of_identifier var
@@ -106,6 +106,7 @@ let rec check_expr (xpr : expr)
                                  string_of_uop op ^ string_of_typ t ^
                                  " in " ^ string_of_expr ex))
     in Some((ty, SUnop(op, (t, e'))), sym_tab)   )
+	| Noexpr -> Some((Void, SNoexpr), sym_tab)
   | _ -> raise (Check_not_implemented "Ast.expr type")
 
 let rec check_stmt (stmt : stmt)

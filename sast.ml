@@ -20,6 +20,7 @@ and sx =
 | SAssign of string * sexpr
 | SBIND of typ * string
 | SBinAssign of (typ * string) * sexpr
+| SNoexpr
 
 type sfunc_decl = {
 	    styp : typ;
@@ -29,7 +30,7 @@ type sfunc_decl = {
 	    sbody : sstmt list;
 }
 and sstmt =
-  SExpr of sexpr
+  | SExpr of sexpr
   | SFunc of sfunc_decl (* (name, return type), list of formals, list of locals, body) *)
 
 let rec string_of_sexpr lvl sxpr =
@@ -58,6 +59,7 @@ let rec string_of_sexpr lvl sxpr =
 	| SBinAssign (b,a) ->
 			(match b with (t,s)->
 				"(" ^ string_of_typ t ^ ", " ^ s ^ ")" ^ string_of_sexpr (lvl+1) a)
+	| SNoexpr -> ""
   | _ -> raise (Failure "string_of_sexpr case not implemented yet.")
 
 let string_of_sstmt lvl sstmt =

@@ -80,6 +80,7 @@ type expr =
 | Call of string * expr list
 | BIND of bind
 | BinAssign of bind * expr
+| Noexpr
 
 let rec string_of_expr expr =
   match expr with
@@ -99,8 +100,9 @@ let rec string_of_expr expr =
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
 	| BIND b -> string_of_bind b
 	| BinAssign (b,a) ->
-		match b with Bind(t,s)->
-			string_of_bind b ^ string_of_expr a
+		(match b with Bind(t,s)->
+			string_of_bind b ^ string_of_expr a)
+	| Noexpr -> ""
 
 type date = expr
 
