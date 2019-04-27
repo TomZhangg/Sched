@@ -5,11 +5,11 @@ type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod
 
 type uop = Not
 
-type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void
+type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void | CId
 
 type bind = typ * string
 
-type sched_kind = Day | Week | Month | Year
+type sched_kind = Day | Week | Month | Year | Id of string
 
 type item_kind = Event | Deadline (* Add <id> *)
 let pp_item_kind lvl kind =
@@ -54,6 +54,7 @@ let string_of_typ t =
   | String -> "str"
   | Int -> "int"
   | Void -> "void"
+  | CId -> "CId"
 
 
 
@@ -154,7 +155,6 @@ let pp_item_spec lvl item_spec =
                             kind_sub_tree;
                             attrs_sub_tree]
 
-(* TODO: The list of item_spec has to be semantically checked. *)
 type il_items_opt =
   Some of item_spec list
 | None

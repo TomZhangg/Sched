@@ -135,6 +135,7 @@ sched_kind:
 | WEEK  { Week }
 | MONTH { Month }
 | YEAR  { Year }
+| ID    { Id($1) }
 
 start_date_opt:
   /* nothing */ { None }

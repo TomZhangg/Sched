@@ -17,12 +17,23 @@ let translate sprogram =
   let context = L.global_context () in
   (* Create the LLVM compilation module into which
      we will generate code *)
-  let the_module  = L.create_module context "Schedch"
-  and i1_t        = L.i1_type       context
-  and i8_t        = L.i8_type       context
-  and i32_t       = L.i32_type      context
-  and float_t     = L.double_type   context
-  and void_t      = L.void_type     context in
+  let the_module  = L.create_module     context "Schedch"
+  and i1_t        = L.i1_type           context
+  and i8_t        = L.i8_type           context
+  and i32_t       = L.i32_type          context
+  and float_t     = L.double_type       context
+  and void_t      = L.void_type         context in
+
+  let i8_tp       = L.pointer_type i8_t in
+  (* A Schedule struct has 5 fields:
+   * 1. Name: Points to a string that is its name.
+   * 2. Start Date: Points to a string that is its start date (for now).
+   * 3. n_items: 8-bit int that gives the number of items in the Schedule.
+   * 4. items_arr: Pointer to start of items array.
+   * 5. arr_size: 8-bit int that gives the size of the array.
+   *)
+  let sched_t     = L.struct_type context
+    [| i8_tp; i8_tp ; i8_t ; (L.pointer_type i8_tp) ; i8_t |] in
 
   (* Return the LLVM type for a Schedch type *)
   (* TODO: Add types here.
@@ -58,6 +69,7 @@ in
       (A.String, SStrLit s) -> L.build_global_stringptr s "" builder
       (* A String literal should result in a defined constant being
        * added to the LLVM module and a pointer to that constant. *)
+    | (A.CId, SId s) -> L.build_global_stringptr s "" builder
     | (A.Bool, SBoolLit b)  -> L.const_int i1_t (if b then 1 else 0)
     | (A.Int, SBinop (e1, op, e2)) ->
      	  let e1' = sxpr builder e1
@@ -95,8 +107,34 @@ in
       | _ -> raise (Failure "sxpr codegen type not implemented yet.")
   in
 
+  let rec ssched_spec builder = function
+    SNamed(kind, sx_opt, sx) ->
+      (* Create a global string constant for the name. *)
+      let name_ptr = sxpr builder sx in
+      (* Allocate space on the stack for the name. *)
+      let sched = L.build_alloca sched_t "" builder in
+      (* Store value of name_ptr to the name field of this Schedule. *)
+      let sname_ptr = L.build_struct_gep sched 0 "" builder in
+      let store = L.build_store name_ptr sname_ptr builder in
+      (* Store value of start date info (if given) *)
+      let date_ptr =
+        (match sx_opt with
+          Some(dt_sx) -> sxpr builder dt_sx
+        | _ -> sxpr builder (A.String, SStrLit "None"))
+      in
+      let sdate_ptr = L.build_struct_gep sched 1 "" builder in
+      L.build_store date_ptr sdate_ptr builder
+  | _ -> raise (Failure "ssched_spec case not implemented yet.")
+  in
+
+  let rec scstmt builder = function
+    SSchedule(spec) -> ignore (ssched_spec builder spec); builder
+  | _ -> raise (Failure "screate_stmt case not implemented yet.")
+  in
+
   let rec sstmt builder = function
       SExpr(sx) -> ignore (sxpr builder sx); builder
+    | SCS(cs) -> ignore (scstmt builder cs); builder
     | _ -> raise (Failure "sstmt codegen type not implemented yet.")
   in
 

@@ -35,8 +35,47 @@ let rec string_of_sexpr lvl sxpr =
     (string_of_sexpr (lvl + 1) (i2, e2))
   | _ -> raise (Failure "string_of_sexpr case not implemented yet.")
 
+type sexpr_opt =
+  Some of sexpr
+| None
+let string_of_sexpr_opt lvl opt =
+  let idnt = indent lvl in
+  match opt with
+    Some(sx) -> string_of_sexpr lvl sx
+  | None -> idnt ^ "None"
+
+type ssched_spec = 
+  (* TODO: Add sil_items_opt *)
+  SNamed of Ast.sched_kind * sexpr_opt * sexpr
+let string_of_ssched_spec lvl spec =
+  let idnt = indent lvl in
+  match spec with
+    SNamed(kind, sx_opt, sx) ->
+      let prefix = idnt ^ "SNamed(" in
+      let suffix = idnt ^ ")" in
+      String.concat "\n" [prefix;
+                          (Ast.pp_sched_kind (lvl + 1) kind);
+                          (string_of_sexpr_opt (lvl + 1) sx_opt);
+                          (string_of_sexpr (lvl + 1) sx);
+                          suffix]
+  | _ -> raise (Failure "string_of_ssched_spec case not implemented yet.")
+
+type screate_stmt =
+  SSchedule of ssched_spec
+let string_of_screate_stmt lvl sc_stmt =
+  let idnt = indent lvl in
+  match sc_stmt with
+    SSchedule(spec) ->
+      let prefix = idnt ^ "SSchedule(" in
+      let suffix = idnt ^ ")" in
+      String.concat "\n" [prefix;
+                          (string_of_ssched_spec (lvl + 1) spec);
+                          suffix]
+  | _ -> raise (Failure "string_of_screate_stmt case not implemented yet.")
+
 type sstmt =
   SExpr of sexpr
+| SCS of screate_stmt
 let string_of_sstmt lvl sstmt =
   let idnt = indent lvl in
   match sstmt with
@@ -46,15 +85,33 @@ let string_of_sstmt lvl sstmt =
       String.concat "\n" [prefix;
                           (string_of_sexpr (lvl + 1) sxpr);
                           suffix]
+  | SCS(cstmt) ->
+      let prefix = idnt ^ "SCS(" in
+      let suffix = idnt ^ ")" in
+      String.concat "\n" [prefix;
+                          (string_of_screate_stmt (lvl + 1) cstmt);
+                          suffix]
   | _ -> raise (Failure "string_of_sstmt case not implemented yet.")
 
 type sfunc_decl = {
-    styp : typ;
-    sfname : string;
-    sformals : bind list;
-    slocals : bind list;
-    sbody : sstmt list;
+  styp : typ;
+  sfname : string;
+  sformals : bind list;
+  slocals : bind list;
+  sbody : sstmt list;
 }
+
+type definable_type = Schedule | SchedItem
+
+type skind_decl = {
+  sdtype : definable_type;
+  skname : string;
+  sprops : bind list;
+}
+
+type sdecl =
+  SFunc of sfunc_decl
+| SKind of skind_decl
 
 type sprogram = sstmt list
 
@@ -62,33 +119,3 @@ let string_of_sprogram sprog =
   let sstmts = List.map (string_of_sstmt 0) sprog in
   String.concat "\n" sstmts
 
-(*
-type sattr = sexpr * sexpr
-type sattrs = sattr list
-
-type sattrs_opt =
-  SSome of sattrs
-| SNone
-
-type sitem_spec =
-  SNamed of sitem_kind * sdt_info_opt * sid * sattrs_opt
-| SAnon of sitem_kind * sdt_info_opt * sattrs_opt
-
-(* TODO: List the item_spec semantic checks that have to be done. *)
-type sil_items_opt =
-  SSome of sitem_spec list
-| SNone
-
-type ssched_spec =
-  SNamed of ssched_kind * sstart_date_opt * sid * sil_items_opt
-| Anon of ssched_kind * sstart_date_opt * sil_items_opt
-
-type screate_stmt =
-  SSchedule of ssched_spec
-| SItem of sitem_spec
-
-  SCS of screate_stmt
-| SIS of sinsert_stmt
-| SSS of sset_stmt
-
-*)

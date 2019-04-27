@@ -22,7 +22,7 @@ let rec check_expr (xpr : expr)
      * that indicated by f's definition. *)
     (* For our print "Hello, World!" example, this means that the
      * argument should have a printable type (Bool or String). *)
-    let fdecl = StringMap.find f sym_tab in
+    let SFunc(fdecl) = StringMap.find f sym_tab in
     (* Check that the args is a valid list of sexprs. *)
     let sarg_opts = List.map (fun arg -> check_expr arg sym_tab) args in
     let nargs = List.length sarg_opts in
@@ -75,6 +75,60 @@ let rec check_expr (xpr : expr)
     in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab)
   | _ -> raise (Check_not_implemented "Ast.expr type")
 
+let check_create_stmt (cstmt : create_stmt)
+                      (sym_tab  : 'a StringMap.t)
+                      : (screate_stmt * 'a StringMap.t) option =
+  match cstmt with
+    Schedule(spec) ->
+    (match spec with
+      Named(kind, st_date_opt, id, il_items_opt) ->
+      (* Semantic checks:
+       * 1. Verify that kind is a Schedule Kind, either a built-in
+       *    or user-defined kind.
+       * 2. Verify that st_date_opt gives only date information.
+       * 3. Verify that id is not already defined.
+       * 4. TODO: Add semantic checks for il_items_opt *)
+      let skind =
+        (match kind with
+          Id(kid) ->
+            (* Curious if this is a compilation error or potential
+             * runtime error. *)
+            let SKind(decl) = StringMap.find kid sym_tab in
+            if decl.sdtype = Schedule
+              then kind
+              else raise (Failure "Schedule Kind is not defined")
+        | _ -> kind)
+      in
+      let (has_date, sst_date_opt)  =
+        (match st_date_opt with
+          None -> false, None
+        | Some(expr) ->
+            (match (check_expr expr sym_tab) with
+              Some(sx, st) -> true, Some(sx)
+            | None -> false, None))
+      in
+      (* TODO: Figure out where the id should be entered into the symbol table. *)
+      let defined =
+        (match id with
+          Id(sid) ->
+            try ignore(StringMap.find sid sym_tab); true
+            with Not_found -> false
+        | _ -> raise (Failure "Invalid id."))
+      in
+      let sid = 
+        (match id with
+          Id(str) -> CId, SId(str)
+        | _ -> raise (Failure "Named Schedule without a name!"))
+      in
+      (* TODO: Add inline items option.
+       * For now (4/25/19) the SNamed is variant has only an Ast.sched_kind,
+       * an sexpr_opt and sexpr. So at this point, we have verified that
+       * the Schedule Kind is defined, recursively checked the optional
+       * date information, and ensured that the id is not already defined. *)
+      Some( SSchedule(SNamed(kind, sst_date_opt, sid)), sym_tab )
+    | _ -> raise (Check_not_implemented "Ast.sched_spec variant"))
+  | _ -> raise (Check_not_implemented "Ast.create_stmt variant")
+
 let rec check_stmt (stmt : stmt)
                    (sym_tab : 'a StringMap.t)
                    : (sstmt * 'a StringMap.t) option =
@@ -83,9 +137,14 @@ let rec check_stmt (stmt : stmt)
   match stmt with
     Expr(expr) ->
       let sexpr = check_expr expr sym_tab in
-      match sexpr with
+      (match sexpr with
         None -> None
-      | Some(sexpr, st) -> Some(SExpr(sexpr), st)
+      | Some(sexpr, st) -> Some(SExpr(sexpr), st))
+  | CS(cstmt) ->
+      let scstmt = check_create_stmt cstmt sym_tab in
+      (match scstmt with
+        None -> None
+      | Some(sstmt, st) -> Some(SCS(sstmt), st))
   | _ -> raise (Check_not_implemented "Ast.stmt type")
 
 let rec check (prog : program)
@@ -114,11 +173,12 @@ let rec check (prog : program)
        | None -> None)
   | [] -> Some ([], sym_tab)
 
-let print_fdecl = {
+let print_decl = SFunc({
   styp = Void;
   sfname = "print";
   sformals = [(String, "text")];
   slocals = [];
   sbody = [];
-}
-let init_st = StringMap.add "print" print_fdecl StringMap.empty
+})
+
+let init_st = StringMap.add "print" print_decl StringMap.empty
