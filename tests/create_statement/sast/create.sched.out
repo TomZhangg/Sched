@@ -1,0 +1,9 @@
+SCS(
+  SSchedule(
+    SNamed(
+      <sched-kind>: Day
+      None
+      typ: CId, sx: SId(trump_nov_7)
+    )
+  )
+)
