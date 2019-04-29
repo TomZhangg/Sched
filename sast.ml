@@ -30,8 +30,10 @@ and sfunc_decl = {
 	    sbody : sstmt list;
 }
 and sstmt =
-  | SExpr of sexpr
-  | SFunc of sfunc_decl (* (name, return type), list of formals, list of locals, body) *)
+    SExpr of sexpr
+  | SIf of sexpr * sstmt * sstmt
+  | SBlock of sstmt list
+	| SFunc of sfunc_decl
 
 let rec string_of_sexpr lvl sxpr =
   let idnt = indent lvl in
@@ -62,7 +64,7 @@ let rec string_of_sexpr lvl sxpr =
 	| SNoexpr -> ""
   | _ -> raise (Failure "string_of_sexpr case not implemented yet.")
 
-let string_of_sstmt lvl sstmt =
+let rec string_of_sstmt lvl sstmt =
   let idnt = indent lvl in
   match sstmt with
     SExpr(sxpr) ->
@@ -71,6 +73,10 @@ let string_of_sstmt lvl sstmt =
       String.concat "\n" [prefix;
                           (string_of_sexpr (lvl + 1) sxpr);
                           suffix]
+  | SBlock(sl) -> "{\n" ^ (String.concat "" (List.map (fun stmt -> string_of_sstmt lvl stmt) sl)) ^ "}\n"
+  | SIf(e, s, SBlock([])) -> "SIf (" ^ string_of_sexpr lvl e ^ ")\n" ^ (string_of_sstmt lvl s)
+  | SIf(e, s1, s2) ->  "SIf (" ^ string_of_sexpr lvl e ^ ")\n" ^
+      (string_of_sstmt lvl s1) ^ "SElse\n" ^ (string_of_sstmt lvl s2)
   | _ -> raise (Failure "string_of_sstmt case not implemented yet.")
 
 

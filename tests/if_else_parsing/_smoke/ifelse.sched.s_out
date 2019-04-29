@@ -1,0 +1,75 @@
+SIf (  typ: int, sx: 3 <   typ: int, sx: 4)
+{
+SExpr(
+    typ: int, sx: 3 +     typ: int, sx: 2
+)SExpr(
+    typ: int, sx: 4 +     typ: int, sx: 27
+)SExpr(
+(-)     typ: int, sx: 4
+)}
+SElse
+{
+SExpr(
+    typ: float, sx: 3.2 -     typ: float, sx: 2.5
+)SExpr(
+    typ: float, sx: 100.01 -     typ: float, sx: 27.0
+)SExpr(
+  typ: float, sx: 35.0
+)}
+
+SIf (  typ: int, sx: 1 <   typ: int, sx: 2)
+{
+SExpr(
+  typ: int, sx: 55
+)}
+SElse
+{
+SExpr(
+    typ: int, sx: 1 -     typ: int, sx: 2
+)SExpr(
+    typ: int, sx: 98 !=     typ: int, sx: 95
+)}
+
+SIf (  typ: float, sx: 2.5 !=   typ: float, sx: 1.0)
+{
+SExpr(
+    typ: int, sx: 2 +     typ: int, sx: 2
+)}
+
+SIf ((-)     typ: int, sx: 1 <   typ: int, sx: 2)
+{
+SExpr(
+    typ: int, sx: 3 ==       typ: int, sx: 1 +       typ: int, sx: 2
+)}
+
+SIf (  typ: int, sx: 1 <   typ: int, sx: 2)
+{
+SExpr(
+    typ: int, sx: 56 ==     typ: int, sx: 55
+)SIf (  typ: int, sx: 3 <   typ: int, sx: 2)
+{
+SExpr(
+    typ: int, sx: 55 ==     typ: int, sx: 55
+)}
+SElse
+{
+SExpr(
+    typ: int, sx: 55 !=     typ: int, sx: 95
+)}
+SIf (  typ: int, sx: 1 <   typ: int, sx: 2)
+{
+SExpr(
+    typ: int, sx: 17 ==     typ: int, sx: 55
+)}
+}
+SElse
+{
+SExpr(
+    typ: int, sx: 96 !=     typ: int, sx: 95
+)SIf (  typ: int, sx: 1 <   typ: int, sx: 2)
+{
+SExpr(
+    typ: int, sx: 55 ==     typ: int, sx: 55
+)}
+}
+
