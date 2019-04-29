@@ -28,7 +28,7 @@ let rec check_expr (xpr : expr)
      * that indicated by f's definition. *)
     (* For our print "Hello, World!" example, this means that the
      * argument should have a printable type (Bool or String). *)
-    let fdecl = StringMap.find f sym_tab in
+    let (t, fdecl) = StringMap.find f sym_tab in
     (* Check that the args is a valid list of sexprs. *)
     let sarg_opts = List.map (fun arg -> check_expr arg sym_tab) args in
     let nargs = List.length sarg_opts in
@@ -65,10 +65,10 @@ let rec check_expr (xpr : expr)
 	| BIND b ->
 		(match b with
 			Bind(t,s) ->
-			let new_tab = StringMap.add s (t, SExpr(Void, SNoexpr)) sym_tab in
+			let new_tab = StringMap.add s (t, SNoexpr) sym_tab in
 			Some((Void, SBIND(t,s)), new_tab))
 	| Assign (var,e) as ex ->
-		let lt = type_of_identifier var
+		let lt = type_of_identifier var sym_tab
 		and r = check_expr e in
 			(match r with Some((rt, e'), st) ->
 				let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
