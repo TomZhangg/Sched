@@ -9,15 +9,16 @@ exception Check_not_implemented of string
 
 
 let type_of_identifier s sym_tab=
-	try StringMap.find s sym_tab
-	with Not_found -> raise (Failure ("undeclared identifier " ^ s))
+	if StringMap.mem s sym_tab
+	then let SExpr(t, s) = StringMap.find s sym_tab in t
+	else  raise (Failure ("undeclared identifier " ^ s))
 
 let check_assign lvaluet rvaluet err =
 	       if lvaluet = rvaluet then lvaluet else raise (Failure err)
 
 let rec check_expr (xpr : expr)
-                   (sym_tab : 'a StringMap.t)
-                   : (sexpr * 'a StringMap.t) option =
+                   (sym_tab : Sast.sstmt StringMap.t)
+                   : (sexpr * Sast.sstmt StringMap.t) option =
   match xpr with
   Call(f, args) ->
     (* For a function call, we need to check that f is defined,
@@ -28,11 +29,12 @@ let rec check_expr (xpr : expr)
      * that indicated by f's definition. *)
     (* For our print "Hello, World!" example, this means that the
      * argument should have a printable type (Bool or String). *)
-    let (t, fdecl) = StringMap.find f sym_tab in
+    let fdecl = StringMap.find f sym_tab in
     (* Check that the args is a valid list of sexprs. *)
     let sarg_opts = List.map (fun arg -> check_expr arg sym_tab) args in
     let nargs = List.length sarg_opts in
-    let neargs = List.length fdecl.sformals in
+		(match fdecl with SFunc sf ->
+    let neargs = List.length sf.sformals in
     if nargs = neargs then
       (* Go through each of the arguments and check that
        * 1. The semantic checks succeeded.
@@ -52,10 +54,10 @@ let rec check_expr (xpr : expr)
 	              if styp = ftyp then (true, argsp) else (false, argsp))
           | None -> (false, [])
       in
-      let zipped = List.combine fdecl.sformals sarg_opts in
+      let zipped = List.combine sf.sformals sarg_opts in
       let (flag, sargs) = List.fold_right sarg_check zipped (true, []) in
-      if flag then Some((fdecl.styp, SCall(f, sargs)), sym_tab) else None
-    else None
+      if flag then Some((sf.styp, SCall(f, sargs)), sym_tab) else None
+    else None)
   | StrLit(lit) ->
     (* Need to check that the type for this expression is a String. *)
     Some((String, SStrLit(lit)), sym_tab)
@@ -65,16 +67,22 @@ let rec check_expr (xpr : expr)
 	| BIND b ->
 		(match b with
 			Bind(t,s) ->
-			let new_tab = StringMap.add s (t, SNoexpr) sym_tab in
+			let se = SExpr (t, SNoexpr) in
+			let new_tab = StringMap.add s se sym_tab in
 			Some((Void, SBIND(t,s)), new_tab))
 	| Assign (var,e) as ex ->
 		let lt = type_of_identifier var sym_tab
-		and r = check_expr e in
+		and r = check_expr e sym_tab in
 			(match r with Some((rt, e'), st) ->
 				let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
 				string_of_typ rt ^ " in " ^ string_of_expr ex
 		in Some((check_assign lt rt err, SAssign(var, (rt, e'))), sym_tab))
-	(* | BinAssign (b,a) *)
+	| BinAssign (b,a) ->
+		let b' = BIND b in
+		let r1 = check_expr b' sym_tab in
+		(match r1 with Some(_,new_tab) ->
+			let r2 = check_expr a new_tab in
+			r2)
   | Binop (e1, op, e2) as e -> (
     let x = check_expr e1 sym_tab in
     let y = check_expr e2 sym_tab in
@@ -155,4 +163,5 @@ let print_fdecl = {
   slocals = [];
   sbody = [];
 }
-let init_st = StringMap.add "print" print_fdecl StringMap.empty
+let pf = SFunc(print_fdecl)
+let init_st = StringMap.add "print" pf StringMap.empty

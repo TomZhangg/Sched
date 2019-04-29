@@ -22,7 +22,7 @@ and sx =
 | SBinAssign of (typ * string) * sexpr
 | SNoexpr
 
-type sfunc_decl = {
+and sfunc_decl = {
 	    styp : typ;
 	    sfname : string;
 	    sformals : bind list;
