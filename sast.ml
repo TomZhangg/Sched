@@ -54,7 +54,7 @@ let rec string_of_sexpr lvl sxpr =
     (string_of_sexpr (lvl + 1) (i1, e1)) ^ " " ^ (string_of_op o) ^ " " ^
     (string_of_sexpr (lvl + 1) (i2, e2))
   | SUnop(o, (i,e)) -> "(" ^ (string_of_uop o) ^ ")" ^ " " ^ (string_of_sexpr (lvl + 1) (i, e))
-  | SAssign(s, e) -> s ^ " = " ^ string_of_sexpr (lvl+1) e
+  | SAssign(s, e) -> s ^ " = " ^ "\n" ^ string_of_sexpr (lvl+1) e
 	| SBIND (t,s) -> "(" ^ string_of_typ t ^ ", " ^ s ^ ")"
 	| SBinAssign (b,a) ->
 			(match b with (t,s)->
