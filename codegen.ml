@@ -9,7 +9,7 @@ module StringMap = Map.Make(String)
 let tstp str = Printf.eprintf "%s\n" str;()
 
 (*type state = (L.llvalue StringMap.t) * L.llvalue * L.llbuilder*)
-type state = {namespace: L.llvalue StringMap.t;
+type state = {namespace:(string, L.llvalue)  Hashtbl.t ;
               func: L.llvalue;
               b: L.llbuilder}
 
@@ -53,12 +53,12 @@ let translate sprogram =
   let main_func = L.define_function "main" main_t the_module in
   let main_builder = L.builder_at_end context (L.entry_block main_func) in
   let str_format_str = L.build_global_stringptr "%s\n" "fmt" main_builder in
-
-  let the_state:state = {namespace=StringMap.empty;
+	let ns = Hashtbl.create 10000 in
+  let the_state:state = {namespace=ns;
                          func=main_func;
                          b=main_builder} in
 
-	let lookup n ns= StringMap.find n ns
+	let lookup n ns= Hashtbl.find ns n
 	in
   (* Construct code for an expression; return its value. *)
   let rec sxpr the_state e =
@@ -73,7 +73,7 @@ let translate sprogram =
     | (A.Float, SFLit l) -> L.const_float_of_string float_t l
 		| (Void, SBIND (t,s)) ->
 			let t' = ltype_of_typ t in
-			namespace = StringMap.add s (L.build_alloca t' s builder) namespace; L.undef t'
+			Hashtbl.add namespace s (L.build_alloca t' s builder); L.undef t'
 			(* StringMap.add s (L.define_global s (init t) the_module) namespace; L.undef t' *)
 		| (t, SAssign (s, e)) -> tstp "enter assign";
 			let e' = sxpr the_state e in tstp "pass checkpoint";
