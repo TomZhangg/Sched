@@ -33,9 +33,14 @@ let translate sprogram =
   let ltype_of_typ = function
     A.Int   -> i32_t
   | A.Bool  -> i1_t
-  | A.Float -> float_t 
+  | A.Float -> float_t
   | A.Void  -> void_t
-in
+	in
+
+	let init t = match t with
+		A.Float -> L.const_float (ltype_of_typ t) 0.0
+	| _ -> L.const_int (ltype_of_typ t) 0
+	in
 
   (* Declare printf(), which the print built-in function will call *)
   let printf_t = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
@@ -52,37 +57,45 @@ in
                          func=main_func;
                          b=main_builder} in
 
-
+	let lookup n ns= StringMap.find n ns
+	in
   (* Construct code for an expression; return its value. *)
-  let rec sxpr builder = function
+  let rec sxpr builder e =
+			let namespace = the_state.namespace in
+			match e with
       (A.String, SStrLit s) -> L.build_global_stringptr s "" builder
       (* A String literal should result in a defined constant being
        * added to the LLVM module and a pointer to that constant. *)
     | (A.Bool, SBoolLit b)  -> L.const_int i1_t (if b then 1 else 0)
     | (A.Int, SIntLit i) -> L.const_int i32_t i
     | (A.Float, SFLit l) -> L.const_float_of_string float_t l
+		| (Void, SBIND (t,s)) ->
+			let t' = ltype_of_typ t in
+			StringMap.add s (L.define_global s (init t) the_module) namespace; L.undef t'
+		| (_, SAssign (s, e)) -> let e' = sxpr builder e in
+												ignore(L.build_store e' (lookup s namespace) builder); e'
     | (A.Bool, SBinop (e1, op, e2)) ->
          	  let e1' = sxpr builder e1
          	  and e2' = sxpr builder e2 in
          	  (match op with
          	  | A.And     -> L.build_and
          	  | A.Or      -> L.build_or
-         	  | A.Equal   -> ( match e1 with 
+         	  | A.Equal   -> ( match e1 with
                   	  (A.Int, _) -> L.build_icmp L.Icmp.Eq
                         | (A.Float, _) -> L.build_fcmp L.Fcmp.Oeq )
-         	  | A.Neq     -> ( match e1 with 
+         	  | A.Neq     -> ( match e1 with
                   	  (A.Int, _) -> L.build_icmp L.Icmp.Ne
                         | (A.Float, _) -> L.build_fcmp L.Fcmp.One )
-		  | A.Less    -> ( match e1 with 
+		  | A.Less    -> ( match e1 with
                   	  (A.Int, _) -> L.build_icmp L.Icmp.Slt
-                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Olt )	
-         	  | A.Leq     -> ( match e1 with 
+                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Olt )
+         	  | A.Leq     -> ( match e1 with
                   	  (A.Int, _) -> L.build_icmp L.Icmp.Sle
                         | (A.Float, _) -> L.build_fcmp L.Fcmp.Ole )
-         	  | A.Greater -> ( match e1 with 
+         	  | A.Greater -> ( match e1 with
                   	  (A.Int, _) -> L.build_icmp L.Icmp.Sgt
                         | (A.Float, _) -> L.build_fcmp L.Fcmp.Ogt )
-         	  | A.Geq     -> ( match e1 with 
+         	  | A.Geq     -> ( match e1 with
                   	  (A.Int, _) -> L.build_icmp L.Icmp.Sge
                         | (A.Float, _) -> L.build_fcmp L.Fcmp.Oge )
        	    ) e1' e2' "tmp" builder
