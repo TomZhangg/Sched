@@ -1,4 +1,9 @@
 int a;
 int b;
 a = 13;
+int c;
 b = 25;
+c = 234;
+bool d;
+d = False;
+d = True || False;
