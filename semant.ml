@@ -88,6 +88,11 @@ let rec check_expr (xpr : expr)
     in Some((ty, SUnop(op, (t, e'))), sym_tab)   )
   | _ -> raise (Check_not_implemented "Ast.expr type")
 
+
+
+
+
+
 let rec check_stmt (stmt : stmt)
                    (sym_tab : 'a StringMap.t)
                    : (sstmt * 'a StringMap.t) option =
@@ -96,10 +101,55 @@ let rec check_stmt (stmt : stmt)
   match stmt with
     Expr(expr) ->
       let sexpr = check_expr expr sym_tab in
-      match sexpr with
+    ( match sexpr with
         None -> None
-      | Some(sexpr, st) -> Some(SExpr(sexpr), st)
+      | Some(sexpr, st) -> Some(SExpr(sexpr), st) )
+  | If(p, b1, b2) -> 
+  let check_bool_expr e sym_tab = (
+  let e' = check_expr e sym_tab
+  and err = "expected Boolean expression in " ^ string_of_expr e in
+  match e' with
+    None -> raise (Failure err)
+  | Some((t', _), st) ->
+    if t' != Bool then raise (Failure err) else e'  ) in
+
+      let p' = check_bool_expr p sym_tab in
+     (match p' with
+      | Some(sexpr, st) ->
+      let sstmt1 = check_stmt b1 sym_tab in
+     (match sstmt1 with
+        None -> None
+      | Some (x1, st1) ->
+      let sstmt2 = check_stmt b2 sym_tab in
+     (match sstmt2 with
+        None -> None
+      | Some (x2, st2) -> Some(SIf(sexpr, x1, x2), st) )))
+  | Block(sl) -> 
+    let slist = check_stmt_list sl sym_tab in
+    ( match slist with
+      Some(sl', st) -> Some(SBlock(sl'), st)  
+      | None -> None )
   | _ -> raise (Check_not_implemented "Ast.stmt type")
+
+
+and check_stmt_list (sl : stmt list)
+              (sym_tab : 'a StringMap.t)
+              : (sstmt list * 'a StringMap.t) option =
+  match sl with
+    stmt :: stmts ->
+    let sstmt = check_stmt stmt sym_tab in
+    (match sstmt with
+       None -> None
+     | Some (x, st) ->
+       let sstmts = check_stmt_list stmts st in
+       ( match sstmts with
+           None -> None 
+         | Some (xs, stf) -> Some (x::xs, stf) ) )
+  | [] -> Some ([], sym_tab)  
+
+
+
+
 
 let rec check (prog : program)
               (sym_tab : 'a StringMap.t)

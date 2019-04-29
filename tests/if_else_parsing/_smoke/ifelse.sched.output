@@ -1,0 +1,41 @@
+if (IntLit(3) < IntLit(4))
+{
+IntLit(3) + IntLit(2);IntLit(4) + IntLit(27);-IntLit(4);}
+else
+{
+FLit(3.2) - FLit(2.5);FLit(100.01) - FLit(27.0);FLit(35.0);}
+
+if (IntLit(1) < IntLit(2))
+{
+IntLit(55);}
+else
+{
+IntLit(1) - IntLit(2);IntLit(98) != IntLit(95);}
+
+if (FLit(2.5) != FLit(1.0))
+{
+IntLit(2) + IntLit(2);}
+
+if (-IntLit(1) < IntLit(2))
+{
+IntLit(3) == IntLit(1) + IntLit(2);}
+
+if (IntLit(1) < IntLit(2))
+{
+IntLit(56) == IntLit(55);if (IntLit(3) < IntLit(2))
+{
+IntLit(55) == IntLit(55);}
+else
+{
+IntLit(55) != IntLit(95);}
+if (IntLit(1) < IntLit(2))
+{
+IntLit(17) == IntLit(55);}
+}
+else
+{
+IntLit(96) != IntLit(95);if (IntLit(1) < IntLit(2))
+{
+IntLit(55) == IntLit(55);}
+}
+

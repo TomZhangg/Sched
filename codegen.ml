@@ -134,11 +134,33 @@ in
       | _ -> raise (Failure "sxpr codegen type not implemented yet.")
   in
 
+  let add_terminal builder instr =
+    match L.block_terminator (L.insertion_block builder) with
+      Some _ -> ()
+    | None -> ignore (instr builder) in
+
   let rec sstmt builder = function
-      SExpr(sx) -> ignore (sxpr builder sx); builder
+      SBlock(sl) -> List.fold_left sstmt builder sl
+    | SExpr(sx) -> ignore (sxpr builder sx); builder
+    | SIf (predicate, then_stmt, else_stmt) ->
+         let bool_val = sxpr builder predicate in
+      let then_bb = L.append_block context "then" main_func in
+      ignore (sstmt (L.builder_at_end context then_bb) then_stmt);
+      let else_bb = L.append_block context "else" main_func in
+      ignore (sstmt (L.builder_at_end context else_bb) else_stmt);
+
+      let end_bb = L.append_block context "if_end" main_func in
+      let build_br_end = L.build_br end_bb in (* partial function *)
+      add_terminal (L.builder_at_end context then_bb) build_br_end;
+      add_terminal (L.builder_at_end context else_bb) build_br_end;
+
+      ignore(L.build_cond_br bool_val then_bb else_bb builder);
+      L.builder_at_end context end_bb
     | _ -> raise (Failure "sstmt codegen type not implemented yet.")
   in
 
-  List.iter (fun stmt -> ignore(sstmt the_state.b stmt)) sprogram;
-  ignore(L.build_ret (L.const_int i32_t 0) the_state.b);
+  (*List.iter (fun stmt -> ignore(sstmt the_state.b stmt)) sprogram;
+  ignore(L.build_ret (L.const_int i32_t 0) the_state.b); *)
+  let final_builder = sstmt the_state.b (SBlock(sprogram)) in
+  ignore(L.build_ret (L.const_int i32_t 0) final_builder);
   the_module
