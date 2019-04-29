@@ -73,8 +73,8 @@ let translate sprogram =
 			let t' = ltype_of_typ t in
 			Hashtbl.add namespace s (L.build_alloca t' s builder); L.undef t'
 			(* StringMap.add s (L.define_global s (init t) the_module) namespace; L.undef t' *)
-		| (t, SAssign (s, e)) -> tstp "enter assign";
-			let e' = sxpr builder e in tstp "pass checkpoint";
+		| (t, SAssign (s, e)) ->
+			let e' = sxpr builder e in 
 			ignore(L.build_store e' (lookup s namespace) builder); e'
     | (A.Bool, SBinop (e1, op, e2)) ->
          	  let e1' = sxpr builder e1
