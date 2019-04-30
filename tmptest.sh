@@ -1,9 +1,33 @@
 #!/bin/bash
-make clean
-make
+
+
+usage()
+{
+    echo "usage: sysinfo_page [[-rt] | [-h]]"
+}
 
 success='### SUCCESS: Files Are Identical! ###'
 fail='### WARNING: Files Are Different! ###'
+rmtmp=false
+help=false
+while [ "$1" != "" ]; do
+    case $1 in
+        -rt | --removetmp )     shift
+                                rmtmp=true
+                                ;;
+        -h | --help )           help=true
+																usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+
+make clean
+make
+
 
 find . -name '*.sched' | while IFS= read -r line ; do
     echo "$line"
@@ -14,3 +38,7 @@ find . -name '*.sched' | while IFS= read -r line ; do
 		./schedch.native -l "$line" > "$line".lout.tmp
 		cmp --silent "$line".lout.tmp "$line".lout && echo "    $success" || echo "    $fail"
 done
+
+if [ $rmtmp = true ] ; then
+	find . -type f -name '*.tmp' -exec rm {} +
+fi
