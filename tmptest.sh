@@ -8,12 +8,12 @@ usage()
 
 success='### SUCCESS: Files Are Identical! ###'
 fail='### WARNING: Files Are Different! ###'
-rmtmp=false
+tmp=false
 help=false
 while [ "$1" != "" ]; do
     case $1 in
-        -rt | --removetmp )     shift
-                                rmtmp=true
+        -t | --tmp )     				shift
+                                tmp=true
                                 ;;
         -h | --help )           help=true
 																usage
@@ -39,6 +39,6 @@ find . -name '*.sched' | while IFS= read -r line ; do
 		cmp --silent "$line".lout.tmp "$line".lout && echo "    $success" || echo "    $fail"
 done
 
-if [ $rmtmp = true ] ; then
+if [ $tmp = false ] ; then
 	find . -type f -name '*.tmp' -exec rm {} +
 fi
