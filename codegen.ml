@@ -7,9 +7,13 @@ open Sast
 
 module StringMap = Map.Make(String)
 let tstp str = Printf.eprintf "%s\n" str;()
+type sym_tab = {
+	mutable scope: L.llvalue StringMap.t;
+	parent: sym_tab option;
+}
 
 (*type state = (L.llvalue StringMap.t) * L.llvalue * L.llbuilder*)
-type state = {namespace:(string, L.llvalue)  Hashtbl.t ;
+type state = {mutable namespace:sym_tab;
               func: L.llvalue;
               b: L.llbuilder}
 
@@ -53,15 +57,24 @@ let translate sprogram =
   let main_func = L.define_function "main" main_t the_module in
   let main_builder = L.builder_at_end context (L.entry_block main_func) in
   let str_format_str = L.build_global_stringptr "%s\n" "fmt" main_builder in
-	let ns = Hashtbl.create 10000 in
-  let the_state:state = {namespace=ns;
+	let st = {scope=StringMap.empty;parent=None} in
+  let the_state:state = {namespace=st;
                          func=main_func;
                          b=main_builder} in
 
-	let lookup n ns= Hashtbl.find ns n	in
-	let namespace = the_state.namespace in
+	let rec lookup n (ns: sym_tab) =
+		try
+			StringMap.find n ns.scope
+		with Not_found ->
+			match ns.parent with
+				Some(parent) -> lookup n parent
+			| _ -> raise Not_found
+
+	in
   (* Construct code for an expression; return its value. *)
-  let rec sxpr builder e =
+  let rec sxpr the_state e =
+			let builder = the_state.b in
+			let namespace = the_state.namespace in
 			match e with
       (A.String, SStrLit s) -> L.build_global_stringptr s "" builder
       (* A String literal should result in a defined constant being
@@ -71,14 +84,14 @@ let translate sprogram =
     | (A.Float, SFLit l) -> L.const_float_of_string float_t l
 		| (Void, SBIND (t,s)) ->
 			let t' = ltype_of_typ t in
-			Hashtbl.add namespace s (L.build_alloca t' s builder); L.undef t'
+			the_state.namespace.scope <- StringMap.add s (L.build_alloca t' s builder) namespace.scope; L.undef t'
 			(* StringMap.add s (L.define_global s (init t) the_module) namespace; L.undef t' *)
 		| (t, SAssign (s, e)) ->
-			let e' = sxpr builder e in 
+			let e' = sxpr the_state e in
 			ignore(L.build_store e' (lookup s namespace) builder); e'
     | (A.Bool, SBinop (e1, op, e2)) ->
-         	  let e1' = sxpr builder e1
-         	  and e2' = sxpr builder e2 in
+         	  let e1' = sxpr the_state e1
+         	  and e2' = sxpr the_state e2 in
          	  (match op with
          	  | A.And     -> L.build_and
          	  | A.Or      -> L.build_or
@@ -102,8 +115,8 @@ let translate sprogram =
                         | (A.Float, _) -> L.build_fcmp L.Fcmp.Oge )
        	    ) e1' e2' "tmp" builder
     | (A.Int, SBinop (e1, op, e2)) ->
-     	  let e1' = sxpr builder e1
-     	  and e2' = sxpr builder e2 in
+     	  let e1' = sxpr the_state e1
+     	  and e2' = sxpr the_state e2 in
      	  (match op with
      	    A.Add     -> L.build_add
      	  | A.Sub     -> L.build_sub
@@ -117,8 +130,8 @@ let translate sprogram =
      	  | A.Geq     -> L.build_icmp L.Icmp.Sge *)
         ) e1' e2' "tmp" builder
     | (A.Float, SBinop (e1, op, e2)) ->
-     	  let e1' = sxpr builder e1
-     	  and e2' = sxpr builder e2 in
+     	  let e1' = sxpr the_state e1
+     	  and e2' = sxpr the_state e2 in
      	  (match op with
      	    A.Add     -> L.build_fadd
      	  | A.Sub     -> L.build_fsub
@@ -132,50 +145,57 @@ let translate sprogram =
      	  | A.Geq     -> L.build_fcmp L.Fcmp.Oge *)
         ) e1' e2' "tmp" builder
     | (A.Float, SUnop (op, e)) ->
-          let e' = sxpr builder e in
+          let e' = sxpr the_state e in
 	  (match op with
 	  A.Neg                  -> L.build_fneg) e' "tmp" builder
     | (A.Int, SUnop (op, e)) ->
-          let e' = sxpr builder e in
+          let e' = sxpr the_state e in
 	  (match op with
 	  A.Neg                  -> L.build_neg) e' "tmp" builder
     | (A.Bool, SUnop (op, e)) ->
-          let e' = sxpr builder e in
+          let e' = sxpr the_state e in
 	  (match op with
           A.Not                  -> L.build_not) e' "tmp" builder
       | (A.Void, SCall("print", [sx])) ->
-          let sx' = sxpr builder sx in
+          let sx' = sxpr the_state sx in
           L.build_call printf_func [| str_format_str ; sx' |] "printf" builder
       | _ -> raise (Failure "sxpr codegen type not implemented yet.")
   in
 
-  let add_terminal builder instr =
+  let add_terminal the_state instr =
+		let builder = the_state.b in
     match L.block_terminator (L.insertion_block builder) with
       Some _ -> ()
     | None -> ignore (instr builder) in
 
-  let rec sstmt builder = function
-      SBlock(sl) -> List.fold_left sstmt builder sl
-    | SExpr(sx) -> ignore (sxpr builder sx); builder
+	let change_builder_state old_state b =
+      {namespace=old_state.namespace;func=old_state.func;b=b}
+  in
+
+  let rec sstmt the_state = function
+      SBlock(sl) -> List.fold_left sstmt the_state sl
+    | SExpr(sx) -> ignore (sxpr the_state sx); the_state
     | SIf (predicate, then_stmt, else_stmt) ->
-         let bool_val = sxpr builder predicate in
+         let bool_val = sxpr the_state predicate in
       let then_bb = L.append_block context "then" main_func in
-      ignore (sstmt (L.builder_at_end context then_bb) then_stmt);
+			let new_state1 = change_builder_state the_state (L.builder_at_end context then_bb) in
+      ignore (sstmt new_state1 then_stmt);
       let else_bb = L.append_block context "else" main_func in
-      ignore (sstmt (L.builder_at_end context else_bb) else_stmt);
+			let new_state2 = change_builder_state the_state (L.builder_at_end context else_bb) in
+      ignore (sstmt new_state2 else_stmt);
 
       let end_bb = L.append_block context "if_end" main_func in
       let build_br_end = L.build_br end_bb in (* partial function *)
-      add_terminal (L.builder_at_end context then_bb) build_br_end;
-      add_terminal (L.builder_at_end context else_bb) build_br_end;
+      add_terminal new_state1 build_br_end;
+      add_terminal new_state2 build_br_end;
 
-      ignore(L.build_cond_br bool_val then_bb else_bb builder);
-      L.builder_at_end context end_bb
+      ignore(L.build_cond_br bool_val then_bb else_bb the_state.b);
+      let new_state = change_builder_state the_state (L.builder_at_end context end_bb) in new_state
     | _ -> raise (Failure "sstmt codegen type not implemented yet.")
   in
 
   (*List.iter (fun stmt -> ignore(sstmt the_state.b stmt)) sprogram;
   ignore(L.build_ret (L.const_int i32_t 0) the_state.b); *)
-  let final_builder = sstmt the_state.b (SBlock(sprogram)) in
-  ignore(L.build_ret (L.const_int i32_t 0) final_builder);
+  let final_state = sstmt the_state (SBlock(sprogram)) in
+  ignore(L.build_ret (L.const_int i32_t 0) final_state.b);
   the_module
