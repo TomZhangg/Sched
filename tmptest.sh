@@ -42,3 +42,5 @@ done
 if [ $tmp = false ] ; then
 	find . -type f -name '*.tmp' -exec rm {} +
 fi
+
+make clean
