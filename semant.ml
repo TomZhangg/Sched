@@ -21,6 +21,11 @@ let type_of_identifier s sym_tab=
 let check_assign lvaluet rvaluet err =
 	       if lvaluet = rvaluet then lvaluet else raise (Failure err)
 
+let get_parent st =
+	match st.parent with
+		Some p -> p
+	| _ -> raise (Failure ("no parent to refer to"))
+
 let rec check_expr (xpr : expr)
                    (sym_tab : symtable)
                    : (sexpr * symtable) option =
@@ -162,7 +167,7 @@ let rec check_stmt (stmt : stmt)
 		let new_tab = {tb=StringMap.empty;parent=Some(sym_tab)} in
     let slist = check_stmt_list sl new_tab in
     ( match slist with
-      Some(sl', st) -> Some(SBlock(sl'), st)
+      Some(sl', st) -> Some(SBlock(sl'), get_parent st)
       | None -> None )
   | _ -> raise (Check_not_implemented "Ast.stmt type")
 
