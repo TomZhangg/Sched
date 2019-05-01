@@ -7,6 +7,6 @@ c = 234;
 bool d;
 d = False;
 d = True || False;
-{ bool b;
-b = True;}
+{
+b = 1234;}
 b = 12345;

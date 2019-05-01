@@ -13,18 +13,36 @@ type symtable = {
 }
 
 
-let type_of_identifier s sym_tab=
-	if StringMap.mem s sym_tab.tb
-	then let SExpr(t, s) = StringMap.find s sym_tab.tb in t
-	else  raise (Failure ("undeclared identifier " ^ s))
+
+
 
 let check_assign lvaluet rvaluet err =
 	       if lvaluet = rvaluet then lvaluet else raise (Failure err)
 
+(* symbol table helper functions *)
 let get_parent st =
 	match st.parent with
 		Some p -> p
 	| _ -> raise (Failure ("no parent to refer to"))
+
+let rec check_exist s st =
+	if StringMap.mem s st.tb then true
+	else match st.parent with
+		None -> false
+	| _ -> check_exist s (get_parent st)
+
+let rec lookup s st =
+	try
+		StringMap.find s st.tb
+	with Not_found ->
+		match st.parent with
+			Some(parent) -> lookup s parent
+		| _ -> raise Not_found
+
+let type_of_identifier s sym_tab=
+	if check_exist s sym_tab
+	then let SExpr(t, s) = lookup s sym_tab in t
+	else  raise (Failure ("undeclared identifier " ^ s))
 
 let rec check_expr (xpr : expr)
                    (sym_tab : symtable)
