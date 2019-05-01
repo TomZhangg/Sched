@@ -7,18 +7,23 @@ module StringMap = Map.Make(String)
 
 exception Check_not_implemented of string
 
+type symtable = {
+	mutable tb: sstmt StringMap.t;
+	parent: symtable option;
+}
+
 
 let type_of_identifier s sym_tab=
-	if StringMap.mem s sym_tab
-	then let SExpr(t, s) = StringMap.find s sym_tab in t
+	if StringMap.mem s sym_tab.tb
+	then let SExpr(t, s) = StringMap.find s sym_tab.tb in t
 	else  raise (Failure ("undeclared identifier " ^ s))
 
 let check_assign lvaluet rvaluet err =
 	       if lvaluet = rvaluet then lvaluet else raise (Failure err)
 
 let rec check_expr (xpr : expr)
-                   (sym_tab : Sast.sstmt StringMap.t)
-                   : (sexpr * Sast.sstmt StringMap.t) option =
+                   (sym_tab : symtable)
+                   : (sexpr * symtable) option =
   match xpr with
   Call(f, args) ->
     (* For a function call, we need to check that f is defined,
@@ -29,7 +34,7 @@ let rec check_expr (xpr : expr)
      * that indicated by f's definition. *)
     (* For our print "Hello, World!" example, this means that the
      * argument should have a printable type (Bool or String). *)
-    let fdecl = StringMap.find f sym_tab in
+    let fdecl = StringMap.find f sym_tab.tb in
     (* Check that the args is a valid list of sexprs. *)
     let sarg_opts = List.map (fun arg -> check_expr arg sym_tab) args in
     let nargs = List.length sarg_opts in
@@ -39,20 +44,20 @@ let rec check_expr (xpr : expr)
       (* Go through each of the arguments and check that
        * 1. The semantic checks succeeded.
        * 2. The type matches the formal argument type. *)
-      let sarg_check (pair : bind * ((sexpr * 'a StringMap.t) option))
+      let sarg_check (pair : bind * ((sexpr * symtable) option))
                      (acc : bool * sexpr list)
                      : bool * sexpr list =
         let (formal, sarg_opt) = pair in
         let (flag, args) = acc in
         if not flag then (flag, args) else
-          match sarg_opt with
+          (match sarg_opt with
             Some(sxpr, st) ->
               let (styp, sx) = sxpr in
 							(match formal with
 								Bind(ftyp,fid) ->
 	              let argsp = sxpr::args in
 	              if styp = ftyp then (true, argsp) else (false, argsp))
-          | None -> (false, [])
+          | None -> (false, []))
       in
       let zipped = List.combine sf.sformals sarg_opts in
       let (flag, sargs) = List.fold_right sarg_check zipped (true, []) in
@@ -68,8 +73,8 @@ let rec check_expr (xpr : expr)
 		(match b with
 			Bind(t,s) ->
 			let se = SExpr (t, SNoexpr) in
-			let new_tab = StringMap.add s se sym_tab in
-			Some((Void, SBIND(t,s)), new_tab))
+			sym_tab.tb <- StringMap.add s se sym_tab.tb;
+			Some((Void, SBIND(t,s)), sym_tab))
 	| Assign (var,e) as ex ->
 		let lt = type_of_identifier var sym_tab
 		and r = check_expr e sym_tab in
@@ -123,8 +128,8 @@ let rec check_expr (xpr : expr)
 
 
 let rec check_stmt (stmt : stmt)
-                   (sym_tab : 'a StringMap.t)
-                   : (sstmt * 'a StringMap.t) option =
+                   (sym_tab : symtable)
+                   : (sstmt * symtable) option =
   (* Given an Ast.stmt, we need to dispatch the semantic
    * check to the appropriate statement type. *)
   match stmt with
@@ -133,7 +138,7 @@ let rec check_stmt (stmt : stmt)
     ( match sexpr with
         None -> None
       | Some(sexpr, st) -> Some(SExpr(sexpr), st) )
-  | If(p, b1, b2) -> 
+  | If(p, b1, b2) ->
   let check_bool_expr e sym_tab = (
   let e' = check_expr e sym_tab
   and err = "expected Boolean expression in " ^ string_of_expr e in
@@ -153,17 +158,17 @@ let rec check_stmt (stmt : stmt)
      (match sstmt2 with
         None -> None
       | Some (x2, st2) -> Some(SIf(sexpr, x1, x2), st) )))
-  | Block(sl) -> 
+  | Block(sl) ->
     let slist = check_stmt_list sl sym_tab in
     ( match slist with
-      Some(sl', st) -> Some(SBlock(sl'), st)  
+      Some(sl', st) -> Some(SBlock(sl'), st)
       | None -> None )
   | _ -> raise (Check_not_implemented "Ast.stmt type")
 
 
 and check_stmt_list (sl : stmt list)
-              (sym_tab : 'a StringMap.t)
-              : (sstmt list * 'a StringMap.t) option =
+              (sym_tab : symtable)
+              : (sstmt list * symtable) option =
   match sl with
     stmt :: stmts ->
     let sstmt = check_stmt stmt sym_tab in
@@ -172,17 +177,17 @@ and check_stmt_list (sl : stmt list)
      | Some (x, st) ->
        let sstmts = check_stmt_list stmts st in
        ( match sstmts with
-           None -> None 
+           None -> None
          | Some (xs, stf) -> Some (x::xs, stf) ) )
-  | [] -> Some ([], sym_tab)  
+  | [] -> Some ([], sym_tab)
 
 
 
 
 
 let rec check (prog : program)
-              (sym_tab : 'a StringMap.t)
-              : (sprogram * 'a StringMap.t) option =
+              (sym_tab : symtable)
+              : (sprogram * symtable) option =
   (* We begin with an Ast.program, and should return an
    * option type of Some Sast.sprogram if the semantic
    * checks succeed, and None otherwise. *)
@@ -214,4 +219,5 @@ let print_fdecl = {
   sbody = [];
 }
 let pf = SFunc(print_fdecl)
-let init_st = StringMap.add "print" pf StringMap.empty
+let init_st_tb = StringMap.add "print" pf StringMap.empty
+let init_st = {tb=init_st_tb;parent=None}
