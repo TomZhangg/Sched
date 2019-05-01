@@ -159,7 +159,8 @@ let rec check_stmt (stmt : stmt)
         None -> None
       | Some (x2, st2) -> Some(SIf(sexpr, x1, x2), st) )))
   | Block(sl) ->
-    let slist = check_stmt_list sl sym_tab in
+		let new_tab = {tb=StringMap.empty;parent=Some(sym_tab)} in
+    let slist = check_stmt_list sl new_tab in
     ( match slist with
       Some(sl', st) -> Some(SBlock(sl'), st)
       | None -> None )
