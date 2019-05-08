@@ -34,6 +34,7 @@ and sstmt =
   | SIf of sexpr * sstmt * sstmt
   | SBlock of sstmt list
 	| SFunc of sfunc_decl
+	| SRt of sexpr
 
 let rec string_of_sexpr lvl sxpr =
   let idnt = indent lvl in
@@ -87,6 +88,10 @@ let rec string_of_sstmt lvl sstmt =
 		^ id_pp ^ "\n"
 		^ idnt2 ^ "<parameters>: " ^ String.concat ", " (List.map string_of_bind  sf.sformals) ^ "\n"
 		^ idnt2 ^ "<body>: " ^ sub_tree
+	| SRt e ->
+		let idnt = indent lvl in
+		let idnt2 = indent (lvl+1) in
+		idnt ^ "return: \n" ^ string_of_sexpr (lvl+1) e
   | _ -> raise (Failure "string_of_sstmt case not implemented yet.")
 
 

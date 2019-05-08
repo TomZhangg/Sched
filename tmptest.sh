@@ -41,6 +41,9 @@ done
 
 if [ $tmp = false ] ; then
 	find . -type f -name '*.tmp' -exec rm {} +
+	find . -type f -name '*.ll' -exec rm {} +
+	find . -type f -name '*.s' -exec rm {} +
+	find . -type f -name '*.exe' -exec rm {} +
 fi
 
 make clean

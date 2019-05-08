@@ -210,6 +210,10 @@ let rec check_stmt (stmt : stmt)
 		let sf = SFunc(new_fdecl) in
 		sym_tab.tb <- StringMap.add (string_of_id s) sf sym_tab.tb;
 		Some(sf, sym_tab))
+	| Rt e ->
+		(match check_expr e sym_tab with
+			Some(se,_) ->
+				Some(SRt(se), sym_tab))
   | _ -> raise (Check_not_implemented "Ast.stmt type")
 
 

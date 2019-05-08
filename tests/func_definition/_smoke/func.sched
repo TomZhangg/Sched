@@ -1,6 +1,7 @@
-func asdf(int a,str s,bool d):
-	asdf();
-	func fdsa():
-		asdf();
-
-asdf(a,s,d,f);
+func asdf(int a,str s,bool d){
+	int a;
+	func fdsa(){
+		int b;
+	}
+	return "a";
+}
