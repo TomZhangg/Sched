@@ -57,7 +57,7 @@ let rec string_of_sexpr lvl sxpr =
     (string_of_sexpr (lvl + 1) (i2, e2))
   | SUnop(o, (i,e)) -> "(" ^ (string_of_uop o) ^ ")" ^ " " ^ (string_of_sexpr (lvl + 1) (i, e))
   | SAssign(s, e) -> s ^ " = " ^ "\n" ^ string_of_sexpr (lvl+1) e
-	| SBIND (t,s) -> "(" ^ string_of_typ t ^ ", " ^ s ^ ")"
+	| SBIND (t,s) -> (indent lvl) ^ "(" ^ string_of_typ t ^ ", " ^ s ^ ")"
 	| SBinAssign (b,a) ->
 			(match b with (t,s)->
 				"(" ^ string_of_typ t ^ ", " ^ s ^ ")" ^ string_of_sexpr (lvl+1) a)
@@ -70,13 +70,23 @@ let rec string_of_sstmt lvl sstmt =
     SExpr(sxpr) ->
       let prefix = idnt ^ "SExpr(" in
       let suffix = idnt ^ ")" in
-      String.concat "\n" [prefix;
+      "\n" ^ String.concat "\n" [prefix;
                           (string_of_sexpr (lvl + 1) sxpr);
                           suffix]
   | SBlock(sl) -> "{\n" ^ (String.concat "" (List.map (fun stmt -> string_of_sstmt lvl stmt) sl)) ^ "}\n"
   | SIf(e, s, SBlock([])) -> "SIf (" ^ string_of_sexpr lvl e ^ ")\n" ^ (string_of_sstmt lvl s)
   | SIf(e, s1, s2) ->  "SIf (" ^ string_of_sexpr lvl e ^ ")\n" ^
       (string_of_sstmt lvl s1) ^ "SElse\n" ^ (string_of_sstmt lvl s2)
+	| SFunc sf ->
+		let idnt = indent lvl in
+		let idnt2 = indent (lvl+1) in
+		let id_pp = idnt2 ^ sf.sfname in
+		let sub_tree = (String.concat "\n" (List.map (fun stmt -> string_of_sstmt (lvl + 1) stmt) sf.sbody)) in
+		idnt ^ "<function-definition>\n"
+		^ idnt2 ^ string_of_typ sf.styp ^ "\n"
+		^ id_pp ^ "\n"
+		^ idnt2 ^ "<parameters>: " ^ String.concat ", " (List.map string_of_bind  sf.sformals) ^ "\n"
+		^ idnt2 ^ "<body>: " ^ sub_tree
   | _ -> raise (Failure "string_of_sstmt case not implemented yet.")
 
 

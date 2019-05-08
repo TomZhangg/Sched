@@ -167,6 +167,7 @@ let rec check_stmt (stmt : stmt)
   and err = "expected Boolean expression in " ^ string_of_expr e in
   match e' with
     None -> raise (Failure err)
+
   | Some((t', _), st) ->
     if t' != Bool then raise (Failure err) else e'  ) in
 
@@ -187,6 +188,28 @@ let rec check_stmt (stmt : stmt)
     ( match slist with
       Some(sl', st) -> Some(SBlock(sl'), get_parent st)
       | None -> None )
+	| DEC(s,a,b) ->
+		let new_tab = {tb=StringMap.empty;parent=Some(sym_tab)} in
+		let add_formal st formal =
+			(match formal with
+				Bind(t,s) ->
+				let se = SExpr (t, SNoexpr) in
+				st.tb <- StringMap.add s se st.tb;)
+		in
+		List.iter (add_formal new_tab) a;
+		let slist_unrefined = check_stmt_list b new_tab in
+		(match slist_unrefined with
+			Some(sl,st)->
+				let new_fdecl = {
+					styp = Void;
+					sfname = string_of_id s;
+					sformals = a;
+					slocals = [];
+					sbody = sl;
+				} in
+		let sf = SFunc(new_fdecl) in
+		sym_tab.tb <- StringMap.add (string_of_id s) sf sym_tab.tb;
+		Some(sf, sym_tab))
   | _ -> raise (Check_not_implemented "Ast.stmt type")
 
 

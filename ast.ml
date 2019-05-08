@@ -104,6 +104,9 @@ let rec string_of_expr expr =
 			string_of_bind b ^ string_of_expr a)
 	| Noexpr -> ""
 
+let string_of_id i =
+	match i  with Id(s) -> s
+
 type date = expr
 
 type time = expr
@@ -291,9 +294,10 @@ type stmt =
   | DS of drop_stmt
   | CPS of copy_stmt
   | Expr of expr
-  | DEC of id * args * stmt list
+  | DEC of id * bind list * stmt list
   | Block of stmt list
   | If of expr * stmt * stmt
+	| Rt of expr
 
 let rec pp_stmt lvl stmt =
   match stmt with
@@ -321,16 +325,20 @@ let rec pp_stmt lvl stmt =
   | DEC(i,a,b) ->
     let idnt = indent lvl in
     let idnt2 = indent (lvl+1) in
-    let id_pp = pp_id (lvl + 1) i in
+    let id_pp = idnt2 ^ string_of_expr i in
     let sub_tree = (String.concat "\n" (List.map (fun stmt -> pp_stmt (lvl + 1) stmt) b)) in
     idnt ^ "<function-definition>\n"
     ^ id_pp ^ "\n"
-    ^ idnt2 ^ "<parameters>: " ^String.concat ", " (List.map string_of_expr a) ^ "\n"
+    ^ idnt2 ^ "<parameters>: " ^String.concat ", " (List.map string_of_bind a) ^ "\n"
     ^ idnt2 ^ "<body>: " ^ sub_tree
   | Block(sl) -> "{\n" ^ (String.concat "" (List.map (fun stmt -> pp_stmt lvl stmt) sl)) ^ "}\n"
   | If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")\n" ^ (pp_stmt lvl s)
   | If(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")\n" ^
       (pp_stmt lvl s1) ^ "else\n" ^ (pp_stmt lvl s2)
+	| Rt e ->
+    let idnt = indent lvl in
+    let idnt2 = indent (lvl+1) in
+		idnt ^ "<return>" ^ "\n" ^ idnt2 ^ string_of_expr e
 
 
 type program = stmt list

@@ -9,8 +9,7 @@ let minute = (digits)digits
 let second = (digits)digits
 
 rule token = parse
-  [' ' '\r' '\n'] { token lexbuf } (* Whitespace *)
-| '\t'          { INDENT }
+  [' ' '\r' '\n' '\t'] { token lexbuf } (* Whitespace *)
 | "#("          { comment 1 lexbuf }      (* Comments *)
 | '('           { LPAREN }
 | ')'           { RPAREN }
@@ -61,6 +60,7 @@ rule token = parse
 | "float"       {FLOAT}
 | "True"        { BLIT(true)  }
 | "False"       { BLIT(false) }
+| "return"			{ RETURN }
 | digits+ as lxm { ILIT(int_of_string lxm) }
 | digits+ '.' as lxm { FLIT(lxm^"0") }
 | '.' digits+ as lxm { FLIT("0"^lxm) }
@@ -77,5 +77,3 @@ and comment lvl = parse
   ")#"  { if lvl = 1 then token lexbuf else comment (lvl - 1) lexbuf }
 | "#("  { comment (lvl + 1) lexbuf }
 | _     { comment lvl lexbuf }
-
-

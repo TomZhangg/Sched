@@ -1,7 +1,7 @@
 %{ open Ast %}
 
 
-%token SEMI COL COMMA CREATE INSERT DROP COPY ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT LEQ GEQ LBRACE RBRACE IF ELSE
+%token SEMI COL COMMA CREATE INSERT DROP COPY ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT LEQ GEQ LBRACE RBRACE IF ELSE RETURN
 %token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN
 %token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
@@ -48,10 +48,11 @@ stmt:
 | set_stmt      { SS($1) }
 | drop_stmt     { DS($1) }
 | expr SEMI     { Expr $1 }
-| FUNC id LPAREN params RPAREN COL indent_stmts { DEC($2, $4, $7)}
+| FUNC id LPAREN params RPAREN LBRACE stmts RBRACE { DEC($2, $4, $7)}
 | LBRACE stmts RBRACE                 { Block($2)    }
 | IF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5, Block([])) }
 | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7)        }
+| RETURN expr SEMI { Rt($2)}
 
 indent_stmts:
   INDENT stmt   { [$2] }
@@ -190,8 +191,8 @@ params:
 | param_list  { List.rev $1 }
 
 param_list:
-  typ ID                    { [BIND(Bind($1,$2))] }
-| param_list COMMA typ ID { BIND(Bind($3,$4)) :: $1 }
+  typ ID                    { [Bind($1,$2)] }
+| param_list COMMA typ ID { Bind($3,$4) :: $1 }
 
 id:
   ID    { Id($1) }
