@@ -191,6 +191,18 @@ let translate sprogram =
 
       ignore(L.build_cond_br bool_val then_bb else_bb the_state.b);
       let new_state = change_builder_state the_state (L.builder_at_end context end_bb) in new_state
+		| SFunc(fdecl) ->
+			let ns = the_state.namespace in
+			let scope = ns.scope in
+			let name = fdecl.sfname in
+			let caster b =
+				match b with A.Bind(t,name) -> (t,name)
+			in
+			let casted = (List.map caster fdecl.sformals) in
+			let formal_types = Array.of_list (List.map (fun (t,_) -> ltype_of_typ t) casted) in
+			let ftype = L.function_type (ltype_of_typ fdecl.styp) formal_types in
+			StringMap.add name (L.define_function name ftype the_module) scope;
+			let end_state = List.fold_left sstmt the_state fdecl.sbody in end_state
     | _ -> raise (Failure "sstmt codegen type not implemented yet.")
   in
 
