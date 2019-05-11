@@ -6,11 +6,12 @@ b = IntLit(234);
 c = IntLit(345);
 print(StrLit("asdf"));
 <function-definition>
+  int
   Id(asdf)
   <parameters>: (int, a), (int, s), (bool, d)
   <body>: (int, a);
 print(StrLit("asdf"));
 asdf(IntLit(1), IntLit(2), BoolLit(false));
   <return>
-    StrLit("a")
-asdf(IntLit(1), IntLit(2), BoolLit(true));
+    IntLit(123)
+c = asdf(IntLit(1), IntLit(2), BoolLit(true));
