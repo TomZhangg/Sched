@@ -49,7 +49,7 @@ stmt:
 | drop_stmt     { DS($1) }
 | copy_stmt     { CPS($1) }
 | expr SEMI     { Expr $1 }
-| FUNC id LPAREN params RPAREN LBRACE stmts RBRACE { DEC($2, $4, $7)}
+| typ id LPAREN params RPAREN LBRACE stmts RBRACE { DEC($1, $2, $4, $7)}
 | LBRACE stmts RBRACE                 { Block($2)    }
 | IF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5, Block([])) }
 | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7)        }

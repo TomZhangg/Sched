@@ -1,8 +1,0 @@
-<drop-statement>
-  <drop-item-from-sched-statement>
-    <id>: Id(x)
-    <id>: Id(y)
-<drop-statement>
-  <drop-sched-from-coll-statement>
-    <id>: Id(asdf)
-    <id>: Id(fdsa)

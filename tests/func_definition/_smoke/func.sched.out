@@ -1,9 +1,0 @@
-<function-definition>
-  <id>: Id(asdf)
-  <parameters>: (int, a), (str, s), (bool, d)
-  <body>: asdf();
-  <function-definition>
-    <id>: Id(fdsa)
-    <parameters>: 
-    <body>: asdf();
-asdf(Id(a), Id(s), Id(d), Id(f));

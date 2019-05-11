@@ -1,76 +1,60 @@
-
 SExpr(
   (int, a)
 )
-
 SExpr(
   (int, b)
 )
-
 SExpr(
 a = 
     typ: int, sx: 13
 )
-
 SExpr(
   (int, c)
 )
-
 SExpr(
 b = 
     typ: int, sx: 25
 )
-
 SExpr(
 c = 
     typ: int, sx: 234
 )
-
 SExpr(
   (bool, d)
 )
-
 SExpr(
 d = 
 false
 )
-
 SExpr(
 d = 
 true || false
 )
 {
-
 SExpr(
 b = 
     typ: int, sx: 1234
 ){
-
 SExpr(
   (int, d)
-)
-SExpr(
+)SExpr(
 d = 
     typ: int, sx: 12
 ){
-
 SExpr(
 b = 
     typ: int, sx: 123456
 )}
-
 SExpr(
 b = 
     typ: int, sx: 12345678
 )}
 }
 
-
 SExpr(
 b = 
     typ: int, sx: 12345
 )
-
 SExpr(
 d = 
 false

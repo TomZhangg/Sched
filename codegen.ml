@@ -291,8 +291,9 @@ let translate sprogram =
 									A.Void -> L.build_ret_void state.b
 									(* Build return statement *)
 								| _ -> L.build_ret (sxpr state e) state.b );
-					the_state
+					state
 				| s -> sstmt state s
+				| _ -> raise (Failure "failed to match func_sstmt")
 			in
 
 			let new_scope = StringMap.empty in
@@ -301,6 +302,10 @@ let translate sprogram =
     	let buidler = L.builder_at_end context (L.entry_block the_function) in
 			let new_state = {namespace=new_st; func=the_state.func; b = buidler} in
 			let end_state = List.fold_left func_sstmt new_state fdecl.sbody in
+			add_terminal end_state (match fdecl.styp with
+	        A.Void -> L.build_ret_void
+	      | A.Float -> L.build_ret (L.const_float float_t 0.0)
+	      | t -> L.build_ret (L.const_int (ltype_of_typ t) 0));
  			the_state
     | _ -> raise (Failure "sstmt codegen type not implemented yet.")
   in
