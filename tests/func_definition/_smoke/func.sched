@@ -4,8 +4,10 @@ int c;
 a = 123;
 b = 234;
 c = 345;
+	print("asdf");
 
 func asdf(int a,int s,bool d){
 	int a;
+	print("asdf");
 	return "a";
 }

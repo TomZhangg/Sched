@@ -57,7 +57,7 @@ let rec check_expr (xpr : expr)
      * that indicated by f's definition. *)
     (* For our print "Hello, World!" example, this means that the
      * argument should have a printable type (Bool or String). *)
-    let fdecl = StringMap.find f sym_tab.tb in
+    let fdecl = lookup f sym_tab in
     (* Check that the args is a valid list of sexprs. *)
     let sarg_opts = List.map (fun arg -> check_expr arg sym_tab) args in
     let nargs = List.length sarg_opts in

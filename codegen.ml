@@ -58,6 +58,7 @@ let translate sprogram =
   let main_builder = L.builder_at_end context (L.entry_block main_func) in
   let str_format_str = L.build_global_stringptr "%s\n" "fmt" main_builder in
 	let st = {scope=StringMap.empty;parent=None} in
+	st.scope <- StringMap.add "print" printf_func st.scope;
   let the_state:state = {namespace=st;
                          func=main_func;
                          b=main_builder} in
