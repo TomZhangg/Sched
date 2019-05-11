@@ -11,3 +11,5 @@ func asdf(int a,int s,bool d){
 	print("asdf");
 	return "a";
 }
+
+asdf(1,2,True);

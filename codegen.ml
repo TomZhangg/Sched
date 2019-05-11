@@ -160,6 +160,13 @@ let translate sprogram =
       | (A.Void, SCall("print", [sx])) ->
           let sx' = sxpr the_state sx in
           L.build_call printf_func [| str_format_str ; sx' |] "printf" builder
+			| (t, SCall(name, args)) ->
+				let the_function = lookup name namespace in
+				let llargs = Array.of_list (List.rev (List.map (sxpr the_state) (List.rev args))) in
+				let result = (match t with
+				                        A.Void -> ""
+				                      | _ -> name ^ "_result") in
+				         L.build_call the_function llargs result the_state.b
       | _ -> raise (Failure "sxpr codegen type not implemented yet.")
   in
 
