@@ -1,0 +1,4 @@
+#( Create a schedule that is named with schedule kind day and no inline item options )#
+Create Schedule Day <2021-01-21> trump_nov_7;
+
+#( Create Schedule Day trump_nov_7 Schedule Items Event <2019-06-21T18:53:00> desc: "Summer solstice."; )#

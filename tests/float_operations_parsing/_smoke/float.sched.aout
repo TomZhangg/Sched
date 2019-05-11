@@ -1,0 +1,18 @@
+FLit(10.5);
+FLit(1.5E-4);
+FLit(1.0);
+FLit(0.0);
+FLit(0.01);
+FLit(1.55E+2) + FLit(2.6);
+FLit(5.1234) - FLit(4.E-3) - FLit(3.14) - FLit(1.0);
+FLit(5.1) * FLit(3.2);
+FLit(6.9) / FLit(3.45) / FLit(2.0);
+FLit(6.0) % FLit(3.0);
+(float, w)FLit(1.5);
+(float, x)FLit(90.0);
+(float, y)FLit(10.8) + FLit(3.0011) + FLit(4.567);
+(float, z)Id(w) + Id(x) + Id(y);
+FLit(10.5) < FLit(1.5);
+FLit(1.55E2) >= FLit(20.1234);
+FLit(0.01) <= FLit(1.0);
+-FLit(3.5) > -FLit(100.20);

@@ -1,0 +1,48 @@
+
+SExpr(
+    typ: int, sx: 1 +     typ: int, sx: 5
+)
+
+SExpr(
+        typ: int, sx: 5 -         typ: int, sx: 43 -       typ: int, sx: 314 -     typ: int, sx: 1
+)
+
+SExpr(
+    typ: float, sx: 5.1 *     typ: float, sx: 3.2
+)
+
+SExpr(
+      typ: int, sx: 6 /       typ: int, sx: 3 /     typ: int, sx: 2
+)
+
+SExpr(
+(-)       typ: int, sx: 2 <     typ: int, sx: 10
+)
+
+SExpr(
+    typ: int, sx: 134 <=     typ: int, sx: 134
+)
+
+SExpr(
+    typ: int, sx: 12 > (-)       typ: int, sx: 23
+)
+
+SExpr(
+    typ: int, sx: 1000 >=     typ: int, sx: 123
+)
+
+SExpr(
+    typ: int, sx: 12 !=     typ: int, sx: 1200
+)
+
+SExpr(
+    typ: int, sx: 12 ==     typ: int, sx: 12
+)
+
+SExpr(
+    typ: int, sx: 12 ==     typ: int, sx: 90
+)
+
+SExpr(
+    typ: int, sx: 11 !=     typ: int, sx: 23
+)

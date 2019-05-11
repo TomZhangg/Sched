@@ -1,0 +1,7 @@
+-IntLit(101234);
+-IntLit(15) + -IntLit(158);
+-IntLit(1500) + -IntLit(1);
+-IntLit(1552) + IntLit(26);
+-IntLit(51234) - -IntLit(43) - IntLit(314) - -IntLit(1);
+IntLit(51) * -IntLit(32);
+IntLit(69) / -IntLit(345) / -IntLit(20);

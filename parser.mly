@@ -1,17 +1,17 @@
 %{ open Ast %}
 
 
-%token SEMI COL COMMA CREATE INSERT DROP ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT
+%token SEMI COL COMMA CREATE INSERT DROP COPY ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT LEQ GEQ LBRACE RBRACE IF ELSE RETURN
 %token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN
 %token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
-%token BOOL STRING INT
+%token BOOL STRING INT FLOAT
 %token <string> DATELIT
 %token <string> TIMELIT
 %token <string> ID
 %token <bool> BLIT
-%token <string> SLIT
+%token <string> SLIT FLIT
 %token <int> ILIT
 %token EOF
 
@@ -19,13 +19,16 @@
 %start program
 %type <Ast.program> program
 
+%nonassoc NOELSE
+%nonassoc ELSE
 %right ASSIGN
 %left OR
 %left AND
 %left MOD
+%left EQ NEQ
+%left LT GT LEQ GEQ
 %left PLUS MINUS
 %left TIMES DIVIDE
-%left EQ NEQ
 %right NOT
 
 
@@ -44,8 +47,13 @@ stmt:
 | insert_stmt   { IS($1) }
 | set_stmt      { SS($1) }
 | drop_stmt     { DS($1) }
+| copy_stmt     { CPS($1) }
 | expr SEMI     { Expr $1 }
-| FUNC id LPAREN params RPAREN COL indent_stmts { DEC($2, $4, $7)}
+| FUNC id LPAREN params RPAREN LBRACE stmts RBRACE { DEC($2, $4, $7)}
+| LBRACE stmts RBRACE                 { Block($2)    }
+| IF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5, Block([])) }
+| IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7)        }
+| RETURN expr SEMI { Rt($2)}
 
 indent_stmts:
   INDENT stmt   { [$2] }
@@ -56,14 +64,20 @@ typ:
   | BOOL  { Bool  }
   | STRING { String }
   | INT    { Int }
+  | FLOAT  { Float }
 
 expr:
   BLIT               { BoolLit($1)            }
 | SLIT               { StrLit ($1) }
 | ID                 { Id($1) }
-| ILIT                { IntLit($1)}
+| ILIT               { IntLit($1)}
+| FLIT               { FLit($1)           }
 | expr EQ     expr   { Binop($1, Equal, $3)   }
 | expr NEQ    expr   { Binop($1, Neq,   $3)   }
+| expr LT     expr   { Binop($1, Less,  $3)   }
+| expr LEQ    expr   { Binop($1, Leq,   $3)   }
+| expr GT     expr   { Binop($1, Greater, $3) }
+| expr GEQ    expr   { Binop($1, Geq,   $3)   }
 | expr AND    expr   { Binop($1, And,   $3)   }
 | expr OR     expr   { Binop($1, Or,    $3)   }
 | expr PLUS   expr   { Binop($1, Add,   $3)   }
@@ -72,7 +86,10 @@ expr:
 | expr DIVIDE expr   { Binop($1, Div,   $3)   }
 | expr MOD    expr   { Binop($1, Mod,   $3)   }
 | NOT expr           { Unop(Not, $2)          }
-| typ ID ASSIGN expr { Assign($1, $2, $4)     }
+| MINUS expr %prec NOT { Unop(Neg, $2)      }
+| typ ID						 { BIND(Bind($1,$2))		}
+| ID ASSIGN expr		 { Assign($1,$3)				}
+| typ ID ASSIGN expr { BinAssign(Bind($1,$2),$4)	}
 | ID LPAREN args_opt RPAREN { Call($1, $3)  }
 | LPAREN expr RPAREN { $2                   }
 
@@ -110,6 +127,20 @@ drop_ifs:
 
 set_stmt:
   SET id OF id TO expr SEMI{ AIE($2, $4, $6) }
+
+copy_stmt:
+  copy_coc { $1 }
+| copy_sos { $1 }
+| copy_ioi { $1 }
+
+copy_coc:
+  COPY SCHED COLLECTION id OF SCHED COLLECTION id SEMI{ Ids(COC,$4, $8) }
+
+copy_sos:
+  COPY SCHED id OF SCHED id SEMI{ Ids(SOS,$3, $6) }
+
+copy_ioi:
+  COPY SCHED ITEM id OF SCHED ITEM id SEMI{ Ids(IOI,$4, $8) }
 
 sched_spec:
   named_sched_spec      { $1 }
@@ -173,8 +204,8 @@ params:
 | param_list  { List.rev $1 }
 
 param_list:
-  id                    { [$1] }
-| param_list COMMA id { $3 :: $1 }
+  typ ID                    { [Bind($1,$2)] }
+| param_list COMMA typ ID { Bind($3,$4) :: $1 }
 
 id:
   ID    { Id($1) }

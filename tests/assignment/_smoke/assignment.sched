@@ -1,0 +1,22 @@
+int a;
+int b;
+a = 13;
+int c;
+b = 25;
+c = 234;
+bool d;
+d = False;
+d = True || False;
+{
+b = 1234;
+{
+int d;
+d = 12;
+{
+b = 123456;
+}
+b = 12345678;
+}
+}
+b = 12345;
+d = False;

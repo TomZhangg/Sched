@@ -1,0 +1,15 @@
+FLit(1.5) + FLit(1.58);
+FLit(1.5E-4) + FLit(0.01);
+FLit(1.55E+2) + FLit(2.6);
+FLit(5.1234) - FLit(4.E-3) - FLit(3.14) - FLit(1.0);
+FLit(5.1) * FLit(3.2);
+FLit(6.9) / FLit(3.45) / FLit(2.0);
+FLit(6.0) > -FLit(1.5);
+FLit(1.11) <= FLit(2.22);
+FLit(5.0E3) >= -FLit(5.0);
+FLit(400.234) > FLit(12.34);
+FLit(0.04) < -FLit(1234.01);
+FLit(1.4) != FLit(1.4);
+-FLit(1.5E-2) != FLit(21.21);
+FLit(1.56) == FLit(0.01);
+FLit(1.0) == FLit(1.0);

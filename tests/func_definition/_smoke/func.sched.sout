@@ -1,0 +1,69 @@
+
+SExpr(
+  (int, a)
+)
+
+SExpr(
+  (int, b)
+)
+
+SExpr(
+  (int, c)
+)
+
+SExpr(
+a = 
+    typ: int, sx: 123
+)
+
+SExpr(
+b = 
+    typ: int, sx: 234
+)
+
+SExpr(
+c = 
+    typ: int, sx: 345
+)
+
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: "asdf"
+  )
+)
+<function-definition>
+  void
+  asdf
+  <parameters>: (int, a), (int, s), (bool, d)
+  <body>: 
+  SExpr(
+    (int, a)
+  )
+
+  SExpr(
+    typ: void, sx: SCall(print)
+      SExpr List:
+      typ: str, sx: "asdf"
+    )
+  )
+
+  SExpr(
+    typ: void, sx: SCall(asdf)
+      SExpr List:
+      typ: int, sx: 1
+      typ: int, sx: 2
+false
+    )
+  )
+  return: 
+    typ: str, sx: "a"
+
+SExpr(
+  typ: void, sx: SCall(asdf)
+    SExpr List:
+    typ: int, sx: 1
+    typ: int, sx: 2
+true
+  )
+)

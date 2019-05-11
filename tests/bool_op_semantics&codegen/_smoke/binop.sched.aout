@@ -1,0 +1,2 @@
+BoolLit(true) && BoolLit(true);
+BoolLit(true) || BoolLit(false);

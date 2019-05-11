@@ -1,13 +1,14 @@
 let rec indent lvl =
   if lvl = 0 then "" else "  " ^ indent (lvl - 1)
 
-type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod
+type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod | Less | Leq | Greater | Geq
 
-type uop = Not
+type uop = Not | Neg
 
-type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void | CId
+type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void | Float | CId
 
-type bind = typ * string
+type bind = Bind of typ * string
+
 
 type sched_kind = Day | Week | Month | Year | Id of string
 
@@ -22,7 +23,7 @@ let string_of_item_kind = function
 | Deadline -> "Deadline"
 | Id(name) -> name
 
-type src_dst = STC | ITS | SFC | IFS
+type src_dst = STC | ITS | SFC | IFS | COC | SOS | IOI  
 
 let pp_sched_kind lvl kind =
   let prefix = (indent lvl) ^ "<sched-kind>: " in
@@ -38,6 +39,10 @@ let string_of_op o =
   | Neq -> "!="
   | And -> "&&"
   | Or -> "||"
+  | Less -> "<"
+  | Leq -> "<="
+  | Greater -> ">"
+  | Geq -> ">="
   | Add -> "+"
   | Sub -> "-"
   | Mult -> "*"
@@ -48,6 +53,7 @@ let string_of_op o =
 let string_of_uop o =
   match o with
   Not -> "!"
+  | Neg -> "-"
 
 let string_of_typ t =
   match t with
@@ -59,24 +65,32 @@ let string_of_typ t =
   | Int -> "int"
   | Void -> "void"
   | CId -> "CId"
+  | Float -> "float"
 
-
+let	string_of_bind b =
+		match b with
+			Bind(a,b) -> "(" ^ string_of_typ a ^ ", "^ b ^ ")"
 
 
 type expr =
   Id of string
 | IntLit of int
+| FLit of string
 | TimeLit of string
 | BoolLit of bool
 | StrLit of string
 | Binop of expr * op * expr
 | Unop of uop * expr
-| Assign of typ * string * expr
+| Assign of string * expr
 | Call of string * expr list
+| BIND of bind
+| BinAssign of bind * expr
+| Noexpr
 
 let rec string_of_expr expr =
   match expr with
     Id(str) -> "Id(" ^ str ^ ")"
+  | FLit(str) -> "FLit(" ^ str ^ ")"
   | StrLit(str) -> "StrLit(" ^ str ^ ")"
   | IntLit(x) -> "IntLit(" ^ (string_of_int x) ^ ")"
   | TimeLit(str) -> "TimeLit(" ^ str ^ ")"
@@ -85,9 +99,18 @@ let rec string_of_expr expr =
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(o, e) -> string_of_uop o ^ string_of_expr e
-  | Assign(t, s, e) -> string_of_typ t ^ " " ^ s ^ " = " ^ string_of_expr e
+  | Assign(s, e) -> s ^ " = " ^ string_of_expr e
+	| Unop(o, e) -> string_of_uop o ^ string_of_expr e
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+	| BIND b -> string_of_bind b
+	| BinAssign (b,a) ->
+		(match b with Bind(t,s)->
+			string_of_bind b ^ string_of_expr a)
+	| Noexpr -> ""
+
+let string_of_id i =
+	match i  with Id(s) -> s
 
 type date = expr
 
@@ -227,7 +250,7 @@ let pp_insert_stmt lvl insert_stmt =
       let expr2 = pp_id (lvl + 1) dst in
         idnt ^ "<insert-item-to-sched-statement>\n" ^ expr1 ^ "\n" ^ expr2
 
-type drop_stmt = 
+type drop_stmt =
 Ids of src_dst * id * id
 let pp_drop_stmt lvl drop_stmt =
   match drop_stmt with
@@ -254,6 +277,28 @@ let pp_set_stmt lvl set_stmt =
       idnt ^ "<attribute id>"
       ^ expr1 ^ "\n" ^ idnt ^ "<destination id>" ^ expr2 ^ "\n" ^ idnt ^ "<expression>: " ^ expr3
 
+type copy_stmt =
+Ids of src_dst * id * id
+let pp_copy_stmt lvl copy_stmt =
+  match copy_stmt with
+    Ids (COC,src,dst) ->
+      let idnt = indent lvl in
+      let expr1 = pp_id (lvl + 1) src in
+      let expr2 = pp_id (lvl + 1) dst in
+        idnt ^ "<copy-coll-of-coll-statement>\n" ^ expr1 ^ "\n" ^ expr2
+  | Ids (SOS,src,dst) ->
+      let idnt = indent lvl in
+      let expr1 = pp_id (lvl + 1) src in
+      let expr2 = pp_id (lvl + 1) dst in
+        idnt ^ "<copy-sched-of-sched-statement>\n" ^ expr1 ^ "\n" ^ expr2
+  | Ids (IOI,src,dst) ->
+      let idnt = indent lvl in
+      let expr1 = pp_id (lvl + 1) src in
+      let expr2 = pp_id (lvl + 1) dst in
+        idnt ^ "<copy-item-of-item-statement>\n" ^ expr1 ^ "\n" ^ expr2
+
+
+
 type args = expr list
 
 type stmt =
@@ -261,8 +306,12 @@ type stmt =
   | IS of insert_stmt
   | SS of set_stmt
   | DS of drop_stmt
+  | CPS of copy_stmt
   | Expr of expr
-  | DEC of id * args * stmt list
+  | DEC of id * bind list * stmt list
+  | Block of stmt list
+  | If of expr * stmt * stmt
+	| Rt of expr
 
 let rec pp_stmt lvl stmt =
   match stmt with
@@ -282,16 +331,29 @@ let rec pp_stmt lvl stmt =
     let idnt = indent lvl in
     let sub_tree = pp_drop_stmt (lvl + 1) drop_stmt in
     idnt ^ "<drop-statement>\n" ^ sub_tree
+  | CPS copy_stmt ->
+    let idnt = indent lvl in
+    let sub_tree = pp_copy_stmt (lvl + 1) copy_stmt in
+    idnt ^ "<copy-statement>\n" ^ sub_tree
   | Expr(expr) -> string_of_expr expr ^ ";"
   | DEC(i,a,b) ->
     let idnt = indent lvl in
     let idnt2 = indent (lvl+1) in
-    let id_pp = pp_id (lvl + 1) i in
+    let id_pp = idnt2 ^ string_of_expr i in
     let sub_tree = (String.concat "\n" (List.map (fun stmt -> pp_stmt (lvl + 1) stmt) b)) in
     idnt ^ "<function-definition>\n"
     ^ id_pp ^ "\n"
-    ^ idnt2 ^ "<parameters>: " ^String.concat ", " (List.map string_of_expr a) ^ "\n"
+    ^ idnt2 ^ "<parameters>: " ^String.concat ", " (List.map string_of_bind a) ^ "\n"
     ^ idnt2 ^ "<body>: " ^ sub_tree
+  | Block(sl) -> "{\n" ^ (String.concat "" (List.map (fun stmt -> pp_stmt lvl stmt) sl)) ^ "}\n"
+  | If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")\n" ^ (pp_stmt lvl s)
+  | If(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")\n" ^
+      (pp_stmt lvl s1) ^ "else\n" ^ (pp_stmt lvl s2)
+	| Rt e ->
+    let idnt = indent lvl in
+    let idnt2 = indent (lvl+1) in
+		idnt ^ "<return>" ^ "\n" ^ idnt2 ^ string_of_expr e
+
 
 type program = stmt list
 let pp_program prog =

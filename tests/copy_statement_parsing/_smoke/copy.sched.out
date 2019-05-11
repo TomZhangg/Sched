@@ -1,0 +1,12 @@
+<copy-statement>
+  <copy-sched-of-sched-statement>
+    <id>: Id(x)
+    <id>: Id(y)
+<copy-statement>
+  <copy-item-of-item-statement>
+    <id>: Id(x)
+    <id>: Id(y)
+<copy-statement>
+  <copy-coll-of-coll-statement>
+    <id>: Id(x)
+    <id>: Id(y)

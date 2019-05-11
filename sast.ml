@@ -13,7 +13,49 @@ and sx =
 | SCall of string * sexpr list
 | SStrLit of string
 | SBoolLit of bool
+| SFLit of string
+| SIntLit of int
 | SBinop of sexpr * op * sexpr
+| SUnop of uop * sexpr
+| SAssign of string * sexpr
+| SBIND of typ * string
+| SBinAssign of (typ * string) * sexpr
+| SNoexpr
+and sfunc_decl = {
+	    styp : typ;
+	    sfname : string;
+	    sformals : bind list;
+	    slocals : bind list;
+	    sbody : sstmt list;
+}
+and definable_type = Schedule | SchedItem
+and skind_decl = {
+  sdtype : definable_type;
+  skname : string;
+  sprops : (typ * string) list;
+}
+and sstmt =
+    SExpr of sexpr
+  | SCS of screate_stmt
+  | SIf of sexpr * sstmt * sstmt
+  | SBlock of sstmt list
+  | SFunc of sfunc_decl
+  | SRt of sexpr
+  | SKind of skind_decl
+and screate_stmt =
+  SSchedule of ssched_spec
+| SItem of sitem_spec
+and ssched_spec = 
+  (* TODO: Add sil_items_opt *)
+  SNamed of Ast.sched_kind * sexpr_opt * sexpr * sil_items
+and sitem_spec =
+  SAnon of Ast.item_kind * sexpr_opt * sattrs
+and sexpr_opt =
+  Some of sexpr
+| None
+and sil_items = sitem_spec list
+and sattr = sexpr * sexpr
+and sattrs = sattr list
 
 let rec string_of_sexpr lvl sxpr =
   let idnt = indent lvl in
@@ -30,21 +72,26 @@ let rec string_of_sexpr lvl sxpr =
   | SStrLit(lit) -> idnt ^ "typ: " ^ tp_string ^ ", sx: " ^ lit
 	| SBoolLit(true) -> "true"
 	| SBoolLit(false) -> "false"
+  | SIntLit(lit) -> idnt ^ "typ: " ^ tp_string ^ ", sx: " ^ string_of_int lit
+  | SFLit(lit) -> idnt ^ "typ: " ^ tp_string ^ ", sx: " ^ lit
   | SBinop((i1,e1), o, (i2,e2)) ->
     (string_of_sexpr (lvl + 1) (i1, e1)) ^ " " ^ (string_of_op o) ^ " " ^
     (string_of_sexpr (lvl + 1) (i2, e2))
+  | SUnop(o, (i,e)) -> "(" ^ (string_of_uop o) ^ ")" ^ " " ^ (string_of_sexpr (lvl + 1) (i, e))
+  | SAssign(s, e) -> s ^ " = " ^ "\n" ^ string_of_sexpr (lvl+1) e
+	| SBIND (t,s) -> (indent lvl) ^ "(" ^ string_of_typ t ^ ", " ^ s ^ ")"
+	| SBinAssign (b,a) ->
+			(match b with (t,s)->
+				"(" ^ string_of_typ t ^ ", " ^ s ^ ")" ^ string_of_sexpr (lvl+1) a)
+	| SNoexpr -> ""
   | _ -> raise (Failure "string_of_sexpr case not implemented yet.")
 
-type sexpr_opt =
-  Some of sexpr
-| None
 let string_of_sexpr_opt lvl opt =
   let idnt = indent lvl in
   match opt with
     Some(sx) -> string_of_sexpr lvl sx
   | None -> idnt ^ "None"
 
-type sattr = sexpr * sexpr
 let string_of_sattr lvl sttr =
   let idnt = indent lvl in
   let prefix = idnt ^ "sattr(" in
@@ -54,7 +101,6 @@ let string_of_sattr lvl sttr =
   let e2_str = string_of_sexpr (lvl + 1) e2 in
   String.concat "\n" [prefix; e1_str; e2_str; suffix]
 
-type sattrs = sattr list
 let string_of_sattrs lvl sttrs =
   let idnt = indent lvl in
   let prefix = idnt ^ "sattrs(" in
@@ -62,8 +108,6 @@ let string_of_sattrs lvl sttrs =
   let sattr_strings = List.map (fun sttr -> string_of_sattr (lvl + 1) sttr) sttrs in
   String.concat "\n" (List.concat [[prefix]; sattr_strings; [suffix]])
 
-type sitem_spec =
-  SAnon of Ast.item_kind * sexpr_opt * sattrs
 let string_of_sitem_spec lvl spec =
   let idnt = indent lvl in
   match spec with
@@ -77,7 +121,6 @@ let string_of_sitem_spec lvl spec =
                         suffix]
   | _ -> raise (Failure "string_of_sitem_spec case not implemented yet.")
 
-type sil_items = sitem_spec list
 let string_of_sil_items lvl items =
   let idnt = indent lvl in
   let prefix = idnt ^ "sil_items(" in
@@ -85,9 +128,6 @@ let string_of_sil_items lvl items =
   let item_strings = List.map (fun spec -> string_of_sitem_spec (lvl + 1) spec) items in
   String.concat "\n" (List.concat [[prefix]; item_strings; [suffix]])
 
-type ssched_spec = 
-  (* TODO: Add sil_items_opt *)
-  SNamed of Ast.sched_kind * sexpr_opt * sexpr * sil_items
 let string_of_ssched_spec lvl spec =
   let idnt = indent lvl in
   match spec with
@@ -103,9 +143,6 @@ let string_of_ssched_spec lvl spec =
                           suffix]
   | _ -> raise (Failure "string_of_ssched_spec case not implemented yet.")
 
-type screate_stmt =
-  SSchedule of ssched_spec
-| SItem of sitem_spec
 let string_of_screate_stmt lvl sc_stmt =
   let idnt = indent lvl in
   match sc_stmt with
@@ -117,16 +154,13 @@ let string_of_screate_stmt lvl sc_stmt =
                           suffix]
   | _ -> raise (Failure "string_of_screate_stmt case not implemented yet.")
 
-type sstmt =
-  SExpr of sexpr
-| SCS of screate_stmt
-let string_of_sstmt lvl sstmt =
+let rec string_of_sstmt lvl sstmt =
   let idnt = indent lvl in
   match sstmt with
     SExpr(sxpr) ->
       let prefix = idnt ^ "SExpr(" in
       let suffix = idnt ^ ")" in
-      String.concat "\n" [prefix;
+      "\n" ^ String.concat "\n" [prefix;
                           (string_of_sexpr (lvl + 1) sxpr);
                           suffix]
   | SCS(cstmt) ->
@@ -135,27 +169,26 @@ let string_of_sstmt lvl sstmt =
       String.concat "\n" [prefix;
                           (string_of_screate_stmt (lvl + 1) cstmt);
                           suffix]
+  | SBlock(sl) -> "{\n" ^ (String.concat "" (List.map (fun stmt -> string_of_sstmt lvl stmt) sl)) ^ "}\n"
+  | SIf(e, s, SBlock([])) -> "SIf (" ^ string_of_sexpr lvl e ^ ")\n" ^ (string_of_sstmt lvl s)
+  | SIf(e, s1, s2) ->  "SIf (" ^ string_of_sexpr lvl e ^ ")\n" ^
+      (string_of_sstmt lvl s1) ^ "SElse\n" ^ (string_of_sstmt lvl s2)
+	| SFunc sf ->
+		let idnt = indent lvl in
+		let idnt2 = indent (lvl+1) in
+		let id_pp = idnt2 ^ sf.sfname in
+		let sub_tree = (String.concat "\n" (List.map (fun stmt -> string_of_sstmt (lvl + 1) stmt) sf.sbody)) in
+		idnt ^ "<function-definition>\n"
+		^ idnt2 ^ string_of_typ sf.styp ^ "\n"
+		^ id_pp ^ "\n"
+		^ idnt2 ^ "<parameters>: " ^ String.concat ", " (List.map string_of_bind  sf.sformals) ^ "\n"
+		^ idnt2 ^ "<body>: " ^ sub_tree
+	| SRt e ->
+		let idnt = indent lvl in
+		let idnt2 = indent (lvl+1) in
+		idnt ^ "return: \n" ^ string_of_sexpr (lvl+1) e
   | _ -> raise (Failure "string_of_sstmt case not implemented yet.")
 
-type sfunc_decl = {
-  styp : typ;
-  sfname : string;
-  sformals : bind list;
-  slocals : bind list;
-  sbody : sstmt list;
-}
-
-type definable_type = Schedule | SchedItem
-
-type skind_decl = {
-  sdtype : definable_type;
-  skname : string;
-  sprops : bind list;
-}
-
-type sdecl =
-  SFunc of sfunc_decl
-| SKind of skind_decl
 
 type sprogram = sstmt list
 

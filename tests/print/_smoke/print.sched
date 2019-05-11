@@ -1,4 +1,7 @@
-str x = "hi";
+str x;
+x = "hi";
+
+str y;
 
 print(x);
 

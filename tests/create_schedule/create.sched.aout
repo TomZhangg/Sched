@@ -1,0 +1,7 @@
+<create-statement>
+  <create-sched-statement>
+    <named-sched-spec>
+      <sched-kind>: Day
+      <start-date-opt>: TimeLit(<2021-01-21>)
+      <id>: Id(trump_nov_7)
+      <inline-items>: None

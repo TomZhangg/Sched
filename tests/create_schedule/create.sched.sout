@@ -1,0 +1,11 @@
+SCS(
+  SSchedule(
+    SNamed(
+      <sched-kind>: Day
+      typ: str, sx: <2021-01-21>
+      typ: CId, sx: SId(trump_nov_7)
+      sil_items(
+      )
+    )
+  )
+)

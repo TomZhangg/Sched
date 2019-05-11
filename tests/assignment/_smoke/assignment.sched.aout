@@ -1,0 +1,18 @@
+(int, a);
+(int, b);
+a = IntLit(13);
+(int, c);
+b = IntLit(25);
+c = IntLit(234);
+(bool, d);
+d = BoolLit(false);
+d = BoolLit(true) || BoolLit(false);
+{
+b = IntLit(1234);{
+(int, d);d = IntLit(12);{
+b = IntLit(123456);}
+b = IntLit(12345678);}
+}
+
+b = IntLit(12345);
+d = BoolLit(false);
