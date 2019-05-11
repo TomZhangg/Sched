@@ -1,7 +1,11 @@
-func asdf(int a,str s,bool d){
+int a;
+int b;
+int c;
+a = 123;
+b = 234;
+c = 345;
+
+func asdf(int a,int s,bool d){
 	int a;
-	func fdsa(){
-		int b;
-	}
 	return "a";
 }
