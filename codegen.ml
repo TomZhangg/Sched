@@ -185,7 +185,8 @@ let translate sprogram =
 			let new_scope = StringMap.empty in
 			let new_st = {scope=new_scope; parent=Some(the_state.namespace)} in
 			let new_state = {namespace=new_st; func=the_state.func; b = the_state.b} in
-			List.fold_left sstmt new_state sl; the_state
+			let new_state = List.fold_left sstmt new_state sl in
+			let end_state = change_builder_state the_state new_state.b in end_state
     | SExpr(sx) -> ignore (sxpr the_state sx); the_state
     | SIf (predicate, then_stmt, else_stmt) ->
          let bool_val = sxpr the_state predicate in
