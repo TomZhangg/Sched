@@ -71,7 +71,7 @@ let rec string_of_sstmt lvl sstmt =
     SExpr(sxpr) ->
       let prefix = idnt ^ "SExpr(" in
       let suffix = idnt ^ ")" in
-      "\n" ^ String.concat "\n" [prefix;
+      String.concat "\n" [prefix;
                           (string_of_sexpr (lvl + 1) sxpr);
                           suffix]
   | SBlock(sl) -> "{\n" ^ (String.concat "" (List.map (fun stmt -> string_of_sstmt lvl stmt) sl)) ^ "}\n"

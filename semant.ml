@@ -188,7 +188,7 @@ let rec check_stmt (stmt : stmt)
     ( match slist with
       Some(sl', st) -> Some(SBlock(sl'), get_parent st)
       | None -> None )
-	| DEC(s,a,b) ->
+	| DEC(t,s,a,b) ->
 		let new_tab = {tb=StringMap.empty;parent=Some(sym_tab)} in
 		let add_formal st formal =
 			(match formal with
@@ -197,7 +197,7 @@ let rec check_stmt (stmt : stmt)
 				st.tb <- StringMap.add s se st.tb;)
 		in
 		let tmp_fdecl = {
-			styp = Void;
+			styp = t;
 			sfname = string_of_id s;
 			sformals = a;
 			slocals = [];
@@ -210,7 +210,7 @@ let rec check_stmt (stmt : stmt)
 		(match slist_unrefined with
 			Some(sl,st)->
 				let new_fdecl = {
-					styp = Void;
+					styp = t;
 					sfname = string_of_id s;
 					sformals = a;
 					slocals = [];

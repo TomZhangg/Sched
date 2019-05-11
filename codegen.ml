@@ -225,6 +225,7 @@ let translate sprogram =
 								| _ -> L.build_ret (sxpr state e) state.b );
 					the_state
 				| s -> sstmt state s
+				| _ -> raise (Failure "failed to match func_sstmt")
 			in
 
 			let new_scope = StringMap.empty in

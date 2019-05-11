@@ -19,7 +19,7 @@ let pp_item_kind lvl kind =
       Event -> prefix ^ "Event"
     | Deadline -> prefix ^ "Deadline"
 
-type src_dst = STC | ITS | SFC | IFS | COC | SOS | IOI  
+type src_dst = STC | ITS | SFC | IFS | COC | SOS | IOI
 
 let pp_sched_kind lvl kind =
   let prefix = (indent lvl) ^ "<sched-kind>: " in
@@ -304,7 +304,7 @@ type stmt =
   | DS of drop_stmt
   | CPS of copy_stmt
   | Expr of expr
-  | DEC of id * bind list * stmt list
+  | DEC of typ * id * bind list * stmt list
   | Block of stmt list
   | If of expr * stmt * stmt
 	| Rt of expr
@@ -332,12 +332,13 @@ let rec pp_stmt lvl stmt =
     let sub_tree = pp_copy_stmt (lvl + 1) copy_stmt in
     idnt ^ "<copy-statement>\n" ^ sub_tree
   | Expr(expr) -> string_of_expr expr ^ ";"
-  | DEC(i,a,b) ->
+  | DEC(t,i,a,b) ->
     let idnt = indent lvl in
     let idnt2 = indent (lvl+1) in
     let id_pp = idnt2 ^ string_of_expr i in
     let sub_tree = (String.concat "\n" (List.map (fun stmt -> pp_stmt (lvl + 1) stmt) b)) in
     idnt ^ "<function-definition>\n"
+		^ idnt2 ^ (string_of_typ t) ^  "\n"
     ^ id_pp ^ "\n"
     ^ idnt2 ^ "<parameters>: " ^String.concat ", " (List.map string_of_bind a) ^ "\n"
     ^ idnt2 ^ "<body>: " ^ sub_tree

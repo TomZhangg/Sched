@@ -6,11 +6,11 @@ b = 234;
 c = 345;
 	print("asdf");
 
-func asdf(int a,int s,bool d){
+int asdf(int a,int s,bool d){
 	int a;
 	print("asdf");
 	asdf(1,2,False);
-	return "a";
+	return 123;
 }
 
-asdf(1,2,True);
+c = asdf(1,2,True);
