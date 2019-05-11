@@ -31,7 +31,7 @@ done
 make clean
 make
 
-if [ $r = true ] ; then
+if [ $replace = true ] ; then
 	find . -name '*.sched' | while IFS= read -r line ; do
 		echo "$line"
 		./schedch.native -a "$line" > "$line".aout
