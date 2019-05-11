@@ -143,7 +143,7 @@ let rec check_expr (xpr : expr)
                                  " in " ^ string_of_expr ex))
     in Some((ty, SUnop(op, (t, e'))), sym_tab)   )
 	| Noexpr -> Some((Void, SNoexpr), sym_tab)
-  | _ -> raise (Check_not_implemented "Ast.expr type")
+  | _ -> raise (Check_not_implemented ("Ast.expr type" ^ (string_of_expr xpr)))
 
 
 
@@ -196,6 +196,15 @@ let rec check_stmt (stmt : stmt)
 				let se = SExpr (t, SNoexpr) in
 				st.tb <- StringMap.add s se st.tb;)
 		in
+		let tmp_fdecl = {
+			styp = Void;
+			sfname = string_of_id s;
+			sformals = a;
+			slocals = [];
+			sbody = [];
+		} in
+		let tf = SFunc(tmp_fdecl) in
+		sym_tab.tb <- StringMap.add (string_of_id s) tf sym_tab.tb;
 		List.iter (add_formal new_tab) a;
 		let slist_unrefined = check_stmt_list b new_tab in
 		(match slist_unrefined with

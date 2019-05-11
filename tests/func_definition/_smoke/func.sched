@@ -9,6 +9,7 @@ c = 345;
 func asdf(int a,int s,bool d){
 	int a;
 	print("asdf");
+	asdf(1,2,False);
 	return "a";
 }
 
