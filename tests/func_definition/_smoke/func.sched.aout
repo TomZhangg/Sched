@@ -5,6 +5,7 @@ a = IntLit(123);
 b = IntLit(234);
 c = IntLit(345);
 print(StrLit("asdf"));
+(int, d);
 <function-definition>
   int
   Id(asdf)
@@ -14,4 +15,14 @@ print(StrLit("asdf"));
 asdf(IntLit(1), IntLit(2), BoolLit(false));
   <return>
     IntLit(123)
+<function-definition>
+  int
+  Id(fdsa)
+  <parameters>: (int, a), (int, s), (bool, d)
+  <body>: (int, a);
+print(StrLit("asdf"));
+asdf(IntLit(1), IntLit(2), BoolLit(false));
+  <return>
+    IntLit(321)
 c = asdf(IntLit(1), IntLit(2), BoolLit(true));
+d = fdsa(IntLit(234), IntLit(321), BoolLit(false));

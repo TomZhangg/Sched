@@ -25,6 +25,9 @@ SExpr(
     typ: str, sx: "asdf"
   )
 )
+SExpr(
+  (int, d)
+)
 <function-definition>
   int
   asdf
@@ -48,6 +51,29 @@ false
   )
   return: 
     typ: int, sx: 123
+<function-definition>
+  int
+  fdsa
+  <parameters>: (int, a), (int, s), (bool, d)
+  <body>:   SExpr(
+    (int, a)
+  )
+  SExpr(
+    typ: void, sx: SCall(print)
+      SExpr List:
+      typ: str, sx: "asdf"
+    )
+  )
+  SExpr(
+    typ: int, sx: SCall(asdf)
+      SExpr List:
+      typ: int, sx: 1
+      typ: int, sx: 2
+false
+    )
+  )
+  return: 
+    typ: int, sx: 321
 SExpr(
 c = 
     typ: int, sx: SCall(asdf)
@@ -55,5 +81,14 @@ c =
       typ: int, sx: 1
       typ: int, sx: 2
 true
+    )
+)
+SExpr(
+d = 
+    typ: int, sx: SCall(fdsa)
+      SExpr List:
+      typ: int, sx: 234
+      typ: int, sx: 321
+false
     )
 )
