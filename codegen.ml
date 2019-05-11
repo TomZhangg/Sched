@@ -173,7 +173,11 @@ let translate sprogram =
   in
 
   let rec sstmt the_state = function
-      SBlock(sl) -> List.fold_left sstmt the_state sl
+      SBlock(sl) ->
+			let new_scope = StringMap.empty in
+			let new_st = {scope=new_scope; parent=Some(the_state.namespace)} in
+			let new_state = {namespace=new_st; func=the_state.func; b = the_state.b} in
+			List.fold_left sstmt new_state sl; the_state
     | SExpr(sx) -> ignore (sxpr the_state sx); the_state
     | SIf (predicate, then_stmt, else_stmt) ->
          let bool_val = sxpr the_state predicate in
@@ -192,17 +196,32 @@ let translate sprogram =
       ignore(L.build_cond_br bool_val then_bb else_bb the_state.b);
       let new_state = change_builder_state the_state (L.builder_at_end context end_bb) in new_state
 		| SFunc(fdecl) ->
+			tstp (A.string_of_typ fdecl.styp);
 			let ns = the_state.namespace in
 			let scope = ns.scope in
 			let name = fdecl.sfname in
 			let caster b =
 				match b with A.Bind(t,name) -> (t,name)
 			in
+			tstp (A.string_of_typ fdecl.styp);
+
 			let casted = (List.map caster fdecl.sformals) in
 			let formal_types = Array.of_list (List.map (fun (t,_) -> ltype_of_typ t) casted) in
 			let ftype = L.function_type (ltype_of_typ fdecl.styp) formal_types in
 			StringMap.add name (L.define_function name ftype the_module) scope;
-			let end_state = List.fold_left sstmt the_state fdecl.sbody in end_state
+			let func_sstmt state = function
+				| SRt e ->
+					ignore(match fdecl.styp with
+									(* Special "return nothing" instr *)
+									A.Void -> L.build_ret_void state.b
+									(* Build return statement *)
+								| _ -> L.build_ret (sxpr state e) state.b );
+					the_state
+				| s -> sstmt state s
+			in
+
+			let end_state = List.fold_left func_sstmt the_state fdecl.sbody in
+ 			end_state
     | _ -> raise (Failure "sstmt codegen type not implemented yet.")
   in
 
