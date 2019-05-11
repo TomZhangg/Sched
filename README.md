@@ -52,11 +52,10 @@ Our feature development workflow should proceed in four phases:
 
 ## Testing
 
-- Test the feature: Ensure that it successfully passes your smoke test and
-  integration test.
-- Test feature integration: Run all the tests in `testall.sh` on the updated
-  version of the compiler that supports your feature.
-- Update the `master` branch and then merge the
+- make a test file with .sched extension inside tests/ directory for test generation. run `./tmptest.sh` to make sure all previous tests pass.
+- run `./tmptest.sh -t` to keep the temporary output of the `.sched` file test output (AST, SAST, and codegen)
+- if the outputs are good, run `./tmptest.sh -r` to generate and replace the output files for comparison with the temporary files (.aout,.sout,.lout)
+- if the new feature passes all tests, done!
 
 ## Merging
 
