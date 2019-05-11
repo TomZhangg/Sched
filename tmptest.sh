@@ -10,6 +10,7 @@ success='### SUCCESS: Files Are Identical! ###'
 fail='### WARNING: Files Are Different! ###'
 tmp=false
 help=false
+replace=false
 while [ "$1" != "" ]; do
     case $1 in
         -t | --tmp )     				shift
@@ -19,6 +20,8 @@ while [ "$1" != "" ]; do
 																usage
                                 exit
                                 ;;
+				-r | --replace )				replace=true
+																;;
         * )                     usage
                                 exit 1
     esac
@@ -27,6 +30,15 @@ done
 
 make clean
 make
+
+if [ $r = true ] ; then
+	find . -name '*.sched' | while IFS= read -r line ; do
+		echo "$line"
+		./schedch.native -a "$line" > "$line".aout
+		./schedch.native -s "$line" > "$line".sout
+		./schedch.native -l "$line" > "$line".lout
+	done
+fi
 
 
 find . -name '*.sched' | while IFS= read -r line ; do
