@@ -5,6 +5,7 @@ make
 ./schedch.native -a tests/create.sched > tests/create.sched.out.tmp
 ./schedch.native -a tests/insert_statement_parsing/_smoke/insert.sched > tests/insert_statement_parsing/_smoke/insert.sched.out.tmp
 ./schedch.native -a tests/set_statement_parsing/_smoke/set.sched > tests/set_statement_parsing/_smoke/set.sched.out.tmp
+./schedch.native -a tests/copy_statement_parsing/_smoke/copy.sched > tests/copy_statement_parsing/_smoke/copy.sched.out.tmp
 ./schedch.native -a tests/boolean_operations_parsing/_smoke/boolean.sched > tests/boolean_operations_parsing/_smoke/boolean.sched.out.tmp
 ./schedch.native -a tests/print/_smoke/print.sched > tests/print/_smoke/print.sched.out.tmp
 ./schedch.native -a tests/func_definition/_smoke/func.sched > tests/func_definition/_smoke/func.sched.out.tmp
@@ -33,6 +34,8 @@ make
 cmp --silent tests/create.sched.output tests/create.sched.out.tmp && echo '### SUCCESS: Files Are Identical! ###' &&
 cmp --silent tests/insert_statement_parsing/_smoke/insert.sched.out.tmp tests/insert_statement_parsing/_smoke/insert.sched.out && echo '### SUCCESS: Files Are Identical! ###' &&
 cmp --silent tests/set_statement_parsing/_smoke/set.sched.out.tmp tests/set_statement_parsing/_smoke/set.sched.out && echo '### SUCCESS: Files Are Identical! ###' &&
+cmp --silent tests/drop_statement_parsing/_smoke/drop.sched.out.tmp tests/drop_statement_parsing/_smoke/drop.sched.out && echo '### SUCCESS: Files Are Identical! ###' &&
+cmp --silent tests/copy_statement_parsing/_smoke/copy.sched.out.tmp tests/copy_statement_parsing/_smoke/copy.sched.out && echo '### SUCCESS: Files Are Identical! ###' &&
 cmp --silent tests/func_definition/_smoke/func.sched.out.tmp tests/func_definition/_smoke/func.sched.out && echo '### SUCCESS: Files Are Identical! ###' &&
 cmp --silent tests/boolean_operations_parsing/_smoke/boolean.sched.out.tmp tests/boolean_operations_parsing/_smoke/boolean.sched.output && echo '### SUCCESS: Files Are Identical! ###' &&
 cmp --silent tests/print/_smoke/print.sched.out.tmp tests/print/_smoke/print.sched.output && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
@@ -53,5 +56,6 @@ cmp --silent tests/float_op_semantics_codegen/_smoke/unop.sched.l_out.tmp tests/
 cmp --silent tests/if_else_parsing/_smoke/ifelse.sched.out.tmp tests/if_else_parsing/_smoke/ifelse.sched.output && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 cmp --silent tests/if_else_parsing/_smoke/ifelse.sched.s_out.tmp tests/if_else_parsing/_smoke/ifelse.sched.s_out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
 cmp --silent tests/if_else_parsing/_smoke/ifelse.sched.l_out.tmp tests/if_else_parsing/_smoke/ifelse.sched.l_out && echo '### SUCCESS: Files Are Identical! ###' || echo '### WARNING: Files Are Different! ###'
+
 
 make clean

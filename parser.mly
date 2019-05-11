@@ -47,6 +47,7 @@ stmt:
 | insert_stmt   { IS($1) }
 | set_stmt      { SS($1) }
 | drop_stmt     { DS($1) }
+| copy_stmt     { CPS($1) }
 | expr SEMI     { Expr $1 }
 | FUNC id LPAREN params RPAREN LBRACE stmts RBRACE { DEC($2, $4, $7)}
 | LBRACE stmts RBRACE                 { Block($2)    }
@@ -128,7 +129,18 @@ set_stmt:
   SET id OF id TO expr SEMI{ AIE($2, $4, $6) }
 
 copy_stmt:
-  COPY id OF id { Ids($2, $4) }
+  copy_coc { $1 }
+| copy_sos { $1 }
+| copy_ioi { $1 }
+
+copy_coc:
+  COPY SCHED COLLECTION id OF SCHED COLLECTION id SEMI{ Ids(COC,$4, $8) }
+
+copy_sos:
+  COPY SCHED id OF SCHED id SEMI{ Ids(SOS,$3, $6) }
+
+copy_ioi:
+  COPY SCHED ITEM id OF SCHED ITEM id SEMI{ Ids(IOI,$4, $8) }
 
 sched_spec:
   named_sched_spec      { $1 }

@@ -19,7 +19,7 @@ let pp_item_kind lvl kind =
       Event -> prefix ^ "Event"
     | Deadline -> prefix ^ "Deadline"
 
-type src_dst = STC | ITS | SFC | IFS
+type src_dst = STC | ITS | SFC | IFS | COC | SOS | IOI  
 
 let pp_sched_kind lvl kind =
   let prefix = (indent lvl) ^ "<sched-kind>: " in
@@ -274,14 +274,24 @@ let pp_set_stmt lvl set_stmt =
       ^ expr1 ^ "\n" ^ idnt ^ "<destination id>" ^ expr2 ^ "\n" ^ idnt ^ "<expression>: " ^ expr3
 
 type copy_stmt =
-  Ids of id * id
+Ids of src_dst * id * id
 let pp_copy_stmt lvl copy_stmt =
   match copy_stmt with
-    Ids (aid, bid) ->
+    Ids (COC,src,dst) ->
       let idnt = indent lvl in
-      let expr1 = pp_id (lvl + 1) aid in
-      let expr2 = pp_id (lvl + 2) bid in
-        idnt ^ "<copy-aid-of-bid-statement>" ^ expr1 ^ "\n" ^ expr2
+      let expr1 = pp_id (lvl + 1) src in
+      let expr2 = pp_id (lvl + 1) dst in
+        idnt ^ "<copy-coll-of-coll-statement>\n" ^ expr1 ^ "\n" ^ expr2
+  | Ids (SOS,src,dst) ->
+      let idnt = indent lvl in
+      let expr1 = pp_id (lvl + 1) src in
+      let expr2 = pp_id (lvl + 1) dst in
+        idnt ^ "<copy-sched-of-sched-statement>\n" ^ expr1 ^ "\n" ^ expr2
+  | Ids (IOI,src,dst) ->
+      let idnt = indent lvl in
+      let expr1 = pp_id (lvl + 1) src in
+      let expr2 = pp_id (lvl + 1) dst in
+        idnt ^ "<copy-item-of-item-statement>\n" ^ expr1 ^ "\n" ^ expr2
 
 
 
