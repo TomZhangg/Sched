@@ -166,7 +166,7 @@ attrs_opt:
 attrs:
   /* nothing */ { [] }
 | COMMA attrs { $2 }
-| ID COL ID attrs { (Id($1), Id($3))::$4 }
+| ID COL expr attrs { (Id($1), $3)::$4 }
 
 params:
   /* nothing */ { [] }

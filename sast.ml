@@ -44,24 +44,68 @@ let string_of_sexpr_opt lvl opt =
     Some(sx) -> string_of_sexpr lvl sx
   | None -> idnt ^ "None"
 
+type sattr = sexpr * sexpr
+let string_of_sattr lvl sttr =
+  let idnt = indent lvl in
+  let prefix = idnt ^ "sattr(" in
+  let suffix = idnt ^ ")" in
+  let e1, e2 = sttr in
+  let e1_str = string_of_sexpr (lvl + 1) e1 in
+  let e2_str = string_of_sexpr (lvl + 1) e2 in
+  String.concat "\n" [prefix; e1_str; e2_str; suffix]
+
+type sattrs = sattr list
+let string_of_sattrs lvl sttrs =
+  let idnt = indent lvl in
+  let prefix = idnt ^ "sattrs(" in
+  let suffix = idnt ^ ")" in
+  let sattr_strings = List.map (fun sttr -> string_of_sattr (lvl + 1) sttr) sttrs in
+  String.concat "\n" (List.concat [[prefix]; sattr_strings; [suffix]])
+
+type sitem_spec =
+  SAnon of Ast.item_kind * sexpr_opt * sattrs
+let string_of_sitem_spec lvl spec =
+  let idnt = indent lvl in
+  match spec with
+    SAnon(kind, sx_opt, sttrs) ->
+    let prefix = idnt ^ "SAnon(" in
+    let suffix = idnt ^ ")" in
+    String.concat "\n" [prefix;
+                        (Ast.pp_item_kind (lvl + 1) kind);
+                        (string_of_sexpr_opt (lvl + 1) sx_opt);
+                        (string_of_sattrs (lvl + 1) sttrs);
+                        suffix]
+  | _ -> raise (Failure "string_of_sitem_spec case not implemented yet.")
+
+type sil_items = sitem_spec list
+let string_of_sil_items lvl items =
+  let idnt = indent lvl in
+  let prefix = idnt ^ "sil_items(" in
+  let suffix = idnt ^ ")" in
+  let item_strings = List.map (fun spec -> string_of_sitem_spec (lvl + 1) spec) items in
+  String.concat "\n" (List.concat [[prefix]; item_strings; [suffix]])
+
 type ssched_spec = 
   (* TODO: Add sil_items_opt *)
-  SNamed of Ast.sched_kind * sexpr_opt * sexpr
+  SNamed of Ast.sched_kind * sexpr_opt * sexpr * sil_items
 let string_of_ssched_spec lvl spec =
   let idnt = indent lvl in
   match spec with
-    SNamed(kind, sx_opt, sx) ->
+    SNamed(kind, sx_opt, sx, sil_items) ->
+      (* TODO: Add string for items. *)
       let prefix = idnt ^ "SNamed(" in
       let suffix = idnt ^ ")" in
       String.concat "\n" [prefix;
                           (Ast.pp_sched_kind (lvl + 1) kind);
                           (string_of_sexpr_opt (lvl + 1) sx_opt);
                           (string_of_sexpr (lvl + 1) sx);
+                          (string_of_sil_items (lvl + 1) sil_items);
                           suffix]
   | _ -> raise (Failure "string_of_ssched_spec case not implemented yet.")
 
 type screate_stmt =
   SSchedule of ssched_spec
+| SItem of sitem_spec
 let string_of_screate_stmt lvl sc_stmt =
   let idnt = indent lvl in
   match sc_stmt with

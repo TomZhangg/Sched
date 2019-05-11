@@ -49,6 +49,10 @@ let rec check_expr (xpr : expr)
       let (flag, sargs) = List.fold_right sarg_check zipped (true, []) in
       if flag then Some((fdecl.styp, SCall(f, sargs)), sym_tab) else None
     else None
+  | TimeLit(lit) ->
+      (* TODO: Implement TimeLit. For now (4/28/19) will just
+       * treat like a string for implementing Create statement. *)
+      Some((String, SStrLit(lit)), sym_tab)
   | StrLit(lit) ->
     (* Need to check that the type for this expression is a String. *)
     Some((String, SStrLit(lit)), sym_tab)
@@ -74,6 +78,78 @@ let rec check_expr (xpr : expr)
                  string_of_typ t2 ^ " in " ^ string_of_expr e))
     in Some((ty, SBinop((t1, e1'), op, (t2, e2'))), sym_tab)
   | _ -> raise (Check_not_implemented "Ast.expr type")
+
+let rec check_sattr (att : attr)
+                    (ikind : Ast.item_kind)
+                    (sym_tab : 'a StringMap.t) : sattr =
+  (* Semantic Checks:
+   * 1. Recursively check semantics of value.
+   * 2. Check that the name of the attribute is defined for the
+   *    Item Kind.
+   * 3. Check that attribute and value types are the same.
+   *
+   * Note att is of the form:
+   *   (Id(name), expr)
+   *)
+  let Id(name), value = att in
+  let sv_ty, sv =
+    (match check_expr value sym_tab with
+      Some(sx, st) -> sx
+    | None -> raise (Failure "attr value invalid expression"))
+  in
+  let ik_key =
+    (match ikind with
+      Id(knm) -> knm
+    | _ -> Ast.string_of_item_kind ikind)
+  in
+  (* The kind declaration has already been checked. *)
+  let SKind(decl) = StringMap.find ik_key sym_tab in
+  let prop_t, prop_nm = List.find (fun (t, n) -> n = name) decl.sprops in
+  if prop_t = sv_ty
+  then (prop_t, SId(name)), (prop_t, sv)
+  else raise (Failure "property type does not match expression type")
+
+let rec check_sitem_spec (item : item_spec)
+                         (sym_tab : 'a StringMap.t)
+                         : sitem_spec =
+  match item with
+    Anon(kind, dt_opt, attrs_opt) ->
+    (* Semantic checks:
+     * 1. The item kind is valid, either built-in or defined.
+     * 2. The dt_opt is valid.
+     * 3. The attrs_opt is valid. *)
+    let ikind =
+      (match kind with
+        Id(kid) ->
+          let SKind(decl) = StringMap.find kid sym_tab in
+          if decl.sdtype = SchedItem
+            then kind
+            else raise (Failure "Item Kind is not defined")
+      | _ -> kind)
+    in
+    let sdt_opt =
+      (match dt_opt with
+        None -> None
+      | Some(dt) ->
+          (match check_expr dt sym_tab with
+            Some(sx, st) -> Some(sx)
+          | None -> None))
+    in
+    let sattrs_ =
+      (match attrs_opt with
+        Some(attrs_) ->
+          List.map (fun att -> check_sattr att ikind sym_tab) attrs_
+      | None -> [])
+    in
+    SAnon(ikind, sdt_opt, sattrs_)
+  | _ -> raise (Failure "check_sitem_spec case not implemented yet.")
+
+let check_il_items (items : item_spec list)
+                   (sym_tab : 'a StringMap.t)
+                   : (sitem_spec list) =
+  (* TODO: Figure out if it is necessary to return an updated
+   * symbol table too. *)
+  List.map (fun item -> check_sitem_spec item sym_tab) items
 
 let check_create_stmt (cstmt : create_stmt)
                       (sym_tab  : 'a StringMap.t)
@@ -120,12 +196,17 @@ let check_create_stmt (cstmt : create_stmt)
           Id(str) -> CId, SId(str)
         | _ -> raise (Failure "Named Schedule without a name!"))
       in
+      let sitems = 
+        (match il_items_opt with
+          Some(items) -> check_il_items items sym_tab
+        | None -> [])
+      in
       (* TODO: Add inline items option.
        * For now (4/25/19) the SNamed is variant has only an Ast.sched_kind,
        * an sexpr_opt and sexpr. So at this point, we have verified that
        * the Schedule Kind is defined, recursively checked the optional
        * date information, and ensured that the id is not already defined. *)
-      Some( SSchedule(SNamed(kind, sst_date_opt, sid)), sym_tab )
+      Some( SSchedule(SNamed(kind, sst_date_opt, sid, sitems)), sym_tab )
     | _ -> raise (Check_not_implemented "Ast.sched_spec variant"))
   | _ -> raise (Check_not_implemented "Ast.create_stmt variant")
 
@@ -181,4 +262,11 @@ let print_decl = SFunc({
   sbody = [];
 })
 
-let init_st = StringMap.add "print" print_decl StringMap.empty
+let event_decl = SKind({
+  sdtype = SchedItem;
+  skname = "Event";
+  sprops = [(String, "desc")];
+})
+
+let st1 = StringMap.add "print" print_decl StringMap.empty
+let init_st = StringMap.add "Event" event_decl st1

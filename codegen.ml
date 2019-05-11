@@ -34,6 +34,7 @@ let translate sprogram =
    *)
   let sched_t     = L.struct_type context
     [| i8_tp; i8_tp ; i8_t ; (L.pointer_type i8_tp) ; i8_t |] in
+  (* A Schedule Item struct has k *)
 
   (* Return the LLVM type for a Schedch type *)
   (* TODO: Add types here.
@@ -107,15 +108,20 @@ in
       | _ -> raise (Failure "sxpr codegen type not implemented yet.")
   in
 
+  let rec sitem_spec builder = function
+    (* Semantic Checks:
+     * 1. Allocate the space for an item. An item consists of a *)
+    _ -> raise (Failure "sitem_spec not implemented yet.")
+  in
+
   let rec ssched_spec builder = function
-    SNamed(kind, sx_opt, sx) ->
+    SNamed(kind, sx_opt, sx, sil_items) ->
       (* Create a global string constant for the name. *)
       let name_ptr = sxpr builder sx in
       (* Allocate space on the stack for the name. *)
       let sched = L.build_alloca sched_t "" builder in
       (* Store value of name_ptr to the name field of this Schedule. *)
       let sname_ptr = L.build_struct_gep sched 0 "" builder in
-      let store = L.build_store name_ptr sname_ptr builder in
       (* Store value of start date info (if given) *)
       let date_ptr =
         (match sx_opt with
@@ -123,7 +129,30 @@ in
         | _ -> sxpr builder (A.String, SStrLit "None"))
       in
       let sdate_ptr = L.build_struct_gep sched 1 "" builder in
-      L.build_store date_ptr sdate_ptr builder
+      let n_items = L.const_int i8_t (List.length sil_items) in
+      let sn_items_ptr = L.build_struct_gep sched 2 "" builder in
+      let arr_size = n_items in
+      let sarr_size_ptr = L.build_struct_gep sched 4 "" builder in
+      let arr = L.build_array_alloca i8_tp arr_size "" builder in
+      let sarr_ptr = L.build_struct_gep sched 3 "" builder in
+
+      let item_ptrs = List.map (fun item -> sitem_spec builder item) sil_items in
+      (* TODO: store item pointers into items array.
+       * fold_left on the item_ptrs list, with an initial accumulator
+       * of 0. *)
+
+      List.fold_left (fun idx item_ptr ->
+          L.build_store item_ptr (L.build_struct_gep arr idx "" builder);
+          idx + 1
+        )
+        0
+        item_ptrs;
+
+      L.build_store name_ptr sname_ptr builder;
+      L.build_store date_ptr sdate_ptr builder;
+      L.build_store n_items sn_items_ptr builder;
+      L.build_store arr sarr_ptr builder;
+      L.build_store arr_size sarr_size_ptr builder
   | _ -> raise (Failure "ssched_spec case not implemented yet.")
   in
 

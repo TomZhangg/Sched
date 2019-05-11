@@ -11,12 +11,16 @@ type bind = typ * string
 
 type sched_kind = Day | Week | Month | Year | Id of string
 
-type item_kind = Event | Deadline (* Add <id> *)
+type item_kind = Event | Deadline | Id of string
 let pp_item_kind lvl kind =
   let prefix = (indent lvl) ^ "<item-kind>: " in
     match kind with
       Event -> prefix ^ "Event"
     | Deadline -> prefix ^ "Deadline"
+let string_of_item_kind = function
+  Event -> "Event"
+| Deadline -> "Deadline"
+| Id(name) -> name
 
 type src_dst = STC | ITS | SFC | IFS
 
