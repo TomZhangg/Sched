@@ -1,8 +1,0 @@
-(str, x);
-x = StrLit("hi");
-(str, y);
-print(Id(x));
-print(StrLit("hello world"));
-print(BoolLit(true));
-print(BoolLit(true) && BoolLit(true));
-foo(Id(x), Id(y), BoolLit(true));
