@@ -200,7 +200,6 @@ let rec check_stmt (stmt : stmt)
 			styp = t;
 			sfname = string_of_id s;
 			sformals = a;
-			slocals = [];
 			sbody = [];
 		} in
 		let tf = SFunc(tmp_fdecl) in
@@ -213,7 +212,6 @@ let rec check_stmt (stmt : stmt)
 					styp = t;
 					sfname = string_of_id s;
 					sformals = a;
-					slocals = [];
 					sbody = sl;
 				} in
 		let sf = SFunc(new_fdecl) in
@@ -275,7 +273,6 @@ let print_fdecl = {
   styp = Void;
   sfname = "print";
   sformals = [Bind(String, "text")];
-  slocals = [];
   sbody = [];
 }
 let pf = SFunc(print_fdecl)
