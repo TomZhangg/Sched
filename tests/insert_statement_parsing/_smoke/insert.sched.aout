@@ -1,0 +1,8 @@
+<insert-statement>
+  <insert-item-to-sched-statement>
+    <id>: Id(x)
+    <id>: Id(y)
+<insert-statement>
+  <insert-sched-to-coll-statement>
+    <id>: Id(asdf)
+    <id>: Id(fdsa)

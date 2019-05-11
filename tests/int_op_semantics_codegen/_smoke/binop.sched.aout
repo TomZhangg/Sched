@@ -1,0 +1,12 @@
+IntLit(1) + IntLit(5);
+IntLit(5) - IntLit(43) - IntLit(314) - IntLit(1);
+FLit(5.1) * FLit(3.2);
+IntLit(6) / IntLit(3) / IntLit(2);
+-IntLit(2) < IntLit(10);
+IntLit(134) <= IntLit(134);
+IntLit(12) > -IntLit(23);
+IntLit(1000) >= IntLit(123);
+IntLit(12) != IntLit(1200);
+IntLit(12) == IntLit(12);
+IntLit(12) == IntLit(90);
+IntLit(11) != IntLit(23);

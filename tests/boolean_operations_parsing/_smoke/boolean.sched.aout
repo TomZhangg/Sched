@@ -1,0 +1,9 @@
+BoolLit(true);
+BoolLit(true) && BoolLit(true);
+!BoolLit(true) || !Id(x) || Id(y);
+BoolLit(true) || BoolLit(false) && BoolLit(true);
+BoolLit(true) && Id(x) && Id(y) || BoolLit(false);
+(bool, x);
+x = BoolLit(true);
+Id(x) == BoolLit(true);
+Id(x) == BoolLit(false) && BoolLit(true);

@@ -1,0 +1,7 @@
+-FLit(10.1234);
+-FLit(1.5) + -FLit(1.58);
+-FLit(1.5E-4) + -FLit(0.01);
+-FLit(1.55E+2) + FLit(2.6);
+-FLit(5.1234) - -FLit(4.E-3) - FLit(3.14) - -FLit(1.0);
+FLit(5.1) * -FLit(3.2);
+FLit(6.9) / -FLit(3.45) / -FLit(2.0);

@@ -1,0 +1,14 @@
+IntLit(10);
+IntLit(1) + IntLit(2);
+IntLit(5) - IntLit(4) - IntLit(3) - IntLit(1);
+IntLit(5) * IntLit(3);
+IntLit(6) / IntLit(3) / IntLit(2);
+IntLit(6) % IntLit(3);
+(int, x)IntLit(10);
+(int, y)IntLit(10) + IntLit(3) + IntLit(4);
+(int, z)Id(x) + Id(y);
+IntLit(10) < IntLit(100);
+IntLit(100) < IntLit(19);
+-IntLit(2) >= -IntLit(2);
+-IntLit(100) <= IntLit(10);
+IntLit(5) > IntLit(1);

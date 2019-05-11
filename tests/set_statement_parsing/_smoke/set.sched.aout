@@ -1,0 +1,8 @@
+<set-statement>
+  <attribute id>    <id>: Id(x)
+  <destination id>    <id>: Id(y)
+  <expression>: Id(asdf)
+<set-statement>
+  <attribute id>    <id>: Id(y)
+  <destination id>    <id>: Id(x)
+  <expression>: Id(fdsa)
