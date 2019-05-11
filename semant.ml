@@ -438,7 +438,6 @@ let print_decl = SFunc({
   styp = Void;
   sfname = "print";
   sformals = [Bind(String, "text")];
-  slocals = [];
   sbody = [];
 })
 
