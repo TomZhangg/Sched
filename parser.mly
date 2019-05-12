@@ -1,7 +1,7 @@
 %{ open Ast %}
 
 
-%token SEMI COL COMMA CREATE INSERT DROP COPY ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT LEQ GEQ LBRACE RBRACE IF ELSE RETURN
+%token SEMI COL COMMA CREATE INSERT DROP COPY ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT LEQ GEQ LBRACE RBRACE IF ELSE LBRACK RBRACK FOR WHILE RETURN
 %token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN
 %token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
@@ -54,6 +54,9 @@ stmt:
 | IF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5, Block([])) }
 | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7)        }
 | RETURN expr SEMI { Rt($2)}
+| FOR LPAREN expr_opt SEMI expr SEMI expr_opt RPAREN stmt
+                                          { For($3, $5, $7, $9)   }
+| WHILE LPAREN expr RPAREN stmt           { While($3, $5)         }
 
 indent_stmts:
   INDENT stmt   { [$2] }
@@ -65,6 +68,10 @@ typ:
   | STRING { String }
   | INT    { Int }
   | FLOAT  { Float }
+
+expr_opt:
+    /* nothing */ { Noexpr }
+  | expr          { $1 }
 
 expr:
   BLIT               { BoolLit($1)            }

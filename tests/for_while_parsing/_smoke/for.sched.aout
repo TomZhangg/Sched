@@ -1,0 +1,15 @@
+(int, i);
+for (i = IntLit(0) ; Id(i) < IntLit(2) ; i = Id(i) + IntLit(1))
+{
+print(StrLit("hi"));}
+
+(int, j);
+j = IntLit(0);
+for ( ; Id(j) < IntLit(2) ; )
+{
+j = Id(j) + IntLit(2);print(StrLit("here we go!"));}
+
+if (Id(j) == IntLit(2))
+{
+print(StrLit("sweeet"));}
+

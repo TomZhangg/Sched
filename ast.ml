@@ -312,6 +312,8 @@ type stmt =
   | Block of stmt list
   | If of expr * stmt * stmt
 	| Rt of expr
+  | For of expr * expr * expr * stmt
+  | While of expr * stmt
 
 let rec pp_stmt lvl stmt =
   match stmt with
@@ -354,6 +356,10 @@ let rec pp_stmt lvl stmt =
     let idnt = indent lvl in
     let idnt2 = indent (lvl+1) in
 		idnt ^ "<return>" ^ "\n" ^ idnt2 ^ string_of_expr e
+  | For(e1, e2, e3, s) ->
+          "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
+          string_of_expr e3  ^ ")\n" ^ (pp_stmt lvl s)
+  | While(e, s) -> "while (" ^ string_of_expr e ^ ")\n" ^ (pp_stmt lvl s)
 
 
 type program = stmt list

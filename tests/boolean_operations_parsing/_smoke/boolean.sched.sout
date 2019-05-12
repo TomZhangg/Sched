@@ -1,0 +1,35 @@
+SExpr(
+true
+)
+SExpr(
+true && true
+)
+SExpr(
+  (bool, x)
+)
+SExpr(
+  (bool, y)
+)
+SExpr(
+x = 
+true
+)
+SExpr(
+y = 
+false
+)
+SExpr(
+    typ: bool, sx: SId(x) == true
+)
+SExpr(
+      typ: bool, sx: SId(x) == false && true
+)
+SExpr(
+(!) true || (!)         typ: bool, sx: SId(x) ||     typ: bool, sx: SId(y)
+)
+SExpr(
+true || false && true
+)
+SExpr(
+true &&         typ: bool, sx: SId(x) &&       typ: bool, sx: SId(y) || false
+)

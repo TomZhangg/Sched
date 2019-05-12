@@ -1,0 +1,42 @@
+SExpr(
+  typ: int, sx: 10
+)
+SExpr(
+    typ: int, sx: 1 +     typ: int, sx: 2
+)
+SExpr(
+        typ: int, sx: 5 -         typ: int, sx: 4 -       typ: int, sx: 3 -     typ: int, sx: 1
+)
+SExpr(
+    typ: int, sx: 5 *     typ: int, sx: 3
+)
+SExpr(
+      typ: int, sx: 6 /       typ: int, sx: 3 /     typ: int, sx: 2
+)
+SExpr(
+    typ: int, sx: 6 %     typ: int, sx: 3
+)
+SExpr(
+  typ: int, sx: 10
+)
+SExpr(
+      typ: int, sx: 10 +       typ: int, sx: 3 +     typ: int, sx: 4
+)
+SExpr(
+    typ: int, sx: SId(x) +     typ: int, sx: SId(y)
+)
+SExpr(
+    typ: int, sx: 10 <     typ: int, sx: 100
+)
+SExpr(
+    typ: int, sx: 100 <     typ: int, sx: 19
+)
+SExpr(
+(-)       typ: int, sx: 2 >= (-)       typ: int, sx: 2
+)
+SExpr(
+(-)       typ: int, sx: 100 <=     typ: int, sx: 10
+)
+SExpr(
+    typ: int, sx: 5 >     typ: int, sx: 1
+)

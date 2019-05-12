@@ -173,6 +173,8 @@ let translate sprogram =
       | (A.Void, SCall("print", [sx])) ->
           let sx' = sxpr the_state sx in
           L.build_call printf_func [| str_format_str ; sx' |] "printf" builder
+      | (A.Void, SNoexpr) -> L.const_int i32_t 0
+      | (_, SId s)       -> L.build_load (lookup s namespace) s builder
 			| (t, SCall(name, args)) ->
 				let the_function = lookup name namespace in
 				let llargs = Array.of_list (List.rev (List.map (sxpr the_state) (List.rev args))) in
@@ -257,21 +259,33 @@ let translate sprogram =
     | SExpr(sx) -> ignore (sxpr the_state sx); the_state
     | SCS(cs) -> ignore (scstmt the_state cs); the_state
     | SIf (predicate, then_stmt, else_stmt) ->
-         let bool_val = sxpr the_state predicate in
-      let then_bb = L.append_block context "then" main_func in
-			let new_state1 = change_builder_state the_state (L.builder_at_end context then_bb) in
-      ignore (sstmt new_state1 then_stmt);
-      let else_bb = L.append_block context "else" main_func in
-			let new_state2 = change_builder_state the_state (L.builder_at_end context else_bb) in
-      ignore (sstmt new_state2 else_stmt);
-
-      let end_bb = L.append_block context "if_end" main_func in
-      let build_br_end = L.build_br end_bb in (* partial function *)
-      add_terminal new_state1 build_br_end;
-      add_terminal new_state2 build_br_end;
-
+      let bool_val = sxpr the_state predicate in
+      let merge_bb = L.append_block context "merge" the_state.func in  
+      let build_br_merge = L.build_br merge_bb in 
+      let then_bb = L.append_block context "then" the_state.func in
+      let new_state1 = change_builder_state the_state (L.builder_at_end context then_bb) in
+      add_terminal (sstmt new_state1 then_stmt) build_br_merge;
+      let else_bb = L.append_block context "else" the_state.func in
+      let new_state2 = change_builder_state the_state (L.builder_at_end context else_bb) in
+      add_terminal (sstmt new_state2 else_stmt) build_br_merge;
       ignore(L.build_cond_br bool_val then_bb else_bb the_state.b);
-      let new_state = change_builder_state the_state (L.builder_at_end context end_bb) in new_state
+      let new_state = change_builder_state the_state (L.builder_at_end context merge_bb) in new_state
+
+    | SWhile (predicate, body) ->
+      let pred_bb = L.append_block context "while" the_state.func in
+        ignore(L.build_br pred_bb the_state.b);
+      let body_bb = L.append_block context "while_body" the_state.func in
+      let new_state = change_builder_state the_state (L.builder_at_end context body_bb) in
+        add_terminal (sstmt new_state body) (L.build_br pred_bb);
+      let pred_builder = L.builder_at_end context pred_bb in
+      let new_state = change_builder_state the_state (L.builder_at_end context pred_bb) in
+      let bool_val = sxpr new_state predicate in
+      let merge_bb = L.append_block context "merge" the_state.func in
+        ignore(L.build_cond_br bool_val body_bb merge_bb pred_builder);
+      let new_state = change_builder_state the_state (L.builder_at_end context merge_bb) in
+        new_state
+    | SFor (e1, e2, e3, body) -> sstmt the_state
+      ( SBlock [SExpr e1 ; SWhile (e2, SBlock [body ; SExpr e3]) ] )
 		| SFunc(fdecl) ->
 			let ns = the_state.namespace in
 			let scope = ns.scope in

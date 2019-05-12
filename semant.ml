@@ -147,6 +147,7 @@ let rec check_expr (xpr : expr)
                                  " in " ^ string_of_expr ex))
     in Some((ty, SUnop(op, (t, e'))), sym_tab)   )
 	| Noexpr -> Some((Void, SNoexpr), sym_tab)
+  | Id s       -> Some((type_of_identifier s sym_tab, SId s), sym_tab)
   | _ -> raise (Check_not_implemented ("Ast.expr type" ^ (string_of_expr xpr)))
 
 
@@ -302,15 +303,6 @@ let rec check_stmt (stmt : stmt)
         None -> None
       | Some(sstmt, st) -> Some(SCS(sstmt), st))
   | If(p, b1, b2) ->
-  let check_bool_expr e sym_tab = (
-  let e' = check_expr e sym_tab
-  and err = "expected Boolean expression in " ^ string_of_expr e in
-  match e' with
-    None -> raise (Failure err)
-
-  | Some((t', _), st) ->
-    if t' != Bool then raise (Failure err) else e'  ) in
-
       let p' = check_bool_expr p sym_tab in
      (match p' with
       | Some(sexpr, st) ->
@@ -322,12 +314,38 @@ let rec check_stmt (stmt : stmt)
      (match sstmt2 with
         None -> None
       | Some (x2, st2) -> Some(SIf(sexpr, x1, x2), st) )))
-  | Block(sl) ->
+  | For(e1, e2, e3, s) -> (
+    let e1' = check_expr e1 sym_tab in
+    match e1' with
+    None -> None
+    | Some(sexpr1, st1) ->
+      let e2' = check_bool_expr e2 st1 in
+      match e2' with
+        None -> None
+      | Some (sexpr2, st2) ->
+        let e3' = check_expr e3 st2 in
+        match e3' with
+          None -> None
+        | Some (sexpr3, st3) ->
+          let s' = check_stmt s st3 in
+          match s' with
+            None -> None
+          | Some (x, st) -> Some(SFor(sexpr1, sexpr2, sexpr3, x), sym_tab) )
+
+  | While(p, s) -> (
+    let p' = check_bool_expr p sym_tab in
+    match p' with
+    | Some(sexpr, st) ->
+      let sstmt = check_stmt s sym_tab in
+      match sstmt with
+        None -> None
+      | Some (x1, st1) -> Some(SWhile(sexpr, x1), sym_tab)  )
+ | Block(sl) -> (
 		let new_tab = {tb=StringMap.empty;parent=Some(sym_tab)} in
     let slist = check_stmt_list sl new_tab in
     ( match slist with
       Some(sl', st) -> Some(SBlock(sl'), get_parent st)
-      | None -> None )
+      | None -> None ) )
 	| DEC(t,s,a,b) ->
 		let new_tab = {tb=StringMap.empty;parent=Some(sym_tab)} in
 		let add_formal st formal =
@@ -363,6 +381,13 @@ let rec check_stmt (stmt : stmt)
 				Some(SRt(se), sym_tab))
   | _ -> raise (Check_not_implemented "Ast.stmt type")
 
+and check_bool_expr (e : expr) (sym_tab: symtable) : (sexpr * symtable) option = (
+  let e' = check_expr e sym_tab
+  and err = "expected Boolean expression in " ^ string_of_expr e in
+  match e' with
+    None -> raise (Failure err)
+  | Some((t', _), st) ->
+    if t' != Bool then raise (Failure err) else e'  )
 
 and check_stmt_list (sl : stmt list)
               (sym_tab : symtable)

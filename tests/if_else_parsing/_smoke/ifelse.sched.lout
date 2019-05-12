@@ -8,73 +8,75 @@ define i32 @main() {
 entry:
   br i1 true, label %then, label %else
 
+merge:                                            ; preds = %else, %then
+  br i1 true, label %then2, label %else3
+
 then:                                             ; preds = %entry
-  br label %if_end
+  br label %merge
 
 else:                                             ; preds = %entry
-  br label %if_end
+  br label %merge
 
-if_end:                                           ; preds = %else, %then
-  br i1 true, label %then1, label %else2
+merge1:                                           ; preds = %else3, %then2
+  br i1 true, label %then5, label %else6
 
-then1:                                            ; preds = %if_end
-  br label %if_end3
+then2:                                            ; preds = %merge
+  br label %merge1
 
-else2:                                            ; preds = %if_end
-  br label %if_end3
+else3:                                            ; preds = %merge
+  br label %merge1
 
-if_end3:                                          ; preds = %else2, %then1
-  br i1 true, label %then4, label %else5
+merge4:                                           ; preds = %else6, %then5
+  br i1 true, label %then8, label %else9
 
-then4:                                            ; preds = %if_end3
-  br label %if_end6
+then5:                                            ; preds = %merge1
+  br label %merge4
 
-else5:                                            ; preds = %if_end3
-  br label %if_end6
+else6:                                            ; preds = %merge1
+  br label %merge4
 
-if_end6:                                          ; preds = %else5, %then4
-  br i1 true, label %then7, label %else8
+merge7:                                           ; preds = %else9, %then8
+  br i1 true, label %then11, label %else18
 
-then7:                                            ; preds = %if_end6
-  br label %if_end9
+then8:                                            ; preds = %merge4
+  br label %merge7
 
-else8:                                            ; preds = %if_end6
-  br label %if_end9
+else9:                                            ; preds = %merge4
+  br label %merge7
 
-if_end9:                                          ; preds = %else8, %then7
-  br i1 true, label %then10, label %else17
-
-then10:                                           ; preds = %if_end9
-  br i1 false, label %then11, label %else12
-
-then11:                                           ; preds = %then10
-  br label %if_end13
-
-else12:                                           ; preds = %then10
-  br label %if_end13
-
-if_end13:                                         ; preds = %else12, %then11
-  br i1 true, label %then14, label %else15
-
-then14:                                           ; preds = %if_end13
-  br label %if_end16
-
-else15:                                           ; preds = %if_end13
-  br label %if_end16
-
-if_end16:                                         ; preds = %else15, %then14
-
-else17:                                           ; preds = %if_end9
-  br i1 true, label %then18, label %else19
-
-then18:                                           ; preds = %else17
-  br label %if_end20
-
-else19:                                           ; preds = %else17
-  br label %if_end20
-
-if_end20:                                         ; preds = %else19, %then18
-
-if_end21:                                         ; No predecessors!
+merge10:                                          ; preds = %merge19, %merge15
   ret i32 0
+
+then11:                                           ; preds = %merge7
+  br i1 false, label %then13, label %else14
+
+merge12:                                          ; preds = %else14, %then13
+  br i1 true, label %then16, label %else17
+
+then13:                                           ; preds = %then11
+  br label %merge12
+
+else14:                                           ; preds = %then11
+  br label %merge12
+
+merge15:                                          ; preds = %else17, %then16
+  br label %merge10
+
+then16:                                           ; preds = %merge12
+  br label %merge15
+
+else17:                                           ; preds = %merge12
+  br label %merge15
+
+else18:                                           ; preds = %merge7
+  br i1 true, label %then20, label %else21
+
+merge19:                                          ; preds = %else21, %then20
+  br label %merge10
+
+then20:                                           ; preds = %else18
+  br label %merge19
+
+else21:                                           ; preds = %else18
+  br label %merge19
 }
