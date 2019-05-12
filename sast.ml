@@ -34,6 +34,8 @@ and sstmt =
   | SIf of sexpr * sstmt * sstmt
   | SBlock of sstmt list
 	| SFunc of sfunc_decl
+  | SFor of sexpr * sexpr * sexpr * sstmt
+  | SWhile of sexpr * sstmt
 
 let rec string_of_sexpr lvl sxpr =
   let idnt = indent lvl in
@@ -77,6 +79,10 @@ let rec string_of_sstmt lvl sstmt =
   | SIf(e, s, SBlock([])) -> "SIf (" ^ string_of_sexpr lvl e ^ ")\n" ^ (string_of_sstmt lvl s)
   | SIf(e, s1, s2) ->  "SIf (" ^ string_of_sexpr lvl e ^ ")\n" ^
       (string_of_sstmt lvl s1) ^ "SElse\n" ^ (string_of_sstmt lvl s2)
+  | SFor(e1, e2, e3, s) ->
+          "SFor (" ^ string_of_sexpr lvl e1  ^ " ; " ^ string_of_sexpr lvl e2 ^ " ; " ^
+          string_of_sexpr lvl e3  ^ ")\n" ^ (string_of_sstmt lvl s)
+  | SWhile(e, s) -> "SWhile (" ^ string_of_sexpr lvl e ^ ")\n" ^ (string_of_sstmt lvl s)  
   | _ -> raise (Failure "string_of_sstmt case not implemented yet.")
 
 

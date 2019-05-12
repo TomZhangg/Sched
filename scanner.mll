@@ -16,6 +16,8 @@ rule token = parse
 | ')'           { RPAREN }
 | '{'           { LBRACE }
 | '}'           { RBRACE }
+| '['           { LBRACK }
+| ']'           { RBRACK }
 | ';'           { SEMI }
 | ':'           { COL }
 | ','           { COMMA }
@@ -61,6 +63,8 @@ rule token = parse
 | "float"       {FLOAT}
 | "True"        { BLIT(true)  }
 | "False"       { BLIT(false) }
+| "for"         { FOR }
+| "while"       { WHILE }
 | digits+ as lxm { ILIT(int_of_string lxm) }
 | digits+ '.' as lxm { FLIT(lxm^"0") }
 | '.' digits+ as lxm { FLIT("0"^lxm) }

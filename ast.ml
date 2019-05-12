@@ -304,6 +304,8 @@ type stmt =
   | DEC of id * args * stmt list
   | Block of stmt list
   | If of expr * stmt * stmt
+  | For of expr * expr * expr * stmt
+  | While of expr * stmt
 
 let rec pp_stmt lvl stmt =
   match stmt with
@@ -341,6 +343,10 @@ let rec pp_stmt lvl stmt =
   | If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")\n" ^ (pp_stmt lvl s)
   | If(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")\n" ^
       (pp_stmt lvl s1) ^ "else\n" ^ (pp_stmt lvl s2)
+  | For(e1, e2, e3, s) ->
+          "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
+          string_of_expr e3  ^ ")\n" ^ (pp_stmt lvl s)
+  | While(e, s) -> "while (" ^ string_of_expr e ^ ")\n" ^ (pp_stmt lvl s)
 
 
 type program = stmt list
