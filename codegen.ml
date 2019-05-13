@@ -291,6 +291,12 @@ let translate sprogram =
   let rec scstmt the_state = function
     SSchedule(spec) ->
       ignore (ssched_spec the_state spec); the_state
+  | SType(spec) ->
+      (* No code is generated for a user defined type; the definition
+       * is used for semantic checks.
+       * Return the_state.
+       *)
+      the_state
   | _ -> raise (Failure "screate_stmt case not implemented yet.")
   in
 

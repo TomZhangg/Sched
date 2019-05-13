@@ -18,6 +18,7 @@ let pp_item_kind lvl kind =
     match kind with
       Event -> prefix ^ "Event"
     | Deadline -> prefix ^ "Deadline"
+    | Id(id) -> prefix ^ id
 let string_of_item_kind = function
   Event -> "Event"
 | Deadline -> "Deadline"

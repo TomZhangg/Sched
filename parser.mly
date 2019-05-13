@@ -203,6 +203,7 @@ anon_item_spec:
 item_kind:
   EVENT    { Event }
 | DEADLINE { Deadline }
+| ID       { Id($1) }
 
 dt_opt:
   /* nothing */ { None }
