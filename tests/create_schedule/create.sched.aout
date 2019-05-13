@@ -2,6 +2,11 @@
   <create-sched-statement>
     <named-sched-spec>
       <sched-kind>: Day
-      <start-date-opt>: TimeLit(<2021-01-21>)
+      <start-date-opt> None
       <id>: Id(trump_nov_7)
-      <inline-items>: None
+      <inline-items>:
+        <anon-item-spec>
+          <date-time-info-opt>: TimeLit(<2019-06-21T18:53:00>)
+          <item-kind>: Event
+          <attrs-opt>:
+            Type: Id(desc), Name: StrLit("Summer solstice.")

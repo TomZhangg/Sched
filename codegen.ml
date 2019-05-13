@@ -30,23 +30,32 @@ let translate sprogram =
   and void_t      = L.void_type         context in
 
   let i8_tp       = L.pointer_type i8_t in
+  (* A Schedule Item Attribute has 3 fields:
+   * 1. Name: Points to a string that is its name.
+   * 2. Value: Points to the value of the attribute.
+   * 3. Next: Points to the next attribute in the linked list.
+   *)
+  let attr_t = L.named_struct_type context "item_attr" in
+  let attr_tp = L.pointer_type attr_t in
+  ignore (L.struct_set_body attr_t [| i8_tp; i8_tp; attr_tp |] false);
+  (* A Schedule Item struct has 3 fields:
+   * 1. Name: Points to a string that is its name (if it has one).
+   * 2. Date Time Info: Points to a string that is its date time info.
+   * 3. Attributes: A linked list of the item's attributes.
+   * 4. Next: Points to the next item in the linked list.
+   *)
+  let item_t = L.named_struct_type context "item" in
+  let item_tp = L.pointer_type item_t in
+  ignore (L.struct_set_body item_t [| i8_tp; i8_tp; attr_tp; item_tp |] false);
   (* A Schedule struct has 5 fields:
    * 1. Name: Points to a string that is its name.
    * 2. Start Date: Points to a string that is its start date (for now).
    * 3. n_items: 8-bit int that gives the number of items in the Schedule.
-   * 4. items_arr: Pointer to start of items array.
-   * 5. arr_size: 8-bit int that gives the size of the array.
+   * 4. Items Linked List: Pointer to the head in a linked list of item.
    *)
   let sched_t     = L.struct_type context
-    [| i8_tp; i8_tp ; i8_t ; (L.pointer_type i8_tp) ; i8_t |] in
-  (* A Schedule Item struct has k *)
+    [| i8_tp; i8_tp ; i8_t ; item_tp |] in
 
-  (* Return the LLVM type for a Schedch type *)
-  (* TODO: Add types here.
-  let ltype_of_typ = function
-          ...
-  in
-  *)
   let ltype_of_typ = function
     A.Int   -> i32_t
   | A.Bool  -> i1_t
@@ -183,10 +192,71 @@ let translate sprogram =
       | _ -> raise (Failure "sxpr codegen type not implemented yet.")
   in
 
-  let rec sitem_spec builder = function
+  let rec sattr the_state = function
+  (* Return a Schedule Item Attribute. *)
+    ((A.String, SId(name)), (A.String, SStrLit(val_))) ->
+    let attr_ptr = L.build_alloca attr_t "" the_state.b in
+    let name_ptr = sxpr the_state (A.String, SStrLit(name)) in
+    let aname_ptr = L.build_struct_gep attr_ptr 0 "" the_state.b in
+    let val_ptr = sxpr the_state (A.String, SStrLit(val_)) in
+    let aval_ptr = L.build_struct_gep attr_ptr 1 "" the_state.b in
+
+    L.build_store name_ptr aname_ptr the_state.b;
+    L.build_store val_ptr aval_ptr the_state.b;
+    attr_ptr
+  | _ -> raise (Failure "sattr not implemented yet.")
+  in
+
+  let rec sattrs_linked_list the_state = function
+  (* Return the head of a linked list of item attributes. *)
+    [] -> L.const_null attr_tp
+  | str :: strs -> 
+    (* 1. Generate the code for the head of the list.
+     * 2. Recursively process the tail of the list, and receive,
+     *    a pointer to the start of the tail.
+     * 3. Link the head to the tail.
+     * 4. Return a pointer to the head.
+     *)
+    let head_ptr = sattr the_state str in
+    let tail_ptr = sattrs_linked_list the_state strs in
+    let hnext_ptr = L.build_struct_gep head_ptr 2 "" the_state.b in
+
+    L.build_store tail_ptr hnext_ptr the_state.b;
+    head_ptr
+  in
+
+  let rec sitem_spec the_state = function
     (* Semantic Checks:
      * 1. Allocate the space for an item. An item consists of a *)
-    _ -> raise (Failure "sitem_spec not implemented yet.")
+    SAnon(kind, dt_opt, strs) ->
+      (* An anonymous schedule item.
+       * 1. Allocate space for the item. *)
+      let item = L.build_alloca item_t "" the_state.b in
+      let dt_ptr =
+        (match dt_opt with
+          Some(dt_sx) -> sxpr the_state dt_sx
+        | _ -> sxpr the_state (A.String, SStrLit "None"))
+      in
+      let idate_ptr = L.build_struct_gep item 1 "" the_state.b in
+      let strs_ptr = sattrs_linked_list the_state strs in
+      let istrs_ptr = L.build_struct_gep item 2 "" the_state.b in
+
+      L.build_store dt_ptr idate_ptr the_state.b;
+      L.build_store strs_ptr istrs_ptr the_state.b;
+      item
+    | _ -> raise (Failure "sitem_spec not implemented yet.")
+  in
+
+  let rec sitems_linked_list the_state = function
+  (* Return the head of a linked list of items. *)
+    [] -> L.const_null item_tp
+  | item :: items ->
+    let head_ptr = sitem_spec the_state item in
+    let tail_ptr = sitems_linked_list the_state items in
+    let hnext_ptr = L.build_struct_gep head_ptr 3 "" the_state.b in
+
+    L.build_store tail_ptr hnext_ptr the_state.b;
+    head_ptr
   in
 
   let rec ssched_spec the_state = function
@@ -206,28 +276,13 @@ let translate sprogram =
       let sdate_ptr = L.build_struct_gep sched 1 "" the_state.b in
       let n_items = L.const_int i8_t (List.length sil_items) in
       let sn_items_ptr = L.build_struct_gep sched 2 "" the_state.b in
-      let arr_size = n_items in
-      let sarr_size_ptr = L.build_struct_gep sched 4 "" the_state.b in
-      let arr = L.build_array_alloca i8_tp arr_size "" the_state.b in
-      let sarr_ptr = L.build_struct_gep sched 3 "" the_state.b in
-
-      let item_ptrs = List.map (fun item -> sitem_spec the_state item) sil_items in
-      (* TODO: store item pointers into items array.
-       * fold_left on the item_ptrs list, with an initial accumulator
-       * of 0. *)
-
-      List.fold_left (fun idx item_ptr ->
-          L.build_store item_ptr (L.build_struct_gep arr idx "" the_state.b);
-          idx + 1
-        )
-        0
-        item_ptrs;
+      let items_ptr = sitems_linked_list the_state sil_items in
+      let sitems_ptr = L.build_struct_gep sched 3 "" the_state.b in
 
       L.build_store name_ptr sname_ptr the_state.b;
       L.build_store date_ptr sdate_ptr the_state.b;
       L.build_store n_items sn_items_ptr the_state.b;
-      L.build_store arr sarr_ptr the_state.b;
-      L.build_store arr_size sarr_size_ptr the_state.b
+      L.build_store items_ptr sitems_ptr the_state.b 
   | _ -> raise (Failure "ssched_spec case not implemented yet.")
   in
 
