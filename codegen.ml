@@ -27,6 +27,7 @@ let translate sprogram =
   and i8_t        = L.i8_type           context
   and i32_t       = L.i32_type          context
   and float_t     = L.double_type       context
+  and str_ptr_t = L.pointer_type (L.i8_type context)
   and void_t      = L.void_type         context in
 
   let i8_tp       = L.pointer_type i8_t in
@@ -61,6 +62,7 @@ let translate sprogram =
   | A.Bool  -> i1_t
   | A.Float -> float_t
   | A.Void  -> void_t
+  | A.String -> str_ptr_t
 	in
 
 	let init t = match t with
@@ -77,7 +79,9 @@ let translate sprogram =
   let main_t = L.function_type i32_t [||] in
   let main_func = L.define_function "main" main_t the_module in
   let main_builder = L.builder_at_end context (L.entry_block main_func) in
-  let str_format_str = L.build_global_stringptr "%s\n" "fmt" main_builder in
+  let str_format_str = L.build_global_stringptr "%s\n" "fmt" main_builder
+  and int_format_str = L.build_global_stringptr "%d\n" "fmt" main_builder
+  and float_format_str = L.build_global_stringptr "%g\n" "fmt" main_builder in
 	let st = {scope=StringMap.empty;parent=None} in
 	st.scope <- StringMap.add "print" printf_func st.scope;
   let the_state:state = {namespace=st;
@@ -182,6 +186,14 @@ let translate sprogram =
       | (A.Void, SCall("print", [sx])) ->
           let sx' = sxpr the_state sx in
           L.build_call printf_func [| str_format_str ; sx' |] "printf" builder
+      | (A.Void, SCall("printi", [sx])) | (A.Void, SCall("printb", [sx])) ->
+          let sx' = sxpr the_state sx in
+	  L.build_call printf_func [| int_format_str ; sx' |]
+	    "printf" builder
+      | (A.Void, SCall ("printf", [sx])) -> 
+          let sx' = sxpr the_state sx in
+	  L.build_call printf_func [| float_format_str ; sx' |]
+	    "printf" builder
       | (A.Void, SNoexpr) -> L.const_int i32_t 0
       | (_, SId s)       -> L.build_load (lookup s namespace) s builder
 			| (t, SCall(name, args)) ->

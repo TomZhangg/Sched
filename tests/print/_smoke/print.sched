@@ -1,14 +1,15 @@
-str x;
-x = "hi";
+str s;
+s = "hello world";
+print(s);
 
-str y;
+float f;
+f = 1.008;
+printf(f);
 
-print(x);
+int i;
+i = -1000;
+printi(i);
 
-print("hello world");
-
-print(True);
-
-print(True && True);
-
-foo(x, y, True);
+bool b;
+b = True;
+printb(b);

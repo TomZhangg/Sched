@@ -1,0 +1,20 @@
+<create-statement>
+  <create-type-statement>
+    <item-type-spec>
+      Name: ExecutiveTime
+      Properties:
+        <new-property>
+          location
+          str
+<create-statement>
+  <create-sched-statement>
+    <named-sched-spec>
+      <sched-kind>: Day
+      <start-date-opt> None
+      <id>: Id(trump_nov_7)
+      <inline-items>:
+        <anon-item-spec>
+          <date-time-info-opt>: TimeLit(<2018-11-07T08:00:00>)
+          <item-kind>: ExecutiveTime
+          <attrs-opt>:
+            Type: Id(location), Name: StrLit("Oval Office")

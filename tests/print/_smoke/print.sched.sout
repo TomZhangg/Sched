@@ -1,0 +1,52 @@
+SExpr(
+  (str, s)
+)
+SExpr(
+s = 
+    typ: str, sx: "hello world"
+)
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: SId(s)
+  )
+)
+SExpr(
+  (float, f)
+)
+SExpr(
+f = 
+    typ: float, sx: 1.008
+)
+SExpr(
+  typ: void, sx: SCall(printf)
+    SExpr List:
+    typ: float, sx: SId(f)
+  )
+)
+SExpr(
+  (int, i)
+)
+SExpr(
+i = 
+(-)       typ: int, sx: 1000
+)
+SExpr(
+  typ: void, sx: SCall(printi)
+    SExpr List:
+    typ: int, sx: SId(i)
+  )
+)
+SExpr(
+  (bool, b)
+)
+SExpr(
+b = 
+true
+)
+SExpr(
+  typ: void, sx: SCall(printb)
+    SExpr List:
+    typ: bool, sx: SId(b)
+  )
+)

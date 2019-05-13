@@ -1,0 +1,29 @@
+SCS(
+  SType(
+    SItemType(
+      Name: ExecutiveTime
+      Type: str Name: location
+    )
+  )
+)
+SCS(
+  SSchedule(
+    SNamed(
+      <sched-kind>: Day
+      None
+      typ: CId, sx: SId(trump_nov_7)
+      sil_items(
+        SAnon(
+          <item-kind>: ExecutiveTime
+          typ: str, sx: <2018-11-07T08:00:00>
+          sattrs(
+            sattr(
+              typ: str, sx: SId(location)
+              typ: str, sx: "Oval Office"
+            )
+          )
+        )
+      )
+    )
+  )
+)

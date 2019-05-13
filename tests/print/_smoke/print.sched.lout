@@ -1,0 +1,29 @@
+; ModuleID = 'Schedch'
+
+@fmt = private unnamed_addr constant [4 x i8] c"%s\0A\00"
+@fmt.1 = private unnamed_addr constant [4 x i8] c"%d\0A\00"
+@fmt.2 = private unnamed_addr constant [4 x i8] c"%g\0A\00"
+@0 = private unnamed_addr constant [14 x i8] c"\22hello world\22\00"
+
+declare i32 @printf(i8*, ...)
+
+define i32 @main() {
+entry:
+  %s = alloca i8*
+  store i8* getelementptr inbounds ([14 x i8], [14 x i8]* @0, i32 0, i32 0), i8** %s
+  %s1 = load i8*, i8** %s
+  %printf = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt, i32 0, i32 0), i8* %s1)
+  %f = alloca double
+  store double 1.008000e+00, double* %f
+  %f2 = load double, double* %f
+  %printf3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt.2, i32 0, i32 0), double %f2)
+  %i = alloca i32
+  store i32 -1000, i32* %i
+  %i4 = load i32, i32* %i
+  %printf5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt.1, i32 0, i32 0), i32 %i4)
+  %b = alloca i1
+  store i1 true, i1* %b
+  %b6 = load i1, i1* %b
+  %printf7 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt.1, i32 0, i32 0), i1 %b6)
+  ret i32 0
+}

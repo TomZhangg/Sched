@@ -481,8 +481,33 @@ let event_decl = SKind({
   sprops = [(String, "desc")];
 })
 
+let printi_decl = SFunc({
+  styp = Void;
+  sfname = "printi";
+  sformals = [Bind(Int, "text")];
+  sbody = [];
+})
+
+let printf_decl = SFunc({
+  styp = Void;
+  sfname = "printf";
+  sformals = [Bind(Float, "text")];
+  sbody = [];
+})
+
+let printb_decl = SFunc({
+  styp = Void;
+  sfname = "printb";
+  sformals = [Bind(Bool, "text")];
+  sbody = [];
+})
+
+
 let st1 = StringMap.add "print" print_decl StringMap.empty
 let st2 = StringMap.add "Event" event_decl st1
-let init_st_tb = st2
+let st3 = StringMap.add "printi" printi_decl st2
+let st4 = StringMap.add "printf" printf_decl st3
+let st5 = StringMap.add "printb" printb_decl st4
+let init_st_tb = st5
 
 let init_st = {tb=init_st_tb;parent=None}
