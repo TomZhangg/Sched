@@ -218,20 +218,48 @@ let pp_sched_spec lvl sched_spec =
                             opt_sub_tree;
                             items_sub_tree]
 
+(* TODO: Add support for existing properties. *)
+type property =
+  New of typ * string
+let pp_property lvl prop =
+  let ot_idnt = indent lvl in
+  let in_idnt = indent (lvl + 1) in
+  match(prop) with
+    New(type_, name) ->
+      String.concat "\n" [ot_idnt ^ "<new-property>";
+                          in_idnt ^ name;
+                          in_idnt ^ (string_of_typ type_)]
+
+type type_spec =
+  ItemType of string * property list
+let pp_type_spec lvl type_spec =
+  let ot_idnt = indent lvl in
+  let in_idnt = indent (lvl + 1) in
+  match(type_spec) with
+    ItemType(name, properties) ->
+      let props_lines = List.map (fun prop -> pp_property (lvl + 2) prop) properties in
+      String.concat "\n" ([ot_idnt ^ "<item-type-spec>";
+                           in_idnt ^ "Name: " ^ name;
+                           in_idnt ^ "Properties:"]
+                        @ props_lines )
+
 type create_stmt =
   Schedule of sched_spec
 | Item of item_spec
-  (* TODO: Add Item insert statements *)
+| Type of type_spec
 let pp_create_stmt lvl create_stmt =
+  let idnt = indent lvl in
   match create_stmt with
     Schedule(spec) ->
-      let idnt = indent lvl in
       let sub_tree = pp_sched_spec (lvl + 1) spec in
         idnt ^ "<create-sched-statement>\n" ^ sub_tree
   | Item(spec) ->
-      let idnt = indent lvl in
       let sub_tree = pp_item_spec (lvl + 1) spec in
         idnt ^ "<create-item-statement>\n" ^ sub_tree
+  | Type(spec) ->
+      let sub_tree = pp_type_spec (lvl + 1) spec in
+        idnt ^ "<create-type-statement>\n" ^ sub_tree
+
 
 
 type insert_stmt =

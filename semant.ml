@@ -44,6 +44,10 @@ let type_of_identifier s sym_tab=
 	then let SExpr(t, s) = lookup s sym_tab in t
 	else  raise (Failure ("undeclared identifier " ^ s))
 
+let insert_into_symtable key entry st =
+  {tb = StringMap.add key entry st.tb;
+   parent = st.parent}
+
 let rec check_expr (xpr : expr)
                    (sym_tab : symtable)
                    : (sexpr * symtable) option =
@@ -227,63 +231,96 @@ let check_il_items (items : item_spec list)
    * symbol table too. *)
   List.map (fun item -> check_sitem_spec item sym_tab) items
 
+let check_property prop sym_tab =
+  match prop with
+    New(type_, name) -> type_, name
+
+let rec check_properties props sym_tab =
+  match props with
+    [] -> []
+  | p :: ps ->
+      let p' = check_property p sym_tab in
+      let ps' = check_properties ps sym_tab in
+      p' :: ps'
+
+let check_type_spec (tspec : type_spec)
+                    (sym_tab : symtable)
+                    : (stype_spec * symtable) =
+  match tspec with
+    ItemType(name, props) ->
+      (* Semantic checks:
+       * 1. Verify name is not already defined.
+       * 2. There is no need to check the properties (5/13/19) since
+       *    the scanner and parser already enforce an identifier and
+       *    valid type.
+       *)
+      let props' = check_properties props sym_tab in
+      if check_exist name sym_tab then raise (Failure "name already defined.")
+      else (SItemType(name, props'), sym_tab)
+
 let check_create_stmt (cstmt : create_stmt)
                       (sym_tab : symtable)
                       : (screate_stmt * symtable) option =
   match cstmt with
     Schedule(spec) ->
-    (match spec with
-      Named(kind, st_date_opt, id, il_items_opt) ->
-      (* Semantic checks:
-       * 1. Verify that kind is a Schedule Kind, either a built-in
-       *    or user-defined kind.
-       * 2. Verify that st_date_opt gives only date information.
-       * 3. Verify that id is not already defined.
-       * 4. TODO: Add semantic checks for il_items_opt *)
-      let skind =
-        (match kind with
-          Id(kid) ->
-            (* Curious if this is a compilation error or potential
-             * runtime error. *)
-            let SKind(decl) = lookup kid sym_tab in
-            if decl.sdtype = Schedule
-              then kind
-              else raise (Failure "Schedule Kind is not defined")
-        | _ -> kind)
-      in
-      let (has_date, sst_date_opt)  =
-        (match st_date_opt with
-          None -> false, None
-        | Some(expr) ->
-            (match (check_expr expr sym_tab) with
-              Some(sx, st) -> true, Some(sx)
-            | None -> false, None))
-      in
-      (* TODO: Figure out where the id should be entered into the symbol table. *)
-      let defined =
-        (match id with
-          Id(sid) ->
-            try ignore(lookup sid sym_tab); true
-            with Not_found -> false
-        | _ -> raise (Failure "Invalid id."))
-      in
-      let sid = 
-        (match id with
-          Id(str) -> CId, SId(str)
-        | _ -> raise (Failure "Named Schedule without a name!"))
-      in
-      let sitems = 
-        (match il_items_opt with
-          Some(items) -> check_il_items items sym_tab
-        | None -> [])
-      in
-      (* TODO: Add inline items option.
-       * For now (4/25/19) the SNamed is variant has only an Ast.sched_kind,
-       * an sexpr_opt and sexpr. So at this point, we have verified that
-       * the Schedule Kind is defined, recursively checked the optional
-       * date information, and ensured that the id is not already defined. *)
-      Some( SSchedule(SNamed(kind, sst_date_opt, sid, sitems)), sym_tab )
-    | _ -> raise (Check_not_implemented "Ast.sched_spec variant"))
+      (* TODO: Refactor pattern matching on spec into its own function. *)
+      (match spec with
+        Named(kind, st_date_opt, id, il_items_opt) ->
+        (* Semantic checks:
+         * 1. Verify that kind is a Schedule Kind, either a built-in
+         *    or user-defined kind.
+         * 2. Verify that st_date_opt gives only date information.
+         * 3. Verify that id is not already defined.
+         * 4. Do semantic checks for il_items_opt *)
+        let skind =
+          (match kind with
+            Id(kid) ->
+              (* Curious if this is a compilation error or potential
+               * runtime error. *)
+              let SKind(decl) = lookup kid sym_tab in
+              if decl.sdtype = Schedule
+                then kind
+                else raise (Failure "Schedule Kind is not defined")
+          | _ -> kind)
+        in
+        let (has_date, sst_date_opt)  =
+          (match st_date_opt with
+            None -> false, None
+          | Some(expr) ->
+              (match (check_expr expr sym_tab) with
+                Some(sx, st) -> true, Some(sx)
+              | None -> false, None))
+        in
+        (* TODO: Figure out where the id should be entered into the symbol table. *)
+        let defined =
+          (match id with
+            Id(sid) ->
+              try ignore(lookup sid sym_tab); true
+              with Not_found -> false
+          | _ -> raise (Failure "Invalid id."))
+        in
+        let sid = 
+          (match id with
+            Id(str) -> CId, SId(str)
+          | _ -> raise (Failure "Named Schedule without a name!"))
+        in
+        let sitems = 
+          (match il_items_opt with
+            Some(items) -> check_il_items items sym_tab
+          | None -> [])
+        in
+        Some( SSchedule(SNamed(kind, sst_date_opt, sid, sitems)), sym_tab )
+      | _ -> raise (Check_not_implemented "Ast.sched_spec variant"))
+    | Type(spec) ->
+        let spec' = check_type_spec spec sym_tab in
+        (match spec' with
+          (SItemType(name, props), st) ->
+            let kdecl = SKind({sdtype = SchedItem;
+                               skname = name;
+                               sprops = props;})
+            in
+            let st' = insert_into_symtable name kdecl st in
+            Some( SType(SItemType(name, props)), st' ))
   | _ -> raise (Check_not_implemented "Ast.create_stmt variant")
 
 let rec check_stmt (stmt : stmt)
@@ -405,9 +442,6 @@ and check_stmt_list (sl : stmt list)
   | [] -> Some ([], sym_tab)
 
 
-
-
-
 let rec check (prog : program)
               (sym_tab : symtable)
               : (sprogram * symtable) option =
@@ -434,31 +468,6 @@ let rec check (prog : program)
        | None -> None)
   | [] -> Some ([], sym_tab)
 
-(*
-let print_decl = SFunc({
-  styp = Void;
-  sfname = "print";
-  sformals = [Bind(String, "text")];
-  sbody = [];
-<<<<<<< HEAD
-})
-
-let event_decl = SKind({
-  sdtype = SchedItem;
-  skname = "Event";
-  sprops = [(String, "desc")];
-})
-
-let st1 = StringMap.add "print" print_decl StringMap.empty
-let init_st = StringMap.add "Event" event_decl st1
-=======
-}
-let pf = SFunc(print_fdecl)
-let init_st_tb = StringMap.add "print" pf StringMap.empty
-let init_st = {tb=init_st_tb;parent=None}
->>>>>>> master
-*)
-
 let print_decl = SFunc({
   styp = Void;
   sfname = "print";
@@ -471,12 +480,9 @@ let event_decl = SKind({
   skname = "Event";
   sprops = [(String, "desc")];
 })
-
 
 let st1 = StringMap.add "print" print_decl StringMap.empty
 let st2 = StringMap.add "Event" event_decl st1
-(* let pf = SFunc(print_fdecl) *)
-(* let init_st_tb = StringMap.add "print" pf st2 *)
 let init_st_tb = st2
 
 let init_st = {tb=init_st_tb;parent=None}

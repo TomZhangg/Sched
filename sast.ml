@@ -46,11 +46,14 @@ and sstmt =
 and screate_stmt =
   SSchedule of ssched_spec
 | SItem of sitem_spec
+| SType of stype_spec
 and ssched_spec = 
   (* TODO: Add sil_items_opt *)
   SNamed of Ast.sched_kind * sexpr_opt * sexpr * sil_items
 and sitem_spec =
   SAnon of Ast.item_kind * sexpr_opt * sattrs
+and stype_spec =
+  SItemType of string * (typ * string) list
 and sexpr_opt =
   Some of sexpr
 | None
@@ -144,6 +147,21 @@ let string_of_ssched_spec lvl spec =
                           suffix]
   | _ -> raise (Failure "string_of_ssched_spec case not implemented yet.")
 
+let string_of_property lvl prop =
+  let idnt = indent lvl in
+  let type_, name = prop in
+  idnt ^ "Type: " ^ (string_of_typ type_) ^ " Name: " ^ name
+
+let string_of_stype_spec lvl spec =
+  let idnt = indent lvl in
+  match spec with
+    SItemType(name, ps) ->
+      let prefix = idnt ^ "SItemType(" in
+      let suffix = idnt ^ ")" in
+      let name_line = (indent (lvl + 1)) ^ "Name: " ^ name in
+      let ps_lines = List.map (fun p -> string_of_property (lvl + 1) p) ps in
+      String.concat "\n" ([prefix; name_line] @ ps_lines @ [suffix])
+
 let string_of_screate_stmt lvl sc_stmt =
   let idnt = indent lvl in
   match sc_stmt with
@@ -153,6 +171,11 @@ let string_of_screate_stmt lvl sc_stmt =
       String.concat "\n" [prefix;
                           (string_of_ssched_spec (lvl + 1) spec);
                           suffix]
+  | SType(spec) ->
+      let prefix = idnt ^ "SType(" in
+      let suffix = idnt ^ ")" in
+      let body = string_of_stype_spec (lvl + 1) spec in
+      String.concat "\n" [prefix; body; suffix]
   | _ -> raise (Failure "string_of_screate_stmt case not implemented yet.")
 
 let rec string_of_sstmt lvl sstmt =

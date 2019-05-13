@@ -41,6 +41,9 @@ rule token = parse
 | "Insert"      { INSERT }
 | "Drop"		{ DROP }
 | "Copy"		{ COPY }
+| "Type"        { TYPE }
+| "new"         { NEW }
+| "ScheduleItem" { DEFSCHEDITEM } 
 | "Schedule"    { SCHED }
 | "Item"        { ITEM }
 | "Items"       { ITEMS }

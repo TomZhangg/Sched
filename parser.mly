@@ -1,7 +1,7 @@
 %{ open Ast %}
 
 
-%token SEMI COL COMMA CREATE INSERT DROP COPY ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT LEQ GEQ LBRACE RBRACE IF ELSE LBRACK RBRACK FOR WHILE RETURN
+%token SEMI COL COMMA CREATE INSERT DROP COPY ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT LEQ GEQ LBRACE RBRACE IF ELSE LBRACK RBRACK FOR WHILE RETURN TYPE DEFSCHEDITEM NEW
 %token FUNC ASSIGN NOT EQ NEQ AND OR LPAREN RPAREN
 %token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
@@ -111,6 +111,17 @@ args_list:
 create_stmt:
   CREATE SCHED sched_spec SEMI  { Schedule($3) }
 | CREATE ITEM item_spec SEMI    { Item($3) }
+| CREATE TYPE type_spec SEMI    { Type($3) }
+
+type_spec:
+  DEFSCHEDITEM ID properties    { ItemType($2, $3) }
+
+properties:
+  /* nothing */                         { [] }
+| LPAREN property RPAREN properties     { $2 :: $4 }
+
+property:
+  NEW ID typ     { New($3, $2) }
 
 insert_stmt:
   insert_stc { $1 }
