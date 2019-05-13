@@ -1,0 +1,42 @@
+SExpr(
+  (int, i)
+)
+SFor (i = 
+  typ: int, sx: 0 ;   typ: int, sx: SId(i) <   typ: int, sx: 2 ; i = 
+    typ: int, sx: SId(i) +     typ: int, sx: 1)
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: "hi"
+  )
+)}
+
+SExpr(
+  (int, j)
+)
+SExpr(
+j = 
+    typ: int, sx: 0
+)
+SFor ( ;   typ: int, sx: SId(j) <   typ: int, sx: 2 ; )
+{
+SExpr(
+j = 
+      typ: int, sx: SId(j) +       typ: int, sx: 2
+)SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: "here we go!"
+  )
+)}
+
+SIf (  typ: int, sx: SId(j) ==   typ: int, sx: 2)
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: "sweeet"
+  )
+)}
+

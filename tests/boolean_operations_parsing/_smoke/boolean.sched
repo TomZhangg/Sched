@@ -2,15 +2,20 @@ True;
 
 True && True;
 
+bool x;
+
+bool y;
+
+x = True;
+
+y = False;
+
+x == True;
+
+x == False && True;
+
 !True || !x || y;
 
 True || False && True;
 
 True && x && y || False;
-
-bool x;
-x = True;
-
-x == True;
-
-x == False && True;

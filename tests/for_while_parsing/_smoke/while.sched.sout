@@ -1,0 +1,57 @@
+SExpr(
+  (int, i)
+)
+SExpr(
+i = 
+    typ: int, sx: 0
+)
+SWhile (  typ: int, sx: SId(i) <   typ: int, sx: 2)
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: "loop working"
+  )
+)SExpr(
+i = 
+      typ: int, sx: SId(i) +       typ: int, sx: 1
+)}
+
+SExpr(
+  (int, j)
+)
+SExpr(
+j = 
+    typ: int, sx: 0
+)
+SExpr(
+  (int, k)
+)
+SExpr(
+k = 
+    typ: int, sx: SId(j)
+)
+SWhile (  typ: int, sx: SId(j) <   typ: int, sx: 2)
+{
+SExpr(
+j = 
+      typ: int, sx: SId(j) +       typ: int, sx: 1
+)SExpr(
+k = 
+      typ: int, sx: SId(k) +       typ: int, sx: 2
+)SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: "moving along"
+  )
+)}
+
+SIf (  typ: int, sx: SId(k) ==   typ: int, sx: 4)
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: "sweeet"
+  )
+)}
+

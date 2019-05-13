@@ -1,0 +1,24 @@
+if (-IntLit(4) + -IntLit(5) < -IntLit(6) - -IntLit(4))
+{
+print(StrLit("reality"));}
+else
+{
+print(StrLit("fantasy"));}
+
+(int, i);
+i = IntLit(0);
+Id(i) < IntLit(1);
+i = Id(i) + IntLit(1);
+if (Id(i) < IntLit(1))
+{
+print(StrLit("NOOO"));}
+else
+{
+if (Id(i) + IntLit(1) <= IntLit(2))
+{
+print(StrLit("yay"));}
+else
+{
+print(StrLit("boo"));}
+}
+

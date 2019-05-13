@@ -1,0 +1,23 @@
+int i;
+i = 0;
+while(i < 2)
+{
+print("loop working");
+i = i+1;
+}
+
+int j;
+j = 0;
+int k;
+k = j;
+while(j < 2)
+{
+j = j + 1; 
+k = k + 2;
+print("moving along");
+}
+
+if (k ==4)
+{
+print("sweeet");
+}

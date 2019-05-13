@@ -1,0 +1,18 @@
+int i;
+for (i = 0; i < 2; i=i+1)
+{
+print("hi"); 
+}
+
+int j;
+j = 0;
+for (; j < 2; )
+{
+ j = j+2;
+print("here we go!");
+}
+
+if(j ==2)
+{
+print("sweeet");
+}

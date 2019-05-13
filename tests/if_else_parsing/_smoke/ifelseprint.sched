@@ -1,0 +1,23 @@
+if(-4 + -5 < -6 - -4) {print("reality");} else {print("fantasy");}
+
+int i; 
+i = 0;
+i < 1;
+i = i + 1;
+
+if (i < 1)
+{
+print("NOOO");
+}
+else
+{
+if (i+1<=2)
+{
+print("yay");
+}
+else
+{
+print("boo");
+}
+}
+
