@@ -1,6 +1,8 @@
 ; ModuleID = 'Schedch'
 
 @fmt = private unnamed_addr constant [4 x i8] c"%s\0A\00"
+@fmt.1 = private unnamed_addr constant [4 x i8] c"%d\0A\00"
+@fmt.2 = private unnamed_addr constant [4 x i8] c"%g\0A\00"
 @0 = private unnamed_addr constant [5 x i8] c"\22hi\22\00"
 @1 = private unnamed_addr constant [14 x i8] c"\22here we go!\22\00"
 @2 = private unnamed_addr constant [9 x i8] c"\22sweeet\22\00"
