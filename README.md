@@ -75,4 +75,18 @@ workflow that leverages the flexibility of Git and its branch features. Read
 more about it in Scott Chacon's lovely [Git
 Book](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell).
 
+# Compiling a Schedch Program
 
+To compile a Schedch program to a native executable:
+
+1. Compile to LLVM code using our Schedch compiler.
+2. Compile the LLVM code using the LL compiler.
+3. Compile the assembly code using the C compiler.
+
+In bash commands:
+
+```bash
+./schedch.native -c program.schedch > program.ll
+llc program.ll > program.s
+cc -o program.exe program.s
+```
