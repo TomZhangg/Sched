@@ -90,10 +90,11 @@ let rec check_expr (xpr : expr)
       let (flag, sargs) = List.fold_right sarg_check zipped (true, []) in
       if flag then Some((sf.styp, SCall(f, sargs)), sym_tab) else None
     else None)
-  | TimeLit(lit) ->
+  | TimeLit(y,mo,d,h,mi,s) ->
       (* TODO: Implement TimeLit. For now (4/28/19) will just
        * treat like a string for implementing Create statement. *)
-      Some((String, SStrLit(lit)), sym_tab)
+			let lit = string_of_tl (y,mo,d,h,mi,s) in
+      Some((Time, STimeLit(y,mo,d,h,mi,s)), sym_tab)
   | StrLit(lit) ->
     (* Need to check that the type for this expression is a String. *)
     Some((String, SStrLit(lit)), sym_tab)
@@ -299,12 +300,12 @@ let check_create_stmt (cstmt : create_stmt)
               with Not_found -> false
           | _ -> raise (Failure "Invalid id."))
         in
-        let sid = 
+        let sid =
           (match id with
             Id(str) -> CId, SId(str)
           | _ -> raise (Failure "Named Schedule without a name!"))
         in
-        let sitems = 
+        let sitems =
           (match il_items_opt with
             Some(items) -> check_il_items items sym_tab
           | None -> [])

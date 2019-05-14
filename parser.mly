@@ -1,4 +1,19 @@
-%{ open Ast %}
+%{ open Ast
+let convert_timelit tl =
+  let y = int_of_string (String.sub tl 1 4) in
+  let mo = int_of_string (String.sub tl 6 2) in
+  let d = int_of_string (String.sub tl 9 2) in
+  let h = int_of_string (String.sub tl 12 2) in
+  let mi = int_of_string (String.sub tl 15 2) in
+  let s = int_of_string (String.sub tl 18 2) in
+  TimeLit(y,mo,d,h,mi,s)
+
+let convert_datelit dl =
+  let y = int_of_string (String.sub dl 1 4) in
+  let mo = int_of_string (String.sub dl 6 2) in
+  let d = int_of_string (String.sub dl 9 2) in
+  TimeLit(y,mo,d,0,0,0)
+%}
 
 
 %token SEMI COL COMMA CREATE INSERT DROP COPY ITEM ITEMS SCHED INTO FROM COLLECTION SET OF TO LT GT INDENT LEQ GEQ LBRACE RBRACE IF ELSE LBRACK RBRACK FOR WHILE RETURN TYPE DEFSCHEDITEM NEW
@@ -6,7 +21,7 @@
 %token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
-%token BOOL STRING INT FLOAT
+%token BOOL STRING INT FLOAT TIME
 %token <string> DATELIT
 %token <string> TIMELIT
 %token <string> ID
@@ -68,6 +83,7 @@ typ:
   | STRING { String }
   | INT    { Int }
   | FLOAT  { Float }
+  | TIME    { Time }
 
 expr_opt:
     /* nothing */ { Noexpr }
@@ -98,6 +114,7 @@ expr:
 | ID ASSIGN expr		 { Assign($1,$3)				}
 | typ ID ASSIGN expr { BinAssign(Bind($1,$2),$4)	}
 | ID LPAREN args_opt RPAREN { Call($1, $3)  }
+| dt                 {$1}
 | LPAREN expr RPAREN { $2                   }
 
 args_opt:
@@ -201,10 +218,14 @@ item_kind:
 | DEADLINE { Deadline }
 | ID       { Id($1) }
 
+dt:
+| TIMELIT       { convert_timelit $1 }
+| DATELIT       { convert_datelit $1 }
+
 dt_opt:
   /* nothing */ { None }
-| TIMELIT       { Some (TimeLit($1)) }
-| DATELIT       { Some (TimeLit($1)) }
+| TIMELIT       { Some (convert_timelit $1) }
+| DATELIT       { Some (convert_datelit $1) }
 
 attrs_opt:
   /* nothing */ { None }

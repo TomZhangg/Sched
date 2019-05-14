@@ -20,6 +20,7 @@ and sx =
 | SAssign of string * sexpr
 | SBIND of typ * string
 | SBinAssign of (typ * string) * sexpr
+| STimeLit of (int*int*int*int*int*int)
 | SNoexpr
 and sfunc_decl = {
 	    styp : typ;
@@ -47,7 +48,7 @@ and screate_stmt =
   SSchedule of ssched_spec
 | SItem of sitem_spec
 | SType of stype_spec
-and ssched_spec = 
+and ssched_spec =
   (* TODO: Add sil_items_opt *)
   SNamed of Ast.sched_kind * sexpr_opt * sexpr * sil_items
 and sitem_spec =
@@ -74,6 +75,9 @@ let rec string_of_sexpr lvl sxpr =
     let lines = List.map (string_of_sexpr (lvl + 1)) sxprs in
     String.concat "\n" ([prefix; snd_line] @ lines @ [suffix])
   | SStrLit(lit) -> idnt ^ "typ: " ^ tp_string ^ ", sx: " ^ lit
+  | STimeLit(y,mo,d,h,mi,s) -> "TimeLit(" ^
+    string_of_tl (y,mo,d,h,mi,s) ^
+    ")"
 	| SBoolLit(true) -> "true"
 	| SBoolLit(false) -> "false"
   | SIntLit(lit) -> idnt ^ "typ: " ^ tp_string ^ ", sx: " ^ string_of_int lit
@@ -214,7 +218,7 @@ let rec string_of_sstmt lvl sstmt =
   | SFor(e1, e2, e3, s) ->
           "SFor (" ^ string_of_sexpr lvl e1  ^ " ; " ^ string_of_sexpr lvl e2 ^ " ; " ^
           string_of_sexpr lvl e3  ^ ")\n" ^ (string_of_sstmt lvl s)
-  | SWhile(e, s) -> "SWhile (" ^ string_of_sexpr lvl e ^ ")\n" ^ (string_of_sstmt lvl s)  
+  | SWhile(e, s) -> "SWhile (" ^ string_of_sexpr lvl e ^ ")\n" ^ (string_of_sstmt lvl s)
   | _ -> raise (Failure "string_of_sstmt case not implemented yet.")
 
 
@@ -223,4 +227,3 @@ type sprogram = sstmt list
 let string_of_sprogram sprog =
   let sstmts = List.map (string_of_sstmt 0) sprog in
   String.concat "\n" sstmts
-

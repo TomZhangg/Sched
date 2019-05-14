@@ -43,7 +43,7 @@ rule token = parse
 | "Copy"		{ COPY }
 | "Type"        { TYPE }
 | "new"         { NEW }
-| "ScheduleItem" { DEFSCHEDITEM } 
+| "ScheduleItem" { DEFSCHEDITEM }
 | "Schedule"    { SCHED }
 | "Item"        { ITEM }
 | "Items"       { ITEMS }
@@ -63,6 +63,7 @@ rule token = parse
 | "int"			{ INT }
 | "str"         { STRING }
 | "float"       {FLOAT}
+| "time"        { TIME }
 | "True"        { BLIT(true)  }
 | "False"       { BLIT(false) }
 | "return"			{ RETURN }

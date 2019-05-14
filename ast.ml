@@ -5,7 +5,7 @@ type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod | Less | Leq | G
 
 type uop = Not | Neg
 
-type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void | Float | CId
+type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void | Float | CId | Time
 
 type bind = Bind of typ * string
 
@@ -67,6 +67,7 @@ let string_of_typ t =
   | Void -> "void"
   | CId -> "CId"
   | Float -> "float"
+  | Time -> "time"
 
 let	string_of_bind b =
 		match b with
@@ -77,7 +78,7 @@ type expr =
   Id of string
 | IntLit of int
 | FLit of string
-| TimeLit of string
+| TimeLit of int*int*int*int*int*int
 | BoolLit of bool
 | StrLit of string
 | Binop of expr * op * expr
@@ -88,14 +89,21 @@ type expr =
 | BinAssign of bind * expr
 | Noexpr
 
+let string_of_tl tl =
+  match tl with
+    (y,mo,d,h,mi,s) ->
+    "<" ^ string_of_int y ^ "-" ^ string_of_int mo ^ "-" ^string_of_int d ^ "T" ^
+    string_of_int h ^ ":" ^ string_of_int mi ^ ":" ^ string_of_int s ^ ">"
+  | _ -> ""
+
 let rec string_of_expr expr =
   match expr with
     Id(str) -> "Id(" ^ str ^ ")"
   | FLit(str) -> "FLit(" ^ str ^ ")"
   | StrLit(str) -> "StrLit(" ^ str ^ ")"
   | IntLit(x) -> "IntLit(" ^ (string_of_int x) ^ ")"
-  | TimeLit(str) -> "TimeLit(" ^
-    str ^
+  | TimeLit(y,mo,d,h,mi,s) -> "TimeLit(" ^
+    string_of_tl (y,mo,d,h,mi,s) ^
     ")"
   | BoolLit(true) -> "BoolLit(" ^ "true" ^ ")"
   | BoolLit(false) -> "BoolLit(" ^ "false" ^ ")"
