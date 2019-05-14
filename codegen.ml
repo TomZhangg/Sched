@@ -20,15 +20,20 @@ type state = {mutable namespace:sym_tab;
 (* translate : Sast.sprogram -> Llvm.module *)
 let translate sprogram =
   let context = L.global_context () in
+  let llmem = L.MemoryBuffer.of_file "sched.bc" in
+  let llm = Llvm_bitreader.parse_bitcode context llmem in
   (* Create the LLVM compilation module into which
      we will generate code *)
-  let the_module  = L.create_module     context "Schedch"
-  and i1_t        = L.i1_type           context
+  let the_module  = L.create_module     context "Schedch" in
+  let i1_t        = L.i1_type           context
   and i8_t        = L.i8_type           context
   and i32_t       = L.i32_type          context
   and float_t     = L.double_type       context
   and str_ptr_t = L.pointer_type (L.i8_type context)
-  and void_t      = L.void_type         context in
+  and void_t      = L.void_type         context
+	and time_t			= L.pointer_type (match L.type_by_name llm "struct.time" with
+      None -> raise (Failure "struct.time isn't defined.")
+    | Some x -> x) in
 
   let i8_tp       = L.pointer_type i8_t in
   (* A Schedule Item Attribute has 3 fields:
@@ -63,6 +68,7 @@ let translate sprogram =
   | A.Float -> float_t
   | A.Void  -> void_t
   | A.String -> str_ptr_t
+	| A.Time -> time_t
 	in
 
 	let init t = match t with
@@ -74,6 +80,8 @@ let translate sprogram =
   let printf_t = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let printf_func = L.declare_function "printf" printf_t the_module in
 
+  let time_init_t = L.function_type time_t [| i32_t; i32_t; i32_t; i32_t; i32_t; i32_t |] in
+  let time_init_f = L.declare_function "time_init" time_init_t the_module in
   (** setup main() where all the code will go **)
   (* ftype is the full llvm function signature *)
   let main_t = L.function_type i32_t [||] in
@@ -84,6 +92,7 @@ let translate sprogram =
   and float_format_str = L.build_global_stringptr "%g\n" "fmt" main_builder in
 	let st = {scope=StringMap.empty;parent=None} in
 	st.scope <- StringMap.add "print" printf_func st.scope;
+	st.scope <- StringMap.add "time_init" time_init_f st.scope;
   let the_state:state = {namespace=st;
                          func=main_func;
                          b=main_builder} in
@@ -109,6 +118,17 @@ let translate sprogram =
     | (A.Bool, SBoolLit b)  -> L.const_int i1_t (if b then 1 else 0)
     | (A.Int, SIntLit i) -> L.const_int i32_t i
     | (A.Float, SFLit l) -> L.const_float_of_string float_t l
+		| (A.Time, STimeLit t) ->
+			(match t with (y,mo,d,h,mi,s) ->
+				let y' = L.const_int i32_t y in
+				let mo' = L.const_int i32_t mo in
+				let d' = L.const_int i32_t d in
+				let h' = L.const_int i32_t h in
+				let mi' = L.const_int i32_t mi in
+				let s' = L.const_int i32_t s in
+				L.build_call time_init_f [| y';mo';d';h';mi';s' |] "time_init" builder
+				| _ -> raise (Failure "time not correct")
+			)
 		| (Void, SBIND (t,s)) ->
 			let t' = ltype_of_typ t in
 			the_state.namespace.scope <- StringMap.add s (L.build_alloca t' s builder) namespace.scope; L.undef t'
@@ -128,7 +148,7 @@ let translate sprogram =
          	  | A.Neq     -> ( match e1 with
                   	  (A.Int, _) -> L.build_icmp L.Icmp.Ne
                         | (A.Float, _) -> L.build_fcmp L.Fcmp.One )
-		  | A.Less    -> ( match e1 with
+		  			| A.Less    -> ( match e1 with
                   	  (A.Int, _) -> L.build_icmp L.Icmp.Slt
                         | (A.Float, _) -> L.build_fcmp L.Fcmp.Olt )
          	  | A.Leq     -> ( match e1 with
@@ -285,7 +305,7 @@ let translate sprogram =
       let date_ptr =
         (match sx_opt with
           Some(dt_sx) -> sxpr the_state dt_sx
-        | _ -> sxpr the_state (A.String, SStrLit "None"))
+        | _ -> sxpr the_state (A.Time, STimeLit (0,0,0,0,0,0)))
       in
       let sdate_ptr = L.build_struct_gep sched 1 "" the_state.b in
       let n_items = L.const_int i8_t (List.length sil_items) in
