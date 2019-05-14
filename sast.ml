@@ -21,6 +21,8 @@ and sx =
 | SBIND of typ * string
 | SBinAssign of (typ * string) * sexpr
 | SNoexpr
+| SArrayLit of sexpr list
+| SIndex of string * sexpr
 and sfunc_decl = {
 	    styp : typ;
 	    sfname : string;
@@ -88,6 +90,8 @@ let rec string_of_sexpr lvl sxpr =
 			(match b with (t,s)->
 				"(" ^ string_of_typ t ^ ", " ^ s ^ ")" ^ string_of_sexpr (lvl+1) a)
 	| SNoexpr -> ""
+  | SArrayLit(l) -> idnt ^ "typ: " ^ tp_string ^ ", sx: SArrayLit(" ^ "[" ^ String.concat "," (List.map (string_of_sexpr lvl) (l)) ^ "]" ^ ")"
+  | SIndex(s, e) -> idnt ^ "typ: " ^ tp_string ^ ", sx: SIndex("^ s ^ "[" ^ (string_of_sexpr lvl e) ^ "]" ^ ")"
   | _ -> raise (Failure "string_of_sexpr case not implemented yet.")
 
 let string_of_sexpr_opt lvl opt =

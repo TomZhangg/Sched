@@ -1,0 +1,19 @@
+int[] i;
+i = [1, 2, 3, -4];
+printi(i[0]);
+printi(leni(i));
+
+float[] f;
+f = [1.5, 2.01, 1.00, -3.];
+printf(f[1]);
+printi(lenf(f));
+
+str[] s;
+s = ["hi", "there", "buddy"];
+print(s[2]);
+printi(lens(s));
+		
+bool[] b;
+b = [True, False, True, True];
+printb(b[0]);
+printi(lenb(b));

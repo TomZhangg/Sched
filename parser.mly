@@ -68,6 +68,7 @@ typ:
   | STRING { String }
   | INT    { Int }
   | FLOAT  { Float }
+  | typ LBRACK RBRACK {Array($1)}
 
 expr_opt:
     /* nothing */ { Noexpr }
@@ -99,6 +100,15 @@ expr:
 | typ ID ASSIGN expr { BinAssign(Bind($1,$2),$4)	}
 | ID LPAREN args_opt RPAREN { Call($1, $3)  }
 | LPAREN expr RPAREN { $2                   }
+| LBRACK args_list RBRACK { ArrayLit(List.rev $2) }
+| ID LBRACK expr RBRACK      { Index($1,$3) }
+/*
+| assignable ASSIGN expr		 { Assign($1,$3)				}
+| typ assignable ASSIGN expr { BinAssign(Bind($1,$2),$4)	}
+
+assignable:
+  ID LBRACK expr RBRACK      { Index($1,$3) }
+*/ 
 
 args_opt:
     /* nothing */ { [] }
