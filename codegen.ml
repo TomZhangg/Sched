@@ -190,7 +190,7 @@ let translate sprogram =
           let sx' = sxpr the_state sx in
 	  L.build_call printf_func [| int_format_str ; sx' |]
 	    "printf" builder
-      | (A.Void, SCall ("printf", [sx])) -> 
+      | (A.Void, SCall ("printf", [sx])) ->
           let sx' = sxpr the_state sx in
 	  L.build_call printf_func [| float_format_str ; sx' |]
 	    "printf" builder
@@ -224,7 +224,7 @@ let translate sprogram =
   let rec sattrs_linked_list the_state = function
   (* Return the head of a linked list of item attributes. *)
     [] -> L.const_null attr_tp
-  | str :: strs -> 
+  | str :: strs ->
     (* 1. Generate the code for the head of the list.
      * 2. Recursively process the tail of the list, and receive,
      *    a pointer to the start of the tail.
@@ -296,7 +296,7 @@ let translate sprogram =
       L.build_store name_ptr sname_ptr the_state.b;
       L.build_store date_ptr sdate_ptr the_state.b;
       L.build_store n_items sn_items_ptr the_state.b;
-      L.build_store items_ptr sitems_ptr the_state.b 
+      L.build_store items_ptr sitems_ptr the_state.b
   | _ -> raise (Failure "ssched_spec case not implemented yet.")
   in
 
@@ -333,8 +333,8 @@ let translate sprogram =
     | SCS(cs) -> ignore (scstmt the_state cs); the_state
     | SIf (predicate, then_stmt, else_stmt) ->
       let bool_val = sxpr the_state predicate in
-      let merge_bb = L.append_block context "merge" the_state.func in  
-      let build_br_merge = L.build_br merge_bb in 
+      let merge_bb = L.append_block context "merge" the_state.func in
+      let build_br_merge = L.build_br merge_bb in
       let then_bb = L.append_block context "then" the_state.func in
       let new_state1 = change_builder_state the_state (L.builder_at_end context then_bb) in
       add_terminal (sstmt new_state1 then_stmt) build_br_merge;
