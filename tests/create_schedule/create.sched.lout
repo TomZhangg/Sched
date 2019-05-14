@@ -2,6 +2,7 @@
 
 %struct.Array = type { i32, %struct.Array_element*, %struct.Array_element*, i32 }
 %struct.Array_element = type { %struct.Array_element*, %struct.Array_element*, i8* }
+%struct.time = type { i32, i32, i32, i32, i32, i32 }
 %item = type { i8*, i8*, %item_attr*, %item* }
 %item_attr = type { i8*, i8*, %item_attr* }
 
@@ -9,10 +10,8 @@
 @fmt.1 = private unnamed_addr constant [4 x i8] c"%d\0A\00"
 @fmt.2 = private unnamed_addr constant [4 x i8] c"%g\0A\00"
 @0 = private unnamed_addr constant [12 x i8] c"trump_nov_7\00"
-@1 = private unnamed_addr constant [5 x i8] c"None\00"
-@2 = private unnamed_addr constant [22 x i8] c"<2019-06-21T18:53:00>\00"
-@3 = private unnamed_addr constant [5 x i8] c"desc\00"
-@4 = private unnamed_addr constant [19 x i8] c"\22Summer solstice.\22\00"
+@1 = private unnamed_addr constant [5 x i8] c"desc\00"
+@2 = private unnamed_addr constant [19 x i8] c"\22Summer solstice.\22\00"
 
 declare i32 @printf(i8*, ...)
 
@@ -30,29 +29,33 @@ declare i32 @arr_length(%struct.Array*)
 
 declare i32 @arr_contains(%struct.Array*, i8*)
 
+declare %struct.time* @time_init(i32, i32, i32, i32, i32, i32)
+
 define i32 @main() {
 entry:
   %0 = alloca { i8*, i8*, i8, %item* }
   %1 = getelementptr inbounds { i8*, i8*, i8, %item* }, { i8*, i8*, i8, %item* }* %0, i32 0, i32 0
+  %time_init = call %struct.time* @time_init(i32 0, i32 0, i32 0, i32 0, i32 0, i32 0)
   %2 = getelementptr inbounds { i8*, i8*, i8, %item* }, { i8*, i8*, i8, %item* }* %0, i32 0, i32 1
   %3 = getelementptr inbounds { i8*, i8*, i8, %item* }, { i8*, i8*, i8, %item* }* %0, i32 0, i32 2
   %4 = alloca %item
+  %time_init1 = call %struct.time* @time_init(i32 2019, i32 6, i32 21, i32 18, i32 53, i32 0)
   %5 = getelementptr inbounds %item, %item* %4, i32 0, i32 1
   %6 = alloca %item_attr
   %7 = getelementptr inbounds %item_attr, %item_attr* %6, i32 0, i32 0
   %8 = getelementptr inbounds %item_attr, %item_attr* %6, i32 0, i32 1
-  store i8* getelementptr inbounds ([5 x i8], [5 x i8]* @3, i32 0, i32 0), i8** %7
-  store i8* getelementptr inbounds ([19 x i8], [19 x i8]* @4, i32 0, i32 0), i8** %8
+  store i8* getelementptr inbounds ([5 x i8], [5 x i8]* @1, i32 0, i32 0), i8** %7
+  store i8* getelementptr inbounds ([19 x i8], [19 x i8]* @2, i32 0, i32 0), i8** %8
   %9 = getelementptr inbounds %item_attr, %item_attr* %6, i32 0, i32 2
   store %item_attr* null, %item_attr** %9
   %10 = getelementptr inbounds %item, %item* %4, i32 0, i32 2
-  store i8* getelementptr inbounds ([22 x i8], [22 x i8]* @2, i32 0, i32 0), i8** %5
+  store %struct.time* %time_init1, i8** %5
   store %item_attr* %6, %item_attr** %10
   %11 = getelementptr inbounds %item, %item* %4, i32 0, i32 3
   store %item* null, %item** %11
   %12 = getelementptr inbounds { i8*, i8*, i8, %item* }, { i8*, i8*, i8, %item* }* %0, i32 0, i32 3
   store i8* getelementptr inbounds ([12 x i8], [12 x i8]* @0, i32 0, i32 0), i8** %1
-  store i8* getelementptr inbounds ([5 x i8], [5 x i8]* @1, i32 0, i32 0), i8** %2
+  store %struct.time* %time_init, i8** %2
   store i8 1, i8* %3
   store %item* %4, %item** %12
   ret i32 0

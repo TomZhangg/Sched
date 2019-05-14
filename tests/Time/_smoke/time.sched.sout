@@ -1,0 +1,17 @@
+SExpr(
+  (time, a)
+)
+SExpr(
+a = 
+TimeLit(<2000-9-10T0:0:0>)
+)
+SExpr(
+  (time, b)
+)
+SExpr(
+b = 
+TimeLit(<2000-9-10T10:10:10>)
+)
+SExpr(
+  (bool, d)
+)

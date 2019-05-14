@@ -28,21 +28,12 @@ declare %struct.time* @time_init(i32, i32, i32, i32, i32, i32)
 
 define i32 @main() {
 entry:
-  %a = alloca i32
-  %b = alloca i32
-  store i32 13, i32* %a
-  %c = alloca i32
-  store i32 25, i32* %b
-  store i32 234, i32* %c
+  %a = alloca %struct.time*
+  %time_init = call %struct.time* @time_init(i32 2000, i32 9, i32 10, i32 0, i32 0, i32 0)
+  store %struct.time* %time_init, %struct.time** %a
+  %b = alloca %struct.time*
+  %time_init1 = call %struct.time* @time_init(i32 2000, i32 9, i32 10, i32 10, i32 10, i32 10)
+  store %struct.time* %time_init1, %struct.time** %b
   %d = alloca i1
-  store i1 false, i1* %d
-  store i1 true, i1* %d
-  store i32 1234, i32* %b
-  %d1 = alloca i32
-  store i32 12, i32* %d1
-  store i32 123456, i32* %b
-  store i32 12345678, i32* %b
-  store i32 12345, i32* %b
-  store i1 false, i1* %d
   ret i32 0
 }

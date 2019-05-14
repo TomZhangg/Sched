@@ -7,7 +7,7 @@ SCS(
       sil_items(
         SAnon(
           <item-kind>: Event
-          typ: str, sx: <2019-06-21T18:53:00>
+TimeLit(<2019-6-21T18:53:0>)
           sattrs(
             sattr(
               typ: str, sx: SId(desc)

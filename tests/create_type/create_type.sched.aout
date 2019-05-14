@@ -14,7 +14,7 @@
       <id>: Id(trump_nov_7)
       <inline-items>:
         <anon-item-spec>
-          <date-time-info-opt>: TimeLit(<2018-11-07T08:00:00>)
+          <date-time-info-opt>: TimeLit(<2018-11-7T8:0:0>)
           <item-kind>: ExecutiveTime
           <attrs-opt>:
             Type: Id(location), Name: StrLit("Oval Office")

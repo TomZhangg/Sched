@@ -15,7 +15,7 @@ SCS(
       sil_items(
         SAnon(
           <item-kind>: ExecutiveTime
-          typ: str, sx: <2018-11-07T08:00:00>
+TimeLit(<2018-11-7T8:0:0>)
           sattrs(
             sattr(
               typ: str, sx: SId(location)

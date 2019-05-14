@@ -6,7 +6,7 @@
       <id>: Id(trump_nov_7)
       <inline-items>:
         <anon-item-spec>
-          <date-time-info-opt>: TimeLit(<2019-06-21T18:53:00>)
+          <date-time-info-opt>: TimeLit(<2019-6-21T18:53:0>)
           <item-kind>: Event
           <attrs-opt>:
             Type: Id(desc), Name: StrLit("Summer solstice.")

@@ -39,32 +39,32 @@
       <id>: Id(trump_nov_7)
       <inline-items>:
         <anon-item-spec>
-          <date-time-info-opt>: TimeLit(<2018-11-07T08:00:00>)
+          <date-time-info-opt>: TimeLit(<2018-11-7T8:0:0>)
           <item-kind>: ExecTime
           <attrs-opt>:
             Type: Id(duration), Name: StrLit("3hr")
             Type: Id(location), Name: StrLit("Oval Office")
         <anon-item-spec>
-          <date-time-info-opt>: TimeLit(<2018-11-07T11:00:00>)
+          <date-time-info-opt>: TimeLit(<2018-11-7T11:0:0>)
           <item-kind>: PresItem
           <attrs-opt>:
             Type: Id(duration), Name: StrLit("30min")
             Type: Id(desc), Name: StrLit("Meeting with the Chief of Staff")
             Type: Id(location), Name: StrLit("Oval Office")
         <anon-item-spec>
-          <date-time-info-opt>: TimeLit(<2018-11-07T11:30:00>)
+          <date-time-info-opt>: TimeLit(<2018-11-7T11:30:0>)
           <item-kind>: ExecTime
           <attrs-opt>:
             Type: Id(duration), Name: StrLit("1hr")
             Type: Id(location), Name: StrLit("Oval Office")
         <anon-item-spec>
-          <date-time-info-opt>: TimeLit(<2018-11-07T12:30:00>)
+          <date-time-info-opt>: TimeLit(<2018-11-7T12:30:0>)
           <item-kind>: Lunch
           <attrs-opt>:
             Type: Id(duration), Name: StrLit("1hr")
             Type: Id(location), Name: StrLit("Private Dining Room")
         <anon-item-spec>
-          <date-time-info-opt>: TimeLit(<2018-11-07T13:30:00>)
+          <date-time-info-opt>: TimeLit(<2018-11-7T13:30:0>)
           <item-kind>: ExecTime
           <attrs-opt>:
             Type: Id(duration), Name: StrLit("3hr30min")
