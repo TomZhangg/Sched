@@ -388,12 +388,17 @@ let translate sprogram =
       {namespace=old_state.namespace;func=old_state.func;b=b}
   in
 
+	let free_mem b k v =
+		ignore(L.build_free v b)
+	in
+
   let rec sstmt the_state = function
       SBlock(sl) ->
 			let new_scope = StringMap.empty in
 			let new_st = {scope=new_scope; parent=Some(the_state.namespace)} in
 			let new_state = {namespace=new_st; func=the_state.func; b = the_state.b} in
 			let new_state = List.fold_left sstmt new_state sl in
+			let _ = StringMap.iter (free_mem new_state.b) new_state.namespace.scope in
 			let end_state = change_builder_state the_state new_state.b in end_state
     | SExpr(sx) -> ignore (sxpr the_state sx); the_state
     | SCS(cs) -> ignore (scstmt the_state cs); the_state
