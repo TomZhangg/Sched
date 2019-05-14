@@ -1,0 +1,18 @@
+#( Create an Item Kind for the President's Personal Schedule. )#
+Create Type ScheduleItem PresItem (new location str) (new note str) (new project_officer str) (new press str);
+
+#( Create an Item Kind just for Executive Time since it is scheduled so often... )#
+Create Type ScheduleItem ExecTime (new location str);
+
+#( Create an Item Kind for lunch. The most important meal of the day! )#
+Create Type ScheduleItem Lunch (new location str);
+
+Create Schedule Day trump_nov_7
+  Schedule Items
+    (ExecTime <2018-11-07T08:00:00> duration: "3hr", location: "Oval Office")
+    (PresItem <2018-11-07T11:00:00> duration: "30min", desc: "Meeting with the Chief of Staff" location: "Oval Office")
+    (ExecTime <2018-11-07T11:30:00> duration: "1hr", location: "Oval Office")
+    (Lunch <2018-11-07T12:30:00> duration: "1hr", location: "Private Dining Room")
+    (ExecTime <2018-11-07T13:30:00> duration: "3hr30min", location: "Oval Office");
+
+

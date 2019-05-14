@@ -1,4 +1,4 @@
 #( Create an Item Kind just for Executive Time since it is scheduled so often... )#
 Create Type ScheduleItem ExecutiveTime (new location str);
 
-Create Schedule Day trump_nov_7 Schedule Items ExecutiveTime <2018-11-07T08:00:00> location: "Oval Office";
+Create Schedule Day trump_nov_7 Schedule Items (ExecutiveTime <2018-11-07T08:00:00> location: "Oval Office");

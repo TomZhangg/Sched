@@ -254,7 +254,7 @@ let check_type_spec (tspec : type_spec)
        *    the scanner and parser already enforce an identifier and
        *    valid type.
        *)
-      let props' = check_properties props sym_tab in
+      let props' = (check_properties props sym_tab)  in
       if check_exist name sym_tab then raise (Failure "name already defined.")
       else (SItemType(name, props'), sym_tab)
 
@@ -317,7 +317,7 @@ let check_create_stmt (cstmt : create_stmt)
           (SItemType(name, props), st) ->
             let kdecl = SKind({sdtype = SchedItem;
                                skname = name;
-                               sprops = props;})
+                               sprops = props @ [(String, "desc"); (String, "duration")];})
             in
             let st' = insert_into_symtable name kdecl st in
             Some( SType(SItemType(name, props)), st' ))
@@ -478,7 +478,7 @@ let print_decl = SFunc({
 let event_decl = SKind({
   sdtype = SchedItem;
   skname = "Event";
-  sprops = [(String, "desc")];
+  sprops = [(String, "desc"); (String, "duration")];
 })
 
 let printi_decl = SFunc({

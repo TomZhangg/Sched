@@ -1,0 +1,112 @@
+SCS(
+  SType(
+    SItemType(
+      Name: PresItem
+      Type: str Name: location
+      Type: str Name: note
+      Type: str Name: project_officer
+      Type: str Name: press
+    )
+  )
+)
+SCS(
+  SType(
+    SItemType(
+      Name: ExecTime
+      Type: str Name: location
+    )
+  )
+)
+SCS(
+  SType(
+    SItemType(
+      Name: Lunch
+      Type: str Name: location
+    )
+  )
+)
+SCS(
+  SSchedule(
+    SNamed(
+      <sched-kind>: Day
+      None
+      typ: CId, sx: SId(trump_nov_7)
+      sil_items(
+        SAnon(
+          <item-kind>: ExecTime
+          typ: str, sx: <2018-11-07T08:00:00>
+          sattrs(
+            sattr(
+              typ: str, sx: SId(duration)
+              typ: str, sx: "3hr"
+            )
+            sattr(
+              typ: str, sx: SId(location)
+              typ: str, sx: "Oval Office"
+            )
+          )
+        )
+        SAnon(
+          <item-kind>: PresItem
+          typ: str, sx: <2018-11-07T11:00:00>
+          sattrs(
+            sattr(
+              typ: str, sx: SId(duration)
+              typ: str, sx: "30min"
+            )
+            sattr(
+              typ: str, sx: SId(desc)
+              typ: str, sx: "Meeting with the Chief of Staff"
+            )
+            sattr(
+              typ: str, sx: SId(location)
+              typ: str, sx: "Oval Office"
+            )
+          )
+        )
+        SAnon(
+          <item-kind>: ExecTime
+          typ: str, sx: <2018-11-07T11:30:00>
+          sattrs(
+            sattr(
+              typ: str, sx: SId(duration)
+              typ: str, sx: "1hr"
+            )
+            sattr(
+              typ: str, sx: SId(location)
+              typ: str, sx: "Oval Office"
+            )
+          )
+        )
+        SAnon(
+          <item-kind>: Lunch
+          typ: str, sx: <2018-11-07T12:30:00>
+          sattrs(
+            sattr(
+              typ: str, sx: SId(duration)
+              typ: str, sx: "1hr"
+            )
+            sattr(
+              typ: str, sx: SId(location)
+              typ: str, sx: "Private Dining Room"
+            )
+          )
+        )
+        SAnon(
+          <item-kind>: ExecTime
+          typ: str, sx: <2018-11-07T13:30:00>
+          sattrs(
+            sattr(
+              typ: str, sx: SId(duration)
+              typ: str, sx: "3hr30min"
+            )
+            sattr(
+              typ: str, sx: SId(location)
+              typ: str, sx: "Oval Office"
+            )
+          )
+        )
+      )
+    )
+  )
+)

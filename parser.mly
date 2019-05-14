@@ -176,8 +176,7 @@ il_items_opt:
 
 items:
   /* nothing */ { [] }
-| COMMA items   { $2 }
-| anon_item_spec items { $1 :: $2 }
+| LPAREN anon_item_spec RPAREN items { $2 :: $4 }
 
 sched_kind:
   DAY   { Day }
