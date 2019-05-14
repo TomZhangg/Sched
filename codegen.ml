@@ -33,10 +33,18 @@ let translate sprogram =
   and float_t     = L.double_type       context
   and str_ptr_t = L.pointer_type (L.i8_type context)
   and void_t      = L.void_type         context
-	(* time_t is defined as struct in sched.c *)
+  and void_ptr_t = L.pointer_type (L.i8_type context)
+  and arr_t      = L.pointer_type (match L.type_by_name llm "struct.Array" with
+        None -> raise (Failure "struct.Array isn't defined.")
+      | Some x -> x)
+  and arr_elmt_t = L.pointer_type (match L.type_by_name llm "struct.Array_element" with
+        None -> raise (Failure "struct.Array_element isn't defined.")
+      | Some x -> x)
+			(* time_t is defined as struct in sched.c *)
 	and time_t			= L.pointer_type (match L.type_by_name llm "struct.time" with
       None -> raise (Failure "struct.time isn't defined.")
-    | Some x -> x) in
+    | Some x -> x)
+  in
 
   let i8_tp       = L.pointer_type i8_t in
   (* A Schedule Item Attribute has 3 fields:
@@ -71,6 +79,7 @@ let translate sprogram =
   | A.Float -> float_t
   | A.Void  -> void_t
   | A.String -> str_ptr_t
+  | A.Array _   -> arr_t
 	| A.Time -> time_t
 	in
 
@@ -83,8 +92,24 @@ let translate sprogram =
   let printf_t = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let printf_func = L.declare_function "printf" printf_t the_module in
 
-  let time_init_t = L.function_type time_t [| i32_t; i32_t; i32_t; i32_t; i32_t; i32_t |] in
+  (* array functions *)
+  let arr_init_t = L.function_type arr_t [||] in
+  let arr_init_f = L.declare_function "arr_init" arr_init_t the_module in
+  let arr_set_contains_struct_t = L.function_type arr_t [| arr_t |] in
+  let arr_set_contains_struct_f = L.declare_function "arr_set_contains_struct" arr_set_contains_struct_t the_module in
+  let arr_append_t = L.function_type arr_elmt_t [| arr_t; void_ptr_t |] in
+  let arr_append_f = L.declare_function "arr_append" arr_append_t the_module in
+  let arr_get_t = L.function_type arr_elmt_t [| arr_t; i32_t |] in
+  let arr_get_f = L.declare_function "arr_get" arr_get_t the_module in
+  let arr_set_t = L.function_type arr_elmt_t [| arr_t; void_ptr_t; i32_t |] in
+  let arr_set_f = L.declare_function "arr_set" arr_set_t the_module in
+  let arr_length_t = L.function_type i32_t [| arr_t |] in
+  let arr_length_f = L.declare_function "arr_length" arr_length_t the_module in
+  let arr_contains_t = L.function_type i32_t [| arr_t; void_ptr_t |] in
+  let arr_contains_f = L.declare_function "arr_contains" arr_contains_t the_module in
+	let time_init_t = L.function_type time_t [| i32_t; i32_t; i32_t; i32_t; i32_t; i32_t |] in
   let time_init_f = L.declare_function "time_init" time_init_t the_module in
+
   (** setup main() where all the code will go **)
   (* ftype is the full llvm function signature *)
   let main_t = L.function_type i32_t [||] in
@@ -173,12 +198,6 @@ let translate sprogram =
      	  | A.Sub     -> L.build_sub
      	  | A.Mult    -> L.build_mul
           | A.Div     -> L.build_sdiv
-     	  (*| A.Equal   -> L.build_icmp L.Icmp.Eq
-     	  | A.Neq     -> L.build_icmp L.Icmp.Ne
-     	  | A.Less    -> L.build_icmp L.Icmp.Slt
-     	  | A.Leq     -> L.build_icmp L.Icmp.Sle
-     	  | A.Greater -> L.build_icmp L.Icmp.Sgt
-     	  | A.Geq     -> L.build_icmp L.Icmp.Sge *)
         ) e1' e2' "tmp" builder
     | (A.Float, SBinop (e1, op, e2)) ->
      	  let e1' = sxpr the_state e1
@@ -188,12 +207,6 @@ let translate sprogram =
      	  | A.Sub     -> L.build_fsub
      	  | A.Mult    -> L.build_fmul
           | A.Div     -> L.build_fdiv
-     	  (*| A.Equal   -> L.build_fcmp L.Fcmp.Oeq
-     	  | A.Neq     -> L.build_fcmp L.Fcmp.One
-     	  | A.Less    -> L.build_fcmp L.Fcmp.Olt
-     	  | A.Leq     -> L.build_fcmp L.Fcmp.Ole
-     	  | A.Greater -> L.build_fcmp L.Fcmp.Ogt
-     	  | A.Geq     -> L.build_fcmp L.Fcmp.Oge *)
         ) e1' e2' "tmp" builder
     | (A.Float, SUnop (op, e)) ->
           let e' = sxpr the_state e in
@@ -218,6 +231,7 @@ let translate sprogram =
           let sx' = sxpr the_state sx in
 	  L.build_call printf_func [| float_format_str ; sx' |]
 	    "printf" builder
+      | (A.Int, SCall ("leni", [a])) | (A.Int, SCall ("lens", [a])) | (A.Int, SCall ("lenf", [a])) | (A.Int, SCall ("lenb", [a])) -> L.build_call arr_length_f [| sxpr the_state a |] "len" builder
       | (A.Void, SNoexpr) -> L.const_int i32_t 0
       | (_, SId s)       -> L.build_load (lookup s namespace) s builder
 			| (t, SCall(name, args)) ->
@@ -227,6 +241,32 @@ let translate sprogram =
 				                        A.Void -> ""
 				                      | _ -> name ^ "_result") in
 				         L.build_call the_function llargs result the_state.b
+      | (styp, SIndex (id, ex)) ->
+        let ltype = ltype_of_typ styp in
+        let arr = L.build_load (lookup id namespace) id builder in
+        let index = sxpr the_state ex in
+        let data_ptr = L.build_call arr_get_f [| arr; index |] "arr_get" builder in
+        let data_ptr = L.build_bitcast data_ptr (L.pointer_type ltype) "data" builder in
+        L.build_load data_ptr "data" builder
+      | (A.Array(styp), SArrayLit contents) -> let rec arr_fill arr = (function
+           [] -> arr
+         | sx :: rest ->
+             let (typ, _) = sx in
+             let data = (match typ with
+               | _ -> let data = L.build_malloc (ltype_of_typ typ) "data" builder in
+                   let llvalue = sxpr the_state sx in
+                   ignore (L.build_store llvalue data builder); data)
+             in
+             let data = L.build_bitcast data void_ptr_t "data" builder in
+             ignore (L.build_call arr_append_f [| arr; data |] "arr_append" builder);
+             arr_fill arr rest)
+         in
+         let el_typ = fst (List.nth contents 0) in
+         let arr = match el_typ with
+             _ ->
+               L.build_call arr_init_f [||] "arr_init" builder
+         in
+         ignore(arr_fill arr (contents)); arr
       | _ -> raise (Failure "sxpr codegen type not implemented yet.")
   in
 

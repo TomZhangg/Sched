@@ -1,11 +1,28 @@
 ; ModuleID = 'Schedch'
 
+%struct.Array = type { i32, %struct.Array_element*, %struct.Array_element*, i32 }
+%struct.Array_element = type { %struct.Array_element*, %struct.Array_element*, i8* }
+
 @fmt = private unnamed_addr constant [4 x i8] c"%s\0A\00"
 @fmt.1 = private unnamed_addr constant [4 x i8] c"%d\0A\00"
 @fmt.2 = private unnamed_addr constant [4 x i8] c"%g\0A\00"
 @0 = private unnamed_addr constant [14 x i8] c"\22hello world\22\00"
 
 declare i32 @printf(i8*, ...)
+
+declare %struct.Array* @arr_init()
+
+declare %struct.Array* @arr_set_contains_struct(%struct.Array*)
+
+declare %struct.Array_element* @arr_append(%struct.Array*, i8*)
+
+declare %struct.Array_element* @arr_get(%struct.Array*, i32)
+
+declare %struct.Array_element* @arr_set(%struct.Array*, i8*, i32)
+
+declare i32 @arr_length(%struct.Array*)
+
+declare i32 @arr_contains(%struct.Array*, i8*)
 
 define i32 @main() {
 entry:

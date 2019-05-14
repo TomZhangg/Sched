@@ -1,0 +1,88 @@
+SExpr(
+  (int[], i)
+)
+SExpr(
+i = 
+    typ: int[], sx: SArrayLit([    typ: int, sx: 1,    typ: int, sx: 2,    typ: int, sx: 3,(-)       typ: int, sx: 4])
+)
+SExpr(
+  typ: void, sx: SCall(printi)
+    SExpr List:
+    typ: int, sx: SIndex(i[    typ: int, sx: 0])
+  )
+)
+SExpr(
+  typ: void, sx: SCall(printi)
+    SExpr List:
+    typ: int, sx: SCall(leni)
+      SExpr List:
+      typ: int[], sx: SId(i)
+    )
+  )
+)
+SExpr(
+  (float[], f)
+)
+SExpr(
+f = 
+    typ: float[], sx: SArrayLit([    typ: float, sx: 1.5,    typ: float, sx: 2.01,    typ: float, sx: 1.00,(-)       typ: float, sx: 3.0])
+)
+SExpr(
+  typ: void, sx: SCall(printf)
+    SExpr List:
+    typ: float, sx: SIndex(f[    typ: int, sx: 1])
+  )
+)
+SExpr(
+  typ: void, sx: SCall(printi)
+    SExpr List:
+    typ: int, sx: SCall(lenf)
+      SExpr List:
+      typ: float[], sx: SId(f)
+    )
+  )
+)
+SExpr(
+  (str[], s)
+)
+SExpr(
+s = 
+    typ: str[], sx: SArrayLit([    typ: str, sx: "hi",    typ: str, sx: "there",    typ: str, sx: "buddy"])
+)
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: SIndex(s[    typ: int, sx: 2])
+  )
+)
+SExpr(
+  typ: void, sx: SCall(printi)
+    SExpr List:
+    typ: int, sx: SCall(lens)
+      SExpr List:
+      typ: str[], sx: SId(s)
+    )
+  )
+)
+SExpr(
+  (bool[], b)
+)
+SExpr(
+b = 
+    typ: bool[], sx: SArrayLit([true,false,true,true])
+)
+SExpr(
+  typ: void, sx: SCall(printb)
+    SExpr List:
+    typ: bool, sx: SIndex(b[    typ: int, sx: 0])
+  )
+)
+SExpr(
+  typ: void, sx: SCall(printi)
+    SExpr List:
+    typ: int, sx: SCall(lenb)
+      SExpr List:
+      typ: bool[], sx: SId(b)
+    )
+  )
+)

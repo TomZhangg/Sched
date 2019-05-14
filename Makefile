@@ -17,7 +17,6 @@ debug :
 
 .PHONY : clean
 clean :
-	rm -rf *.o *.bc
-	rm -f schedch.native schedch.d.byte parser.ml parser.mli scanner.ml *.cmo *.cmi && \
+	rm -f schedch.native schedch.d.byte parser.ml parser.mli scanner.ml *.cmo *.cmi *.o *.bc && \
 	rm -rf _build && \
 	rm tests/*\.tmp tests/*\.ll tests/*\.s tests/*\.exe

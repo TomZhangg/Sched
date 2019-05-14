@@ -1,0 +1,16 @@
+(int[], i);
+i = [IntLit(1),IntLit(2),IntLit(3),-IntLit(4)];
+printi(i[IntLit(0)]);
+printi(leni(Id(i)));
+(float[], f);
+f = [FLit(1.5),FLit(2.01),FLit(1.00),-FLit(3.0)];
+printf(f[IntLit(1)]);
+printi(lenf(Id(f)));
+(str[], s);
+s = [StrLit("hi"),StrLit("there"),StrLit("buddy")];
+print(s[IntLit(2)]);
+printi(lens(Id(s)));
+(bool[], b);
+b = [BoolLit(true),BoolLit(false),BoolLit(true),BoolLit(true)];
+printb(b[IntLit(0)]);
+printi(lenb(Id(b)));

@@ -1,5 +1,7 @@
 ; ModuleID = 'Schedch'
 
+%struct.Array = type { i32, %struct.Array_element*, %struct.Array_element*, i32 }
+%struct.Array_element = type { %struct.Array_element*, %struct.Array_element*, i8* }
 %item = type { i8*, i8*, %item_attr*, %item* }
 %item_attr = type { i8*, i8*, %item_attr* }
 
@@ -13,6 +15,20 @@
 @4 = private unnamed_addr constant [19 x i8] c"\22Summer solstice.\22\00"
 
 declare i32 @printf(i8*, ...)
+
+declare %struct.Array* @arr_init()
+
+declare %struct.Array* @arr_set_contains_struct(%struct.Array*)
+
+declare %struct.Array_element* @arr_append(%struct.Array*, i8*)
+
+declare %struct.Array_element* @arr_get(%struct.Array*, i32)
+
+declare %struct.Array_element* @arr_set(%struct.Array*, i8*, i32)
+
+declare i32 @arr_length(%struct.Array*)
+
+declare i32 @arr_contains(%struct.Array*, i8*)
 
 define i32 @main() {
 entry:

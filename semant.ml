@@ -48,6 +48,13 @@ let insert_into_symtable key entry st =
   {tb = StringMap.add key entry st.tb;
    parent = st.parent}
 
+let rec check_all_same_types l err_type = match l with
+        [] -> ()
+        |	(t1 :: t2 :: _) when t1 <> t2 ->
+                raise (Failure ("non-duplicate " ^ err_type ^ ": t1 = " ^ (string_of_typ t1) ^ ", t2 = " ^ (string_of_typ t2)))
+        | _ :: t -> check_all_same_types t err_type
+
+
 let rec check_expr (xpr : expr)
                    (sym_tab : symtable)
                    : (sexpr * symtable) option =
@@ -153,6 +160,39 @@ let rec check_expr (xpr : expr)
     in Some((ty, SUnop(op, (t, e'))), sym_tab)   )
 	| Noexpr -> Some((Void, SNoexpr), sym_tab)
   | Id s       -> Some((type_of_identifier s sym_tab, SId s), sym_tab)
+  | Index (s, e) -> (
+      let x = check_expr e sym_tab in
+      match x with
+        Some ((t, e'), _) ->
+      match (type_of_identifier s sym_tab) with
+        Array(ty)    -> (match t with
+              Int -> Some((ty, SIndex(s, (t, e'))), sym_tab)
+          | _ -> raise (Failure ("array index must be int, received " ^ (string_of_typ t)))
+        )
+      | _ as ty -> raise (Failure ("illegal index operation: access " ^ (string_of_typ t) ^ " from " ^ (string_of_typ ty)))
+    )
+  | ArrayLit l -> (
+    let get_array_types (array_lit : expr list) =
+      List.map (fun (a) -> let x = check_expr a sym_tab in 
+                 match x with 
+                   Some ((t, e'), _) -> t) array_lit
+    in
+    let check_typ = function
+        Int -> ()
+      | Float -> ()
+      | Bool -> ()
+      | String -> ()
+      | _ as t -> raise (Failure ("illegal array type: " ^ (string_of_typ t)))
+    in
+    List.iter check_typ (get_array_types l);
+    check_all_same_types (get_array_types l) "array element type";
+    let a1 = List.nth (get_array_types l) 0 in
+    let sl = List.map (fun (a) -> let x = check_expr a sym_tab in 
+                 match x with 
+                   Some ((t, e'), _) -> (t, e')) l
+in
+    Some((Array(a1), SArrayLit sl), sym_tab) 
+  )
   | _ -> raise (Check_not_implemented ("Ast.expr type" ^ (string_of_expr xpr)))
 
 
@@ -503,12 +543,47 @@ let printb_decl = SFunc({
   sbody = [];
 })
 
+let leni_decl = SFunc({
+  styp = Int;
+  sfname = "leni";
+  sformals = [Bind(Array(Int), "text")];
+  sbody = [];
+})
+
+let lens_decl = SFunc({
+  styp = Int;
+  sfname = "lens";
+  sformals = [Bind(Array(String), "text")];
+  sbody = [];
+})
+
+let lenf_decl = SFunc({
+  styp = Int;
+  sfname = "lenf";
+  sformals = [Bind(Array(Float), "text")];
+  sbody = [];
+})
+
+let lenb_decl = SFunc({
+  styp = Int;
+  sfname = "lenb";
+  sformals = [Bind(Array(Bool), "text")];
+  sbody = [];
+})
+
 
 let st1 = StringMap.add "print" print_decl StringMap.empty
 let st2 = StringMap.add "Event" event_decl st1
 let st3 = StringMap.add "printi" printi_decl st2
 let st4 = StringMap.add "printf" printf_decl st3
 let st5 = StringMap.add "printb" printb_decl st4
-let init_st_tb = st5
+let st6 = StringMap.add "leni" leni_decl st5
+let st7 = StringMap.add "lenf" lenf_decl st6
+let st8 = StringMap.add "lens" lens_decl st7
+let st9 = StringMap.add "lenb" lenb_decl st8
+(* let pf = SFunc(print_fdecl) *)
+(* let init_st_tb = StringMap.add "print" pf st2 *)
+let init_st_tb = st9
+
 
 let init_st = {tb=init_st_tb;parent=None}

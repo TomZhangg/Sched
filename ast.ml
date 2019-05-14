@@ -5,7 +5,7 @@ type op = Equal | Neq | And | Or | Add | Sub | Mult | Div | Mod | Less | Leq | G
 
 type uop = Not | Neg
 
-type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void | Float | CId | Time
+type typ = Sched | SchedItem | SchedCollection | Bool | String | Int | Void | Float | CId | Array of typ | Time
 
 type bind = Bind of typ * string
 
@@ -56,7 +56,7 @@ let string_of_uop o =
   Not -> "!"
   | Neg -> "-"
 
-let string_of_typ t =
+let rec string_of_typ t =
   match t with
     Sched
   | SchedItem
@@ -67,9 +67,10 @@ let string_of_typ t =
   | Void -> "void"
   | CId -> "CId"
   | Float -> "float"
+  | Array(t) -> (string_of_typ t) ^ "[]"
   | Time -> "time"
 
-let	string_of_bind b =
+let string_of_bind b =
 		match b with
 			Bind(a,b) -> "(" ^ string_of_typ a ^ ", "^ b ^ ")"
 
@@ -88,6 +89,8 @@ type expr =
 | BIND of bind
 | BinAssign of bind * expr
 | Noexpr
+| ArrayLit of expr list
+| Index of string * expr
 
 let string_of_tl tl =
   match tl with
@@ -96,7 +99,7 @@ let string_of_tl tl =
     string_of_int h ^ ":" ^ string_of_int mi ^ ":" ^ string_of_int s ^ ">"
   | _ -> ""
 
-let rec string_of_expr expr =
+let rec string_of_expr expr = (
   match expr with
     Id(str) -> "Id(" ^ str ^ ")"
   | FLit(str) -> "FLit(" ^ str ^ ")"
@@ -119,6 +122,8 @@ let rec string_of_expr expr =
 		(match b with Bind(t,s)->
 			string_of_bind b ^ string_of_expr a)
 	| Noexpr -> ""
+  | ArrayLit(l) -> "[" ^ String.concat "," (List.map string_of_expr (l)) ^ "]"
+  | Index(s, e) -> s ^ "[" ^ (string_of_expr e) ^ "]" )
 
 let string_of_id i =
 	match i  with Id(s) -> s
