@@ -73,7 +73,7 @@ let	string_of_bind b =
 		match b with
 			Bind(a,b) -> "(" ^ string_of_typ a ^ ", "^ b ^ ")"
 
-
+(* Timelit is year,month,date,... in order *)
 type expr =
   Id of string
 | IntLit of int

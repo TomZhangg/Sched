@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-
+/*----------------------------------*/
+/* TYPE DEFINITIONS */
+/*----------------------------------*/
 
 struct time {
     int32_t year;
@@ -12,12 +14,19 @@ struct time {
     int32_t minute;
     int32_t second;
 };
-
 typedef struct time time;
+
+/*----------------------------------*/
+/* FUNCTION DECLARATIONS */
+/*----------------------------------*/
 
 time* time_init(int y, int mo, int d, int h, int mi, int s);
 int32_t compare(time t1, time t2);
 
+
+/*----------------------------------*/
+/* FUNCTION IMPLEMENTATIONS */
+/*----------------------------------*/
 
 time* time_init(int y, int mo, int d, int h, int mi, int s) {
   time* r = malloc(sizeof(time));

@@ -91,8 +91,7 @@ let rec check_expr (xpr : expr)
       if flag then Some((sf.styp, SCall(f, sargs)), sym_tab) else None
     else None)
   | TimeLit(y,mo,d,h,mi,s) ->
-      (* TODO: Implement TimeLit. For now (4/28/19) will just
-       * treat like a string for implementing Create statement. *)
+			(* timelit implemented as six-tuples*)
 			let lit = string_of_tl (y,mo,d,h,mi,s) in
       Some((Time, STimeLit(y,mo,d,h,mi,s)), sym_tab)
   | StrLit(lit) ->

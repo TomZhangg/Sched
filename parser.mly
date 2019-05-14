@@ -1,4 +1,7 @@
 %{ open Ast
+
+(* convert the timelits to six-tuple.
+datelits will be automatically have 0,0,0 for their hour,minute, and second fields *)
 let convert_timelit tl =
   let y = int_of_string (String.sub tl 1 4) in
   let mo = int_of_string (String.sub tl 6 2) in

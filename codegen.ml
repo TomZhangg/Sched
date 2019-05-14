@@ -20,6 +20,8 @@ type state = {mutable namespace:sym_tab;
 (* translate : Sast.sprogram -> Llvm.module *)
 let translate sprogram =
   let context = L.global_context () in
+
+	(* llvm c code linking*)
   let llmem = L.MemoryBuffer.of_file "sched.bc" in
   let llm = Llvm_bitreader.parse_bitcode context llmem in
   (* Create the LLVM compilation module into which
@@ -31,6 +33,7 @@ let translate sprogram =
   and float_t     = L.double_type       context
   and str_ptr_t = L.pointer_type (L.i8_type context)
   and void_t      = L.void_type         context
+	(* time_t is defined as struct in sched.c *)
 	and time_t			= L.pointer_type (match L.type_by_name llm "struct.time" with
       None -> raise (Failure "struct.time isn't defined.")
     | Some x -> x) in
@@ -119,6 +122,7 @@ let translate sprogram =
     | (A.Int, SIntLit i) -> L.const_int i32_t i
     | (A.Float, SFLit l) -> L.const_float_of_string float_t l
 		| (A.Time, STimeLit t) ->
+			(* as the new time type is a six-tuple, build six integers and call time_init *)
 			(match t with (y,mo,d,h,mi,s) ->
 				let y' = L.const_int i32_t y in
 				let mo' = L.const_int i32_t mo in
