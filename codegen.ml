@@ -63,7 +63,7 @@ let translate sprogram =
    *)
   let item_t = L.named_struct_type context "item" in
   let item_tp = L.pointer_type item_t in
-  ignore (L.struct_set_body item_t [| i8_tp; i8_tp; attr_tp; item_tp |] false);
+  ignore (L.struct_set_body item_t [| i8_tp; time_t; attr_tp; item_tp |] false);
   (* A Schedule struct has 5 fields:
    * 1. Name: Points to a string that is its name.
    * 2. Start Date: Points to a string that is its start date (for now).
@@ -71,7 +71,7 @@ let translate sprogram =
    * 4. Items Linked List: Pointer to the head in a linked list of item.
    *)
   let sched_t     = L.struct_type context
-    [| i8_tp; i8_tp ; i8_t ; item_tp |] in
+    [| i8_tp; time_t ; i8_t ; item_tp |] in
 
   let ltype_of_typ = function
     A.Int   -> i32_t
@@ -313,7 +313,8 @@ let translate sprogram =
       let dt_ptr =
         (match dt_opt with
           Some(dt_sx) -> sxpr the_state dt_sx
-        | _ -> sxpr the_state (A.String, SStrLit "None"))
+				| Some(A.Time, STimeLit(a,b,c,d,e,f)) -> sxpr the_state (A.Time, STimeLit(a,b,c,d,e,f))
+        | _ -> sxpr the_state (A.Time, STimeLit (0,0,0,0,0,0)))
       in
       let idate_ptr = L.build_struct_gep item 1 "" the_state.b in
       let strs_ptr = sattrs_linked_list the_state strs in
