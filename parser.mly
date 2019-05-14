@@ -165,10 +165,10 @@ sched_spec:
 | anon_sched_spec       { $1 }
 
 named_sched_spec:
-  sched_kind start_date_opt id il_items_opt  { Named($1, $2, $3, $4) }
+  sched_kind dt_opt id il_items_opt  { Named($1, $2, $3, $4) }
 
 anon_sched_spec:
-  sched_kind start_date_opt il_items_opt     { Anon($1, $2, $3) }
+  sched_kind dt_opt il_items_opt     { Anon($1, $2, $3) }
 
 il_items_opt:
   /* nothing */ { None }
@@ -185,9 +185,6 @@ sched_kind:
 | YEAR  { Year }
 | ID    { Id($1) }
 
-start_date_opt:
-  /* nothing */ { None }
-| DATELIT          { Some (TimeLit($1)) }
 
 item_spec:
   named_item_spec       { $1 }
@@ -207,6 +204,7 @@ item_kind:
 dt_opt:
   /* nothing */ { None }
 | TIMELIT       { Some (TimeLit($1)) }
+| DATELIT       { Some (TimeLit($1)) }
 
 attrs_opt:
   /* nothing */ { None }

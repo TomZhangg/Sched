@@ -94,7 +94,9 @@ let rec string_of_expr expr =
   | FLit(str) -> "FLit(" ^ str ^ ")"
   | StrLit(str) -> "StrLit(" ^ str ^ ")"
   | IntLit(x) -> "IntLit(" ^ (string_of_int x) ^ ")"
-  | TimeLit(str) -> "TimeLit(" ^ str ^ ")"
+  | TimeLit(str) -> "TimeLit(" ^
+    str ^
+    ")"
   | BoolLit(true) -> "BoolLit(" ^ "true" ^ ")"
   | BoolLit(false) -> "BoolLit(" ^ "false" ^ ")"
   | Binop(e1, o, e2) ->
@@ -122,7 +124,7 @@ let pp_id lvl id =
   let prefix = (indent lvl) ^ "<id>: " in
     prefix ^ string_of_expr id
 
-type start_date_opt =
+type dt_info_opt =
   Some of expr
 | None
 let pp_start_date_opt lvl start_date_opt =
@@ -131,13 +133,11 @@ let pp_start_date_opt lvl start_date_opt =
     Some date -> idnt ^ "<start-date-opt>: " ^ (string_of_expr date)
   | None -> idnt ^ "<start-date-opt> None"
 
-type dt_info_opt =
-  Some of time
-| None
+
 let pp_dt_info_opt lvl opt =
   let idnt = indent lvl in
   match opt with
-    Some time -> idnt ^ "<date-time-info-opt>: " ^ (string_of_expr time)
+    Some expr -> idnt ^ "<date-time-info-opt>: " ^ (string_of_expr expr)
   | None -> idnt ^ " <date-time-info-opt>: None"
 
 type attr = expr * expr
@@ -195,8 +195,8 @@ let pp_items_opt lvl opt =
     String.concat "\n" ((idnt ^ "<inline-items>:")::sub_items_list)
 
 type sched_spec =
-  Named of sched_kind * start_date_opt * id * il_items_opt
-| Anon of sched_kind * start_date_opt * il_items_opt
+  Named of sched_kind * dt_info_opt * id * il_items_opt
+| Anon of sched_kind * dt_info_opt * il_items_opt
 let pp_sched_spec lvl sched_spec =
   let idnt = indent lvl in
   match sched_spec with
