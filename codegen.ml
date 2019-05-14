@@ -349,6 +349,7 @@ let translate sprogram =
       let date_ptr =
         (match sx_opt with
           Some(dt_sx) -> sxpr the_state dt_sx
+				| Some(A.Time, STimeLit(a,b,c,d,e,f)) -> sxpr the_state (A.Time, STimeLit(a,b,c,d,e,f))
         | _ -> sxpr the_state (A.Time, STimeLit (0,0,0,0,0,0)))
       in
       let sdate_ptr = L.build_struct_gep sched 1 "" the_state.b in
