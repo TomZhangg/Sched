@@ -47,7 +47,7 @@ find . -name '*.sched' | while IFS= read -r line ; do
 		cmp --silent "$line".aout.tmp "$line".aout && echo "    $success" || echo "    $fail"
 		./schedch.native -s "$line" > "$line".sout.tmp
 		cmp --silent "$line".sout.tmp "$line".sout && echo "    $success" || echo "    $fail"
-		./schedch.native -l "$line" > "$line".lout.tmp
+		./schedch.native -c "$line" > "$line".lout.tmp
 		cmp --silent "$line".lout.tmp "$line".lout && echo "    $success" || echo "    $fail"
 done
 

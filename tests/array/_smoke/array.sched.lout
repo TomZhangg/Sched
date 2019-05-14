@@ -150,7 +150,17 @@ entry:
   %b87 = load %struct.Array*, %struct.Array** %b
   %len88 = call i32 @arr_length(%struct.Array* %b87)
   %printf89 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt.1, i32 0, i32 0), i32 %len88)
+  %0 = bitcast %struct.Array** %b to i8*
+  tail call void @free(i8* %0)
+  %1 = bitcast %struct.Array** %f to i8*
+  tail call void @free(i8* %1)
+  %2 = bitcast %struct.Array** %i to i8*
+  tail call void @free(i8* %2)
+  %3 = bitcast %struct.Array** %s to i8*
+  tail call void @free(i8* %3)
   ret i32 0
 }
 
 declare noalias i8* @malloc(i32)
+
+declare void @free(i8*)

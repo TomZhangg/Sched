@@ -70,6 +70,10 @@ merge11:                                          ; preds = %while4
   br i1 %tmp13, label %then, label %else
 
 merge14:                                          ; preds = %else, %then
+  %0 = bitcast i32* %i to i8*
+  tail call void @free(i8* %0)
+  %1 = bitcast i32* %j to i8*
+  tail call void @free(i8* %1)
   ret i32 0
 
 then:                                             ; preds = %merge11
@@ -79,3 +83,5 @@ then:                                             ; preds = %merge11
 else:                                             ; preds = %merge11
   br label %merge14
 }
+
+declare void @free(i8*)

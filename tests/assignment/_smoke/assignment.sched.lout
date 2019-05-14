@@ -42,7 +42,19 @@ entry:
   store i32 12, i32* %d1
   store i32 123456, i32* %b
   store i32 12345678, i32* %b
+  %0 = bitcast i32* %d1 to i8*
+  tail call void @free(i8* %0)
   store i32 12345, i32* %b
   store i1 false, i1* %d
+  %1 = bitcast i32* %a to i8*
+  tail call void @free(i8* %1)
+  %2 = bitcast i32* %b to i8*
+  tail call void @free(i8* %2)
+  %3 = bitcast i32* %c to i8*
+  tail call void @free(i8* %3)
+  %4 = bitcast i1* %d to i8*
+  tail call void @free(i8* %4)
   ret i32 0
 }
+
+declare void @free(i8*)

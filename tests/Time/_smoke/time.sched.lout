@@ -35,5 +35,21 @@ entry:
   %time_init1 = call %struct.time* @time_init(i32 2000, i32 9, i32 10, i32 10, i32 10, i32 10)
   store %struct.time* %time_init1, %struct.time** %b
   %d = alloca i1
+  %c = alloca %struct.time*
+  %d2 = alloca %struct.time*
+  %time_init3 = call %struct.time* @time_init(i32 2000, i32 9, i32 1, i32 0, i32 0, i32 0)
+  store %struct.time* %time_init3, %struct.time** %d2
+  %0 = bitcast %struct.time** %d2 to i8*
+  tail call void @free(i8* %0)
+  %1 = bitcast %struct.time** %c to i8*
+  tail call void @free(i8* %1)
+  %2 = bitcast %struct.time** %a to i8*
+  tail call void @free(i8* %2)
+  %3 = bitcast %struct.time** %b to i8*
+  tail call void @free(i8* %3)
+  %4 = bitcast i1* %d to i8*
+  tail call void @free(i8* %4)
   ret i32 0
 }
+
+declare void @free(i8*)

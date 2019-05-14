@@ -22,7 +22,7 @@ IntLit(3) == IntLit(1) + IntLit(2);}
 
 if (IntLit(1) < IntLit(2))
 {
-IntLit(56) == IntLit(55);if (IntLit(3) < IntLit(2))
+IntLit(56) == IntLit(55);(bool, a)BoolLit(false);if (Id(a))
 {
 IntLit(55) == IntLit(55);}
 else
@@ -34,7 +34,7 @@ IntLit(17) == IntLit(55);}
 }
 else
 {
-IntLit(96) != IntLit(95);if (IntLit(1) < IntLit(2))
+a = BoolLit(true);IntLit(96) != IntLit(95);if (IntLit(1) < IntLit(2))
 {
 IntLit(55) == IntLit(55);}
 }
