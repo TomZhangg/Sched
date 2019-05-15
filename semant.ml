@@ -576,6 +576,13 @@ let lenb_decl = SFunc({
   sbody = [];
 })
 
+let pt_decl = SFunc({
+  styp = Void;
+  sfname = "print_time";
+  sformals = [Bind(Time, "text")];
+  sbody = [];
+})
+
 
 let st1 = StringMap.add "print" print_decl StringMap.empty
 let st2 = StringMap.add "Event" event_decl st1
@@ -586,9 +593,10 @@ let st6 = StringMap.add "leni" leni_decl st5
 let st7 = StringMap.add "lenf" lenf_decl st6
 let st8 = StringMap.add "lens" lens_decl st7
 let st9 = StringMap.add "lenb" lenb_decl st8
+let st10 = StringMap.add "print_time" pt_decl st9
 (* let pf = SFunc(print_fdecl) *)
 (* let init_st_tb = StringMap.add "print" pf st2 *)
-let init_st_tb = st9
+let init_st_tb = st10
 
 
 let init_st = {tb=init_st_tb;parent=None}

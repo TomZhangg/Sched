@@ -26,6 +26,8 @@ declare i32 @arr_contains(%struct.Array*, i8*)
 
 declare %struct.time* @time_init(i32, i32, i32, i32, i32, i32)
 
+declare void @print_time(%struct.time*)
+
 define i32 @main() {
 entry:
   %a = alloca %struct.time*
@@ -44,6 +46,7 @@ entry:
   %myfunc_result = call %struct.time* @myfunc(i32 1, i32 2, i32 3, i32 4)
   %time_init5 = call %struct.time* @time_init(i32 2000, i32 0, i32 1, i32 0, i32 0, i32 0)
   store %struct.time* %time_init5, %struct.time** %z
+  %printf = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt.1, i32 0, i32 0), i32 2000)
   %e = alloca %struct.time*
   %time_init6 = call %struct.time* @time_init(i32 0, i32 0, i32 0, i32 0, i32 0, i32 0)
   store %struct.time* %time_init6, %struct.time** %e
@@ -51,10 +54,12 @@ entry:
   %f = alloca %struct.time*
   %myfunc_result8 = call %struct.time* @myfunc.4(i32 1)
   store %struct.time* %myfunc_result8, %struct.time** %b
+  %b9 = load %struct.time*, %struct.time** %b
+  call void @print_time(%struct.time* %b9)
   %t = alloca %struct.time*
-  %time_init9 = call %struct.time* @time_init(i32 2000, i32 0, i32 0, i32 0, i32 0, i32 0)
-  %myfunc_result10 = call %struct.time* @myfunc.4(i32 3)
-  store %struct.time* %myfunc_result10, %struct.time** %t
+  %time_init10 = call %struct.time* @time_init(i32 2000, i32 0, i32 0, i32 0, i32 0, i32 0)
+  %myfunc_result11 = call %struct.time* @myfunc.4(i32 3)
+  store %struct.time* %myfunc_result11, %struct.time** %t
   ret i32 0
 }
 

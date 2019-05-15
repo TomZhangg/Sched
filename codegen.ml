@@ -109,6 +109,8 @@ let translate sprogram =
   let arr_contains_f = L.declare_function "arr_contains" arr_contains_t the_module in
 	let time_init_t = L.function_type time_t [| i32_t; i32_t; i32_t; i32_t; i32_t; i32_t |] in
   let time_init_f = L.declare_function "time_init" time_init_t the_module in
+	let print_time_t = L.function_type void_t [|time_t|] in
+	let print_time_f = L.declare_function "print_time" print_time_t the_module in
 
   (** setup main() where all the code will go **)
   (* ftype is the full llvm function signature *)
@@ -121,6 +123,7 @@ let translate sprogram =
 	let st = {scope=StringMap.empty;parent=None} in
 	st.scope <- StringMap.add "print" printf_func st.scope;
 	st.scope <- StringMap.add "time_init" time_init_f st.scope;
+	st.scope <- StringMap.add "print_time" print_time_f st.scope;
   let the_state:state = {namespace=st;
                          func=main_func;
                          b=main_builder} in

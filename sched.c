@@ -181,3 +181,7 @@ array* arr_set_contains_struct(array *a) {
    int secdiff = s1-s2;
    return 0;
  }
+
+void print_time(time* t1){
+  printf("<%d-%d-%dT%d:%d:%d>\n",t1->year,t1->month,t1->day,t1->hour,t1->minute,t1->second);
+}
