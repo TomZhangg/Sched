@@ -1,8 +1,9 @@
-
+print("");print("");
 print("simple time declaration");
 time a;
 a = <2000-09-10>;
 print_time(a);
+print("");
 
 int c = 1;
 printi(c);

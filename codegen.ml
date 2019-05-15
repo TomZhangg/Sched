@@ -146,12 +146,8 @@ let translate sprogram =
 	st.scope <- StringMap.add "print" printf_func st.scope;
 	st.scope <- StringMap.add "time_init" time_init_f st.scope;
 	st.scope <- StringMap.add "print_time" print_time_f st.scope;
-<<<<<<< HEAD
+	st.scope <- StringMap.add "arr_init" arr_init_f st.scope;
 	st.scope <- StringMap.add "t_diff" time_diff_f st.scope;
-=======
-        st.scope <- StringMap.add "arr_init" arr_init_f st.scope;
-
->>>>>>> 1e71c79b7893bca710a875085109b0824b5c1dbe
   let the_state:state = {namespace=st;
                          func=main_func;
                          b=main_builder} in
