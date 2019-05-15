@@ -241,7 +241,7 @@ int32_t t_to_s(time t1){
   return d;
 }
 
-time s_to_t(int s){
+time* s_to_t(int s){
   int32_t t,y,mo,d,h,mi,sec;
 
   printf("%d", 123);
@@ -256,13 +256,13 @@ time s_to_t(int s){
   mi= t/60;
   t = s%60;
   sec = t;
-  time r;
-  r.year = y;
-  r.month = mo;
-  r.day = d;
-  r.hour = h;
-  r.minute = mi;
-  r.second = sec;
+  time* r;
+  r->year = y;
+  r->month = mo;
+  r->day = d;
+  r->hour = h;
+  r->minute = mi;
+  r->second = sec;
   return r;
 }
  int32_t time_compare(time *t1, time *t2){

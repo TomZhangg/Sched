@@ -207,15 +207,12 @@ let translate sprogram =
 					let e' = sxpr the_state (t, SAssign(s,(t,e2))) in
 					ignore(L.build_store e' (lookup s namespace) builder); e'
 				| _ -> print_endline (string_of_sexpr 0 e); L.undef t')
-		| (A.Int, SBinop (e1, Sub, e2)) ->
-			let e1' = sxpr the_state e1
-			and e2' = sxpr the_state e2 in
-			L.build_call  time_diff_f [|e1';e2'|] "tmp" builder
+
     | (A.Bool, SBinop (e1, op, e2)) ->
          	  let e1' = sxpr the_state e1
          	  and e2' = sxpr the_state e2 in
 						(match e1 with
-							(A.Time,_)->
+						(A.Time,_)->
 							(match op with
 		         	  | A.Equal   -> L.build_call  time_eq_f [|e1';e2'|] "tmp" builder
 		         	  | A.Neq     -> L.build_call  time_neq_f [|e1';e2'|] "tmp" builder
@@ -247,14 +244,18 @@ let translate sprogram =
 	                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Oge)
 	       	    ) e1' e2' "tmp" builder)
     | (A.Int, SBinop (e1, op, e2)) ->
+
      	  let e1' = sxpr the_state e1
      	  and e2' = sxpr the_state e2 in
+				(match e1 with
+					(A.Time,_) ->	L.build_call  time_diff_f [|e1';e2'|] "tmp" builder
+				| _ ->
      	  (match op with
      	    A.Add     -> L.build_add
      	  | A.Sub     -> L.build_sub
      	  | A.Mult    -> L.build_mul
           | A.Div     -> L.build_sdiv
-        ) e1' e2' "tmp" builder
+        ) e1' e2' "tmp" builder)
     | (A.Float, SBinop (e1, op, e2)) ->
      	  let e1' = sxpr the_state e1
      	  and e2' = sxpr the_state e2 in
