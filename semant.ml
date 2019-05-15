@@ -32,6 +32,7 @@ let rec check_exist s st =
 	| _ -> check_exist s (get_parent st)
 
 let rec lookup s st =
+	print_endline s;
 	try
 		StringMap.find s st.tb
 	with Not_found ->
@@ -121,11 +122,16 @@ let rec check_expr (xpr : expr)
 				string_of_typ rt ^ " in " ^ string_of_expr ex
 		in Some((check_assign lt rt err, SAssign(var, (rt, e'))), sym_tab))
 	| BinAssign (b,a) ->
-		let b' = BIND b in
-		let r1 = check_expr b' sym_tab in
-		(match r1 with Some(_,new_tab) ->
-			let r2 = check_expr a new_tab in
-			r2)
+		(match b with
+			Bind(t,s) ->
+			let se = SExpr (t, SNoexpr) in
+			sym_tab.tb <- StringMap.add s se sym_tab.tb;
+			let r2 = check_expr a sym_tab in
+			match r2 with
+			Some((_,sa),st) ->
+				Some((t,SBinAssign((t,s),(t,sa))),st);
+			| _ -> None
+		)
   | Binop (e1, op, e2) as e -> (
     let x = check_expr e1 sym_tab in
     let y = check_expr e2 sym_tab in
@@ -173,8 +179,8 @@ let rec check_expr (xpr : expr)
     )
   | ArrayLit l -> (
     let get_array_types (array_lit : expr list) =
-      List.map (fun (a) -> let x = check_expr a sym_tab in 
-                 match x with 
+      List.map (fun (a) -> let x = check_expr a sym_tab in
+                 match x with
                    Some ((t, e'), _) -> t) array_lit
     in
     let check_typ = function
@@ -187,11 +193,11 @@ let rec check_expr (xpr : expr)
     List.iter check_typ (get_array_types l);
     check_all_same_types (get_array_types l) "array element type";
     let a1 = List.nth (get_array_types l) 0 in
-    let sl = List.map (fun (a) -> let x = check_expr a sym_tab in 
-                 match x with 
+    let sl = List.map (fun (a) -> let x = check_expr a sym_tab in
+                 match x with
                    Some ((t, e'), _) -> (t, e')) l
 in
-    Some((Array(a1), SArrayLit sl), sym_tab) 
+    Some((Array(a1), SArrayLit sl), sym_tab)
   )
   | _ -> raise (Check_not_implemented ("Ast.expr type" ^ (string_of_expr xpr)))
 
