@@ -7,7 +7,7 @@ f = [FLit(1.5),FLit(2.01),FLit(1.00),-FLit(3.0)];
 printf(f[IntLit(1)]);
 printi(lenf(Id(f)));
 (str[], s);
-s = [StrLit("hi"),StrLit("there"),StrLit("buddy")];
+s = [StrLit(hi),StrLit(there),StrLit(buddy)];
 print(s[IntLit(2)]);
 printi(lens(Id(s)));
 (bool[], b);

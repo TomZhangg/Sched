@@ -1,0 +1,190 @@
+SExpr(
+  (time, a)
+)
+SExpr(
+a = 
+TimeLit(<2000-9-10T0:0:0>)
+)
+SExpr(
+  (time, b)
+)
+SExpr(
+b = 
+TimeLit(<2000-9-10T10:10:10>)
+)
+SExpr(
+  (bool, d)
+)
+SExpr(
+  (time, k)
+)
+SExpr(
+k = 
+TimeLit(<2000-9-10T10:10:10>)
+)
+SExpr(
+  (time, j)
+)
+SExpr(
+j = 
+TimeLit(<2000-9-10T0:0:0>)
+)
+SIf (typ: bool, sx: SCall(equal)
+  SExpr List:
+  typ: time, sx: SId(b)
+  typ: time, sx: SId(k)
+))
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: times are equal
+  )
+)}
+SElse
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: times are a changing
+  )
+)}
+
+SIf (typ: bool, sx: SCall(equal)
+  SExpr List:
+  typ: time, sx: SId(a)
+  typ: time, sx: SId(j)
+))
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: times are equal
+  )
+)}
+SElse
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: times are a changing
+  )
+)}
+
+{
+SExpr(
+  (time, c)
+){
+SExpr(
+  (time, d)
+)SExpr(
+d = 
+TimeLit(<2000-9-1T0:0:0>)
+)SIf (typ: bool, sx: SCall(equal)
+  SExpr List:
+  typ: time, sx: SId(a)
+  typ: time, sx: SId(d)
+))
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: times are equal
+  )
+)}
+SElse
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: times are a changing
+  )
+)}
+SIf (typ: bool, sx: SCall(compare)
+  SExpr List:
+  typ: time, sx: SId(a)
+  typ: time, sx: SId(d)
+))
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: a is more recent
+  )
+)}
+SElse
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: d is more recent
+  )
+)}
+}
+{
+SExpr(
+  (time, e)
+)SExpr(
+e = 
+TimeLit(<0-0-0T0:0:0>)
+)SExpr(
+  (bool, d)
+)}
+{
+SExpr(
+  (time, f)
+)}
+}
+
+SIf (typ: bool, sx: SCall(equal)
+  SExpr List:
+  typ: time, sx: SId(a)
+  typ: time, sx: SId(b)
+))
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: times are equal
+  )
+)}
+SElse
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: times are a changing
+  )
+)}
+
+SIf (typ: bool, sx: SCall(compare)
+  SExpr List:
+  typ: time, sx: SId(a)
+  typ: time, sx: SId(b)
+))
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: time1 is atleast recent as time2
+  )
+)}
+SElse
+{
+SExpr(
+  typ: void, sx: SCall(print)
+    SExpr List:
+    typ: str, sx: time2 is more recent
+  )
+)}
+
+SExpr(
+  typ: void, sx: SCall(printb)
+    SExpr List:
+    typ: bool, sx: SCall(equal)
+      SExpr List:
+      typ: time, sx: SId(a)
+      typ: time, sx: SId(b)
+    )
+  )
+)

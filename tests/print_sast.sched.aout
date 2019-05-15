@@ -1,1 +1,1 @@
-print(StrLit("hello world"));
+print(StrLit(hello world));

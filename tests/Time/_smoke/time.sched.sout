@@ -25,5 +25,18 @@ SExpr(
 d = 
 TimeLit(<2000-9-1T0:0:0>)
 )}
+{
+SExpr(
+  (time, e)
+)SExpr(
+e = 
+TimeLit(<0-0-0T0:0:0>)
+)SExpr(
+  (bool, d)
+)}
+{
+SExpr(
+  (time, f)
+)}
 }
 

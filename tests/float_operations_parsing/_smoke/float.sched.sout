@@ -29,16 +29,16 @@ SExpr(
     typ: float, sx: 6.0 %     typ: float, sx: 3.0
 )
 SExpr(
-  typ: float, sx: 1.5
+(float, w)    typ: float, sx: 1.5
 )
 SExpr(
-  typ: float, sx: 90.0
+(float, x)    typ: float, sx: 90.0
 )
 SExpr(
-      typ: float, sx: 10.8 +       typ: float, sx: 3.0011 +     typ: float, sx: 4.567
+(float, y)        typ: float, sx: 10.8 +         typ: float, sx: 3.0011 +       typ: float, sx: 4.567
 )
 SExpr(
-      typ: float, sx: SId(w) +       typ: float, sx: SId(x) +     typ: float, sx: SId(y)
+(float, z)        typ: float, sx: SId(w) +         typ: float, sx: SId(x) +       typ: float, sx: SId(y)
 )
 SExpr(
     typ: float, sx: 10.5 <     typ: float, sx: 1.5

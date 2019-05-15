@@ -9,4 +9,4 @@
           <date-time-info-opt>: TimeLit(<2019-6-21T18:53:0>)
           <item-kind>: Event
           <attrs-opt>:
-            Type: Id(desc), Name: StrLit("Summer solstice.")
+            Type: Id(desc), Name: StrLit(Summer solstice.)

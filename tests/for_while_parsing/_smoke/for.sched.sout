@@ -8,7 +8,7 @@ SFor (i =
 SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "hi"
+    typ: str, sx: hi
   )
 )}
 
@@ -27,7 +27,7 @@ j =
 )SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "here we go!"
+    typ: str, sx: here we go!
   )
 )}
 
@@ -36,7 +36,7 @@ SIf (  typ: int, sx: SId(j) ==   typ: int, sx: 2)
 SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "sweeet"
+    typ: str, sx: sweeet
   )
 )}
 

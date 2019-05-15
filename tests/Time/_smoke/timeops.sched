@@ -1,0 +1,71 @@
+time a;
+a = <2000-09-10>;
+time b;
+b = <2000-09-10T10:10:10>;
+bool d;
+time k;
+k = <2000-09-10T10:10:10>;
+time j;
+j = <2000-09-10T00:00:00>;
+
+if(equal(b,k)){
+  print("times are equal");
+}
+else{
+  print("times are a changing");
+}
+
+if(equal(a,j)){
+print("times are equal");
+}
+else{
+print("times are a changing");
+}
+
+{
+	time c;
+	{
+		time d;
+		d = <2000-09-01>;
+                if(equal(a,d)){
+                print("times are equal");
+                }
+                else{
+                print("times are a changing");
+                }
+                if(compare(a,d)){
+                print("a is more recent");
+                }
+                else{
+                print("d is more recent");
+                }
+	}
+
+	{
+		time e;
+		e = <0000-00-00>;
+		bool d;
+                
+	}
+
+
+	{
+		time f;
+	}
+}
+
+if(equal(a,b)){
+print("times are equal");
+}
+else{
+print("times are a changing");
+}
+
+if(compare(a,b)){
+print("time1 is atleast recent as time2");
+}
+else{
+print("time2 is more recent");
+}
+
+printb(equal(a, b));
