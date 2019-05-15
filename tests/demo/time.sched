@@ -1,0 +1,44 @@
+time a;
+a = <2000-09-10>;
+time b;
+b = <2000-09-10T10:10:10>;
+bool d;
+
+int a = 12;
+
+{
+	time c;
+	{
+		time d;
+		d = <2000-09-01>;
+	}
+
+	time myfunc(int a,int s,int d, int f){
+		time t;
+		t = <2019-05-15>;
+		return t;
+	}
+	time z = myfunc(1,2,3,4);
+	z = <2000-00-01>;
+	{
+		time e;
+		e = <0000-00-00>;
+		bool d;
+	}
+	{
+		time f;
+	}
+}
+
+time myfunc(int a,int s,int d){
+	time t;
+	t = <2019-05-15>;
+	return t;
+}
+time myfunc(int b){
+	return <0000-00-00>;
+}
+b = myfunc(1);
+time t = <2000-00-00>;
+t = myfunc(3);
+
