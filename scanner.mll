@@ -74,7 +74,7 @@ rule token = parse
 | digits+ '.' as lxm { FLIT(lxm^"0") }
 | '.' digits+ as lxm { FLIT("0"^lxm) }
 | ((digits+ '.' digits+) | (digits '.'  digits* ( ['e' 'E'] ['+' '-']? digits )?) ) as lxm { FLIT(lxm) }
-| '"'([^'"']*)'"' as s { SLIT(s) }
+| '"' as t (([^'"']*) as s) '"'  { SLIT(s) }
 | "func"        { FUNC }
 | '<' year '-' month '-' day '>' as lit  { DATELIT(lit) }
 | '<' year '-' month '-' day 'T' hour ':' minute ':' second '>' as lit  { TIMELIT(lit) }
