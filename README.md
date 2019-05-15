@@ -91,3 +91,6 @@ llc program.ll > program.s
 cc -o program.exe program.s
 ```
 4. Also, you can use the newly added ```compile.sh``` for compilation with automatic linking with the sched.c file.
+
+usage is as follows:
+```./compile.sh path/to/your/file```
