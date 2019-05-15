@@ -1,16 +1,33 @@
+
+print("simple time declaration");
 time a;
 a = <2000-09-10>;
-time b;
-b = <2000-09-10T10:10:10>;
-bool d;
+print_time(a);
 
-int a = 12;
+int c = 1;
+printi(c);
+
+print("bind and assign declaration");
+time b;b = <2000-09-10T10:10:10>;
+print_time(b);
+
+void reccc(int a){
+	print("wow!");
+}
 
 {
 	time c;
+	c = <2001-10-19>;
 	{
 		time d;
 		d = <2000-09-01>;
+	}
+
+	{
+		time c;
+		c = <1999-12-31T23:59:59>;
+		print("c inside a block with new declaration");
+		print_time(c);
 	}
 
 	time myfunc(int a,int s,int d, int f){
@@ -20,7 +37,6 @@ int a = 12;
 	}
 	time z = myfunc(1,2,3,4);
 	z = <2000-00-01>;
-	printi(2000);
 	{
 		time e;
 		e = <0000-00-00>;
@@ -29,9 +45,12 @@ int a = 12;
 	{
 		time f;
 	}
+
+	print("c after exiting block");
+	print_time(c);
 }
 
-time myfunc(int a,int s,int d){
+time myfunc1(int a,int s,int d){
 	time t;
 	t = <2019-05-15>;
 	return t;
@@ -42,5 +61,6 @@ time myfunc(int b){
 b = myfunc(1);
 print_time(b);
 time t = <2000-00-00>;
-t = myfunc(3);
+t = myfunc1(3,3,4);
+print_time(t);
 

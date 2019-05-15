@@ -59,6 +59,7 @@ rule token = parse
 | "Year"        { YEAR }
 | "Event"       { EVENT }
 | "Deadline"    { DEADLINE }
+| "void"        { VOID }
 | "bool"        { BOOL }
 | "int"			{ INT }
 | "str"         { STRING }

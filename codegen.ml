@@ -172,7 +172,10 @@ let translate sprogram =
 			(match b with (t,s) ->
 				let t' = ltype_of_typ t in
 				the_state.namespace.scope <- StringMap.add s (L.build_alloca t' s builder) namespace.scope;
-				let r' = sxpr the_state e in r')
+				match e with (t, e2) ->
+					let e' = sxpr the_state (t, SAssign(s,(t,e2))) in
+					ignore(L.build_store e' (lookup s namespace) builder); e'
+				| _ -> print_endline (string_of_sexpr 0 e); L.undef t')
     | (A.Bool, SBinop (e1, op, e2)) ->
          	  let e1' = sxpr the_state e1
          	  and e2' = sxpr the_state e2 in

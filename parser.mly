@@ -24,7 +24,7 @@ let convert_datelit dl =
 %token PLUS MINUS TIMES DIVIDE MOD
 %token DAY WEEK MONTH YEAR
 %token EVENT DEADLINE
-%token BOOL STRING INT FLOAT TIME
+%token BOOL STRING INT FLOAT TIME VOID
 %token <string> DATELIT
 %token <string> TIMELIT
 %token <string> ID
@@ -88,6 +88,7 @@ typ:
   | FLOAT  { Float }
   | typ LBRACK RBRACK {Array($1)}
   | TIME    { Time }
+  | VOID    { Void }
 
 expr_opt:
     /* nothing */ { Noexpr }
