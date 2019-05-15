@@ -32,7 +32,6 @@ let rec check_exist s st =
 	| _ -> check_exist s (get_parent st)
 
 let rec lookup s st =
-	print_endline s;
 	try
 		StringMap.find s st.tb
 	with Not_found ->
