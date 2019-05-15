@@ -467,9 +467,19 @@ let translate sprogram =
 
 			let new_scope = StringMap.empty in
 			let new_st = {scope=new_scope; parent=Some(the_state.namespace)} in
+
     	let the_function = lookup fdecl.sfname new_st in
     	let buidler = L.builder_at_end context (L.entry_block the_function) in
+			let add_formal st formal =
+				(match formal with
+					A.Bind(t,s) ->
+					let se = SExpr (t, SNoexpr) in
+					st.scope <- StringMap.add s (L.build_alloca (ltype_of_typ t) s buidler) st.scope;
+				)
+			in
+			List.iter (add_formal new_st) fdecl.sformals;
 			let new_state = {namespace=new_st; func=the_state.func; b = buidler} in
+
 			let end_state = List.fold_left func_sstmt new_state fdecl.sbody in
 			add_terminal end_state (match fdecl.styp with
 	        A.Void -> L.build_ret_void
