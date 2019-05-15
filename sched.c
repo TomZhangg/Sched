@@ -234,6 +234,37 @@ bool t_neq(time t1, time t2){
  bool r = t_eq(t1,t2);
  return !r;
 }
+
+int32_t t_to_s(time t1){
+  time t2 = {0,0,0,0,0,0};
+  int d = t_diff(t1,t2);
+  return d;
+}
+
+time s_to_t(int s){
+  int32_t t,y,mo,d,h,mi,sec;
+
+  printf("%d", 123);
+  y = s/31536000;
+  t = s%31536000;
+  mo = t/2592000;
+  t = s%2592000;
+  d = t/86400;
+  t = s%86400;
+  h = t/3600;
+  t = s%3600;
+  mi= t/60;
+  t = s%60;
+  sec = t;
+  time r;
+  r.year = y;
+  r.month = mo;
+  r.day = d;
+  r.hour = h;
+  r.minute = mi;
+  r.second = sec;
+  return r;
+}
  int32_t time_compare(time *t1, time *t2){
    long year1 = (long)t1->year;
    long year2 = (long)t2->year;

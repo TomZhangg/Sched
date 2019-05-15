@@ -123,3 +123,10 @@ print("the return value of the function is always the same.");
 print_time(t);
 print_time(tv);
 
+print("time to seconds conversion");
+int sec;
+sec = t_to_s(<0000-00-01>);
+printi(sec);
+print("");
+
+

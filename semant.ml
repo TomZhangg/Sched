@@ -119,7 +119,8 @@ let rec check_expr (xpr : expr)
 			(match r with Some((rt, e'), st) ->
 				let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^
 				string_of_typ rt ^ " in " ^ string_of_expr ex
-		in Some((check_assign lt rt err, SAssign(var, (rt, e'))), sym_tab))
+				in Some((check_assign lt rt err, SAssign(var, (rt, e'))), sym_tab)
+			| _ -> None)
 	| BinAssign (b,a) ->
 		(match b with
 			Bind(t,s) ->
@@ -603,23 +604,37 @@ let t_diff = SFunc({
   sformals = [Bind(Time, "t1"); Bind(Time, "t2")];
   sbody = [];
 })
+let t_to_s = SFunc({
+  styp = Int;
+  sfname = "t_to_s";
+  sformals = [Bind(Time, "t1")];
+  sbody = [];
+})
+let s_to_t = SFunc({
+  styp = Time;
+  sfname = "s_to_t";
+  sformals = [Bind(Int, "s")];
+  sbody = [];
+})
 
 
-let st1 = StringMap.add "print" print_decl StringMap.empty
-let st2 = StringMap.add "Event" event_decl st1
-let st3 = StringMap.add "printi" printi_decl st2
-let st4 = StringMap.add "printf" printf_decl st3
-let st5 = StringMap.add "printb" printb_decl st4
-let st6 = StringMap.add "leni" leni_decl st5
-let st7 = StringMap.add "lenf" lenf_decl st6
-let st8 = StringMap.add "lens" lens_decl st7
-let st9 = StringMap.add "lenb" lenb_decl st8
-let st10 = StringMap.add "print_time" pt_decl st9
-let st11 = StringMap.add "compare" compare_decl st10
-let st12 = StringMap.add "equal" equal_decl st11
+let st = StringMap.add "print" print_decl StringMap.empty
+let st1 = StringMap.add "Event" event_decl st
+let st2 = StringMap.add "printi" printi_decl st1
+let st3 = StringMap.add "printf" printf_decl st2
+let st4 = StringMap.add "printb" printb_decl st3
+let st5 = StringMap.add "leni" leni_decl st4
+let st6 = StringMap.add "lenf" lenf_decl st5
+let st7 = StringMap.add "lens" lens_decl st6
+let st8 = StringMap.add "lenb" lenb_decl st7
+let st9 = StringMap.add "print_time" pt_decl st8
+let st10 = StringMap.add "compare" compare_decl st9
+let st11 = StringMap.add "equal" equal_decl st10
+let st12 = StringMap.add "t_to_s" t_to_s st11
+let st13 = StringMap.add "s_to_t" s_to_t st12
 (* let pf = SFunc(print_fdecl) *)
 (* let init_st_tb = StringMap.add "print" pf st2 *)
-let init_st_tb = st12
+let init_st_tb = st13
 
 
 

@@ -112,6 +112,11 @@ let translate sprogram =
 	let time_diff_t = L.function_type i32_t [| time_t; time_t |] in
 	let time_diff_f = L.declare_function "t_diff" time_diff_t the_module in
 
+	let s_to_t_t = L.function_type time_t [| i32_t |] in
+	let s_to_t_f = L.declare_function "s_to_t" s_to_t_t the_module in
+	let t_to_s_t = L.function_type i32_t [| time_t |] in
+	let t_to_s_f = L.declare_function "t_to_s" t_to_s_t the_module in
+
 	let time_gt_t = L.function_type i1_t [| time_t; time_t |] in
 	let time_gt_f = L.declare_function "t_gt" time_gt_t the_module in
 	let time_ge_t = L.function_type i1_t [| time_t; time_t |] in
@@ -148,6 +153,8 @@ let translate sprogram =
 	st.scope <- StringMap.add "print_time" print_time_f st.scope;
 	st.scope <- StringMap.add "arr_init" arr_init_f st.scope;
 	st.scope <- StringMap.add "t_diff" time_diff_f st.scope;
+	st.scope <- StringMap.add "t_to_s" t_to_s_f st.scope;
+	st.scope <- StringMap.add "s_to_t" s_to_t_f st.scope;
   let the_state:state = {namespace=st;
                          func=main_func;
                          b=main_builder} in
