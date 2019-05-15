@@ -119,7 +119,7 @@ time t = <2000-00-00>;
 t = myfunc(3,3,4);
 time tv = <1234-56-78>;
 tv = myfunc(13,33,44);
-print("after calling the function, everything will look the same");
+print("the return value of the function is always the same.");
 print_time(t);
 print_time(tv);
 
