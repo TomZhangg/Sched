@@ -1,0 +1,21 @@
+time a;
+a = <2000-09-10>;
+time b;
+b = <2000-09-10T10:10:10>;
+bool d;
+
+if(equal(a,b)){
+print("times are equal");
+}
+else{
+print("times are a changing");
+}
+
+if(compare(a,b)){
+print("time1 is atleast recent as time2");
+}
+else{
+print("time2 is more recent");
+}
+
+printb(equal(a, b));
