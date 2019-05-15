@@ -160,28 +160,77 @@ array* arr_set_contains_struct(array *a) {
   =====================================================
   */
 
- int32_t compare(time t1, time t2){
-   int year1 = t1.year;
-   int year2 = t2.year;
-   int yeardiff = year1-year2;
-   int month1 = t1.month;
-   int month2 = t2.month;
-   int mdiff = month1-month2;
-   int day1 = t1.day;
-   int day2 = t2.day;
-   int ddiff = day1-day2;
-   int hour1 = t1.hour;
-   int hour2 = t2.hour;
-   int hdiff = hour1-hour2;
-   int min1 = t1.minute;
-   int min2 = t2.minute;
-   int mindiff = min1-min2;
-   int s1 = t1.second;
-   int s2 = t2.second;
-   int secdiff = s1-s2;
-   return 0;
+ int32_t time_compare(time t1, time t2){
+   long year1 = (long)t1.year;
+   long year2 = (long)t2.year;
+   long yeardiff = year1-year2;
+   long month1 = (long)t1.month;
+   long month2 = (long)t2.month;
+   long mdiff = month1-month2;
+   long day1 = (long)t1.day;
+   long day2 = (long)t2.day;
+   long ddiff = day1-day2;
+   long hour1 = (long)t1.hour;
+   long hour2 = (long)t2.hour;
+   long hdiff = hour1-hour2;
+   long min1 = (long)t1.minute;
+   long min2 = (long)t2.minute;
+   long mindiff = min1-min2;
+   long s1 = (long)t1.second;
+   long s2 = (long)t2.second;
+   long secdiff = s1-s2;
+   long minsecs = (long)60;
+   long hoursecs = (long)60*60;
+   long daysecs = (long)24*60*60;
+   long monthsecs = (long)30*24*60*60;
+   long yearsecs = (long)365*24*60*60;
+   long diff = secdiff + mindiff*minsecs + hdiff*hoursecs + ddiff*daysecs + mdiff*monthsecs +  yeardiff*yearsecs;
+   if(diff < (long)0){
+   return 0; 
+   }
+   else
+   {
+   return 1;
+   }
  }
+
+ int32_t time_equal(time t1, time t2){
+   long year1 = (long)t1.year;
+   long year2 = (long)t2.year;
+   long yeardiff = year1-year2;
+   long month1 = (long)t1.month;
+   long month2 = (long)t2.month;
+   long mdiff = month1-month2;
+   long day1 = (long)t1.day;
+   long day2 = (long)t2.day;
+   long ddiff = day1-day2;
+   long hour1 = (long)t1.hour;
+   long hour2 = (long)t2.hour;
+   long hdiff = hour1-hour2;
+   long min1 = (long)t1.minute;
+   long min2 = (long)t2.minute;
+   long mindiff = min1-min2;
+   long s1 = (long)t1.second;
+   long s2 = (long)t2.second;
+   long secdiff = s1-s2;
+   long minsecs = (long)60;
+   long hoursecs = (long)60*60;
+   long daysecs = (long)24*60*60;
+   long monthsecs = (long)30*24*60*60;
+   long yearsecs = (long)365*24*60*60;
+   long diff = secdiff + mindiff*minsecs + hdiff*hoursecs + ddiff*daysecs + mdiff*monthsecs +  yeardiff*yearsecs;
+   if(diff == (long)0){
+   return 1; 
+   }
+   else
+   {
+   return 0;
+   }
+ }
+
 
 void print_time(time* t1){
   printf("<%d-%d-%dT%d:%d:%d>\n",t1->year,t1->month,t1->day,t1->hour,t1->minute,t1->second);
 }
+
+

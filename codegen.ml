@@ -111,6 +111,12 @@ let translate sprogram =
   let time_init_f = L.declare_function "time_init" time_init_t the_module in
 	let print_time_t = L.function_type void_t [|time_t|] in
 	let print_time_f = L.declare_function "print_time" print_time_t the_module in
+  let time_compare_t = L.function_type i1_t [| time_t; time_t |] in
+  let time_compare_f = L.declare_function "time_compare" time_compare_t the_module in
+  let time_equal_t = L.function_type i1_t [| time_t; time_t |] in
+  let time_equal_f = L.declare_function "time_equal" time_equal_t the_module in
+
+
 
   (** setup main() where all the code will go **)
   (* ftype is the full llvm function signature *)
@@ -124,6 +130,8 @@ let translate sprogram =
 	st.scope <- StringMap.add "print" printf_func st.scope;
 	st.scope <- StringMap.add "time_init" time_init_f st.scope;
 	st.scope <- StringMap.add "print_time" print_time_f st.scope;
+        st.scope <- StringMap.add "arr_init" arr_init_f st.scope;
+
   let the_state:state = {namespace=st;
                          func=main_func;
                          b=main_builder} in
@@ -243,6 +251,8 @@ let translate sprogram =
 	  L.build_call printf_func [| float_format_str ; sx' |]
 	    "printf" builder
       | (A.Int, SCall ("leni", [a])) | (A.Int, SCall ("lens", [a])) | (A.Int, SCall ("lenf", [a])) | (A.Int, SCall ("lenb", [a])) -> L.build_call arr_length_f [| sxpr the_state a |] "len" builder
+      | (A.Bool, SCall("compare", [a;b])) -> L.build_call time_compare_f [| sxpr the_state a; sxpr the_state b |] "time_compare" builder
+      | (A.Bool, SCall("equal", [a;b])) -> L.build_call time_equal_f [| sxpr the_state a; sxpr the_state b |] "time_equal" builder
       | (A.Void, SNoexpr) -> L.const_int i32_t 0
       | (_, SId s)       -> L.build_load (lookup s namespace) s builder
 			| (t, SCall(name, args)) ->

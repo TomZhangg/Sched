@@ -576,12 +576,28 @@ let lenb_decl = SFunc({
   sbody = [];
 })
 
+
 let pt_decl = SFunc({
   styp = Void;
   sfname = "print_time";
   sformals = [Bind(Time, "text")];
   sbody = [];
 })
+
+let compare_decl = SFunc({
+  styp = Bool;
+  sfname = "compare";
+  sformals = [Bind(Time, "t1");Bind(Time, "t2")];
+  sbody = [];
+})
+
+let equal_decl = SFunc({
+  styp = Bool;
+  sfname = "equal";
+  sformals = [Bind(Time, "t1");Bind(Time, "t2")];
+  sbody = [];
+})
+
 
 
 let st1 = StringMap.add "print" print_decl StringMap.empty
@@ -594,9 +610,12 @@ let st7 = StringMap.add "lenf" lenf_decl st6
 let st8 = StringMap.add "lens" lens_decl st7
 let st9 = StringMap.add "lenb" lenb_decl st8
 let st10 = StringMap.add "print_time" pt_decl st9
+let st11 = StringMap.add "compare" compare_decl st10
+let st12 = StringMap.add "equal" equal_decl st11
 (* let pf = SFunc(print_fdecl) *)
 (* let init_st_tb = StringMap.add "print" pf st2 *)
-let init_st_tb = st10
+let init_st_tb = st12
+
 
 
 let init_st = {tb=init_st_tb;parent=None}
