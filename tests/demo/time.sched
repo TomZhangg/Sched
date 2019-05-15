@@ -5,9 +5,6 @@ a = <2000-09-10>;
 print_time(a);
 print("");
 
-int c = 1;
-printi(c);
-
 print("bind and assign declaration");
 time b = <2000-09-10T10:10:10>;
 print_time(b);
@@ -19,30 +16,98 @@ print("time comparison between times");
 
 bool l;
 l = x > z;
+print("");
+print("year 2000 < year 1000?");
 printb(l);
+
+l = x >= z;
+print("");
+print("year 2000 <= year 1000?");
+printb(l);
+print("");
+
+l = x == z;
+print("");
+print("year 2000 == year 1000?");
+printb(l);
+print("");
+
+l = x < z;
+print("");
+print("year 2000 > year 1000?");
+printb(l);
+print("");
+
+l = x <= z;
+print("");
+print("year 2000 >= year 1000?");
+printb(l);
+print("");
+
+l = x == x;
+print("");
+print("year 1000 == year 1000?");
+printb(l);
+print("");
+
+
+time c;
+c = <1000-00-00>;
+print("declared first c");
+print_time(c);
+print("");
 
 {
 	time c;
 	c = <2001-10-19>;
-	print("declared c");
+	print("declared c in a block");
 	print_time(c);
+	print("");
 
 	{
 		time c;
 		c = <1999-12-31T23:59:59>;
-		print("c inside a block with new declaration");
+		print("c inside aother block");
 		print_time(c);
+		print("");
 	}
 
-	print("c after exiting block");
+	print("c after exiting a block");
 	print_time(c);
+	print("");
 }
 
-{
-	time e;
-	e = <0000-00-00>;
-	bool d;
+print("c after exiting another block");
+print_time(c);
+print("");
+
+int time_to_sec(time t){
+	return t - <0000-00-00T00:00:00>;
 }
+
+int df;
+df = time_to_sec(c);
+printi(df);
+
+time dd;
+dd = <0000-00-01>;
+print("declared dd with 1 day");
+print_time(dd);
+print("");
+
+int asdf = time_to_sec(dd);
+print("one day equals this number of seconds");
+printi(asdf);
+print("");
+
+print("declare a function that looks like this:
+time myfunc(int a,int s,int d){
+	time t;
+	t = <2019-05-15>;
+	return t;
+}
+");
+print("");
 
 time myfunc(int a,int s,int d){
 	time t;
@@ -50,8 +115,11 @@ time myfunc(int a,int s,int d){
 	return t;
 }
 
-print_time(b);
 time t = <2000-00-00>;
 t = myfunc(3,3,4);
+time tv = <1234-56-78>;
+tv = myfunc(13,33,44);
+print("after calling the function, everything will look the same");
 print_time(t);
+print_time(tv);
 
