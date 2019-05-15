@@ -17,13 +17,13 @@ SExpr(
     typ: int, sx: 6 %     typ: int, sx: 3
 )
 SExpr(
-  typ: int, sx: 10
+(int, x)    typ: int, sx: 10
 )
 SExpr(
-      typ: int, sx: 10 +       typ: int, sx: 3 +     typ: int, sx: 4
+(int, y)        typ: int, sx: 10 +         typ: int, sx: 3 +       typ: int, sx: 4
 )
 SExpr(
-    typ: int, sx: SId(x) +     typ: int, sx: SId(y)
+(int, z)      typ: int, sx: SId(x) +       typ: int, sx: SId(y)
 )
 SExpr(
     typ: int, sx: 10 <     typ: int, sx: 100

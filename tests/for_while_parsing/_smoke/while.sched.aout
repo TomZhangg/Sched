@@ -2,7 +2,7 @@
 i = IntLit(0);
 while (Id(i) < IntLit(2))
 {
-print(StrLit("loop working"));i = Id(i) + IntLit(1);}
+print(StrLit(loop working));i = Id(i) + IntLit(1);}
 
 (int, j);
 j = IntLit(0);
@@ -10,9 +10,9 @@ j = IntLit(0);
 k = Id(j);
 while (Id(j) < IntLit(2))
 {
-j = Id(j) + IntLit(1);k = Id(k) + IntLit(2);print(StrLit("moving along"));}
+j = Id(j) + IntLit(1);k = Id(k) + IntLit(2);print(StrLit(moving along));}
 
 if (Id(k) == IntLit(4))
 {
-print(StrLit("sweeet"));}
+print(StrLit(sweeet));}
 

@@ -47,7 +47,7 @@ SExpr(
 )
 SExpr(
 s = 
-    typ: str[], sx: SArrayLit([    typ: str, sx: "hi",    typ: str, sx: "there",    typ: str, sx: "buddy"])
+    typ: str[], sx: SArrayLit([    typ: str, sx: hi,    typ: str, sx: there,    typ: str, sx: buddy])
 )
 SExpr(
   typ: void, sx: SCall(print)

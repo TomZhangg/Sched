@@ -26,6 +26,12 @@ declare i32 @arr_contains(%struct.Array*, i8*)
 
 declare %struct.time* @time_init(i32, i32, i32, i32, i32, i32)
 
+declare void @print_time(%struct.time*)
+
+declare i1 @time_compare(%struct.time*, %struct.time*)
+
+declare i1 @time_equal(%struct.time*, %struct.time*)
+
 define i32 @main() {
 entry:
   %a = alloca %struct.time*
@@ -39,17 +45,10 @@ entry:
   %d2 = alloca %struct.time*
   %time_init3 = call %struct.time* @time_init(i32 2000, i32 9, i32 1, i32 0, i32 0, i32 0)
   store %struct.time* %time_init3, %struct.time** %d2
-  %0 = bitcast %struct.time** %d2 to i8*
-  tail call void @free(i8* %0)
-  %1 = bitcast %struct.time** %c to i8*
-  tail call void @free(i8* %1)
-  %2 = bitcast %struct.time** %a to i8*
-  tail call void @free(i8* %2)
-  %3 = bitcast %struct.time** %b to i8*
-  tail call void @free(i8* %3)
-  %4 = bitcast i1* %d to i8*
-  tail call void @free(i8* %4)
+  %e = alloca %struct.time*
+  %time_init4 = call %struct.time* @time_init(i32 0, i32 0, i32 0, i32 0, i32 0, i32 0)
+  store %struct.time* %time_init4, %struct.time** %e
+  %d5 = alloca i1
+  %f = alloca %struct.time*
   ret i32 0
 }
-
-declare void @free(i8*)

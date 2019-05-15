@@ -10,7 +10,7 @@ SWhile (  typ: int, sx: SId(i) <   typ: int, sx: 2)
 SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "loop working"
+    typ: str, sx: loop working
   )
 )SExpr(
 i = 
@@ -42,7 +42,7 @@ k =
 )SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "moving along"
+    typ: str, sx: moving along
   )
 )}
 
@@ -51,7 +51,7 @@ SIf (  typ: int, sx: SId(k) ==   typ: int, sx: 4)
 SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "sweeet"
+    typ: str, sx: sweeet
   )
 )}
 

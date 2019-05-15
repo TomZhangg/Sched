@@ -1,0 +1,59 @@
+(time, a);
+a = TimeLit(<2000-9-10T0:0:0>);
+(time, b);
+b = TimeLit(<2000-9-10T10:10:10>);
+(bool, d);
+(time, k);
+k = TimeLit(<2000-9-10T10:10:10>);
+(time, j);
+j = TimeLit(<2000-9-10T0:0:0>);
+if (equal(Id(b), Id(k)))
+{
+print(StrLit(times are equal));}
+else
+{
+print(StrLit(times are a changing));}
+
+if (equal(Id(a), Id(j)))
+{
+print(StrLit(times are equal));}
+else
+{
+print(StrLit(times are a changing));}
+
+{
+(time, c);{
+(time, d);d = TimeLit(<2000-9-1T0:0:0>);if (equal(Id(a), Id(d)))
+{
+print(StrLit(times are equal));}
+else
+{
+print(StrLit(times are a changing));}
+if (compare(Id(a), Id(d)))
+{
+print(StrLit(a is more recent));}
+else
+{
+print(StrLit(d is more recent));}
+}
+{
+(time, e);e = TimeLit(<0-0-0T0:0:0>);(bool, d);}
+{
+(time, f);}
+}
+
+if (equal(Id(a), Id(b)))
+{
+print(StrLit(times are equal));}
+else
+{
+print(StrLit(times are a changing));}
+
+if (compare(Id(a), Id(b)))
+{
+print(StrLit(time1 is atleast recent as time2));}
+else
+{
+print(StrLit(time2 is more recent));}
+
+printb(equal(Id(a), Id(b)));

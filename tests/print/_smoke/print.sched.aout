@@ -1,5 +1,5 @@
 (str, s);
-s = StrLit("hello world");
+s = StrLit(hello world);
 print(Id(s));
 (float, f);
 f = FLit(1.008);

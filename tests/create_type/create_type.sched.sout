@@ -19,7 +19,7 @@ TimeLit(<2018-11-7T8:0:0>)
           sattrs(
             sattr(
               typ: str, sx: SId(location)
-              typ: str, sx: "Oval Office"
+              typ: str, sx: Oval Office
             )
           )
         )

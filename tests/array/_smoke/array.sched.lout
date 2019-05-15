@@ -7,9 +7,9 @@
 @fmt = private unnamed_addr constant [4 x i8] c"%s\0A\00"
 @fmt.1 = private unnamed_addr constant [4 x i8] c"%d\0A\00"
 @fmt.2 = private unnamed_addr constant [4 x i8] c"%g\0A\00"
-@0 = private unnamed_addr constant [5 x i8] c"\22hi\22\00"
-@1 = private unnamed_addr constant [8 x i8] c"\22there\22\00"
-@2 = private unnamed_addr constant [8 x i8] c"\22buddy\22\00"
+@0 = private unnamed_addr constant [3 x i8] c"hi\00"
+@1 = private unnamed_addr constant [6 x i8] c"there\00"
+@2 = private unnamed_addr constant [6 x i8] c"buddy\00"
 
 declare i32 @printf(i8*, ...)
 
@@ -28,6 +28,12 @@ declare i32 @arr_length(%struct.Array*)
 declare i32 @arr_contains(%struct.Array*, i8*)
 
 declare %struct.time* @time_init(i32, i32, i32, i32, i32, i32)
+
+declare void @print_time(%struct.time*)
+
+declare i1 @time_compare(%struct.time*, %struct.time*)
+
+declare i1 @time_equal(%struct.time*, %struct.time*)
 
 define i32 @main() {
 entry:
@@ -97,17 +103,17 @@ entry:
   %arr_init44 = call %struct.Array* @arr_init()
   %malloccall45 = tail call i8* @malloc(i32 ptrtoint (i1** getelementptr (i1*, i1** null, i32 1) to i32))
   %data46 = bitcast i8* %malloccall45 to i8**
-  store i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0), i8** %data46
+  store i8* getelementptr inbounds ([3 x i8], [3 x i8]* @0, i32 0, i32 0), i8** %data46
   %data47 = bitcast i8** %data46 to i8*
   %arr_append48 = call %struct.Array_element* @arr_append(%struct.Array* %arr_init44, i8* %data47)
   %malloccall49 = tail call i8* @malloc(i32 ptrtoint (i1** getelementptr (i1*, i1** null, i32 1) to i32))
   %data50 = bitcast i8* %malloccall49 to i8**
-  store i8* getelementptr inbounds ([8 x i8], [8 x i8]* @1, i32 0, i32 0), i8** %data50
+  store i8* getelementptr inbounds ([6 x i8], [6 x i8]* @1, i32 0, i32 0), i8** %data50
   %data51 = bitcast i8** %data50 to i8*
   %arr_append52 = call %struct.Array_element* @arr_append(%struct.Array* %arr_init44, i8* %data51)
   %malloccall53 = tail call i8* @malloc(i32 ptrtoint (i1** getelementptr (i1*, i1** null, i32 1) to i32))
   %data54 = bitcast i8* %malloccall53 to i8**
-  store i8* getelementptr inbounds ([8 x i8], [8 x i8]* @2, i32 0, i32 0), i8** %data54
+  store i8* getelementptr inbounds ([6 x i8], [6 x i8]* @2, i32 0, i32 0), i8** %data54
   %data55 = bitcast i8** %data54 to i8*
   %arr_append56 = call %struct.Array_element* @arr_append(%struct.Array* %arr_init44, i8* %data55)
   store %struct.Array* %arr_init44, %struct.Array** %s
@@ -150,17 +156,7 @@ entry:
   %b87 = load %struct.Array*, %struct.Array** %b
   %len88 = call i32 @arr_length(%struct.Array* %b87)
   %printf89 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt.1, i32 0, i32 0), i32 %len88)
-  %0 = bitcast %struct.Array** %b to i8*
-  tail call void @free(i8* %0)
-  %1 = bitcast %struct.Array** %f to i8*
-  tail call void @free(i8* %1)
-  %2 = bitcast %struct.Array** %i to i8*
-  tail call void @free(i8* %2)
-  %3 = bitcast %struct.Array** %s to i8*
-  tail call void @free(i8* %3)
   ret i32 0
 }
 
 declare noalias i8* @malloc(i32)
-
-declare void @free(i8*)

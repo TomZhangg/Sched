@@ -22,7 +22,7 @@ c =
 SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "asdf"
+    typ: str, sx: asdf
   )
 )
 SExpr(
@@ -38,7 +38,7 @@ SExpr(
   SExpr(
     typ: void, sx: SCall(print)
       SExpr List:
-      typ: str, sx: "asdf"
+      typ: str, sx: asdf
     )
   )
   SExpr(
@@ -61,7 +61,7 @@ false
   SExpr(
     typ: void, sx: SCall(print)
       SExpr List:
-      typ: str, sx: "asdf"
+      typ: str, sx: asdf
     )
   )
   SExpr(

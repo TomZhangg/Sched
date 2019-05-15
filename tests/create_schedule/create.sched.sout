@@ -11,7 +11,7 @@ TimeLit(<2019-6-21T18:53:0>)
           sattrs(
             sattr(
               typ: str, sx: SId(desc)
-              typ: str, sx: "Summer solstice."
+              typ: str, sx: Summer solstice.
             )
           )
         )

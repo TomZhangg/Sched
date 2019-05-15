@@ -7,9 +7,9 @@
 @fmt = private unnamed_addr constant [4 x i8] c"%s\0A\00"
 @fmt.1 = private unnamed_addr constant [4 x i8] c"%d\0A\00"
 @fmt.2 = private unnamed_addr constant [4 x i8] c"%g\0A\00"
-@0 = private unnamed_addr constant [5 x i8] c"\22hi\22\00"
-@1 = private unnamed_addr constant [14 x i8] c"\22here we go!\22\00"
-@2 = private unnamed_addr constant [9 x i8] c"\22sweeet\22\00"
+@0 = private unnamed_addr constant [3 x i8] c"hi\00"
+@1 = private unnamed_addr constant [12 x i8] c"here we go!\00"
+@2 = private unnamed_addr constant [7 x i8] c"sweeet\00"
 
 declare i32 @printf(i8*, ...)
 
@@ -29,6 +29,12 @@ declare i32 @arr_contains(%struct.Array*, i8*)
 
 declare %struct.time* @time_init(i32, i32, i32, i32, i32, i32)
 
+declare void @print_time(%struct.time*)
+
+declare i1 @time_compare(%struct.time*, %struct.time*)
+
+declare i1 @time_equal(%struct.time*, %struct.time*)
+
 define i32 @main() {
 entry:
   %i = alloca i32
@@ -41,7 +47,7 @@ while:                                            ; preds = %while_body, %entry
   br i1 %tmp3, label %while_body, label %merge
 
 while_body:                                       ; preds = %while
-  %printf = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8], [5 x i8]* @0, i32 0, i32 0))
+  %printf = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @0, i32 0, i32 0))
   %i1 = load i32, i32* %i
   %tmp = add i32 %i1, 1
   store i32 %tmp, i32* %i
@@ -61,7 +67,7 @@ while_body5:                                      ; preds = %while4
   %j6 = load i32, i32* %j
   %tmp7 = add i32 %j6, 2
   store i32 %tmp7, i32* %j
-  %printf8 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8], [14 x i8]* @1, i32 0, i32 0))
+  %printf8 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8], [12 x i8]* @1, i32 0, i32 0))
   br label %while4
 
 merge11:                                          ; preds = %while4
@@ -70,18 +76,12 @@ merge11:                                          ; preds = %while4
   br i1 %tmp13, label %then, label %else
 
 merge14:                                          ; preds = %else, %then
-  %0 = bitcast i32* %i to i8*
-  tail call void @free(i8* %0)
-  %1 = bitcast i32* %j to i8*
-  tail call void @free(i8* %1)
   ret i32 0
 
 then:                                             ; preds = %merge11
-  %printf15 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @2, i32 0, i32 0))
+  %printf15 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt, i32 0, i32 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @2, i32 0, i32 0))
   br label %merge14
 
 else:                                             ; preds = %merge11
   br label %merge14
 }
-
-declare void @free(i8*)

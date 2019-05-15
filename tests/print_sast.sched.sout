@@ -1,6 +1,6 @@
 SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "hello world"
+    typ: str, sx: hello world
   )
 )

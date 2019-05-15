@@ -3,7 +3,7 @@ SExpr(
 )
 SExpr(
 s = 
-    typ: str, sx: "hello world"
+    typ: str, sx: hello world
 )
 SExpr(
   typ: void, sx: SCall(print)

@@ -17,4 +17,4 @@
           <date-time-info-opt>: TimeLit(<2018-11-7T8:0:0>)
           <item-kind>: ExecutiveTime
           <attrs-opt>:
-            Type: Id(location), Name: StrLit("Oval Office")
+            Type: Id(location), Name: StrLit(Oval Office)

@@ -160,24 +160,24 @@ array* arr_set_contains_struct(array *a) {
   =====================================================
   */
 
- int32_t time_compare(time t1, time t2){
-   long year1 = (long)t1.year;
-   long year2 = (long)t2.year;
+ int32_t time_compare(time *t1, time *t2){
+   long year1 = (long)t1->year;
+   long year2 = (long)t2->year;
    long yeardiff = year1-year2;
-   long month1 = (long)t1.month;
-   long month2 = (long)t2.month;
+   long month1 = (long)t1->month;
+   long month2 = (long)t2->month;
    long mdiff = month1-month2;
-   long day1 = (long)t1.day;
-   long day2 = (long)t2.day;
+   long day1 = (long)t1->day;
+   long day2 = (long)t2->day;
    long ddiff = day1-day2;
-   long hour1 = (long)t1.hour;
-   long hour2 = (long)t2.hour;
+   long hour1 = (long)t1->hour;
+   long hour2 = (long)t2->hour;
    long hdiff = hour1-hour2;
-   long min1 = (long)t1.minute;
-   long min2 = (long)t2.minute;
+   long min1 = (long)t1->minute;
+   long min2 = (long)t2->minute;
    long mindiff = min1-min2;
-   long s1 = (long)t1.second;
-   long s2 = (long)t2.second;
+   long s1 = (long)t1->second;
+   long s2 = (long)t2->second;
    long secdiff = s1-s2;
    long minsecs = (long)60;
    long hoursecs = (long)60*60;
@@ -194,24 +194,24 @@ array* arr_set_contains_struct(array *a) {
    }
  }
 
- int32_t time_equal(time t1, time t2){
-   long year1 = (long)t1.year;
-   long year2 = (long)t2.year;
+ int32_t time_equal(time *t1, time *t2){
+   long year1 = (long)t1->year;
+   long year2 = (long)t2->year;
    long yeardiff = year1-year2;
-   long month1 = (long)t1.month;
-   long month2 = (long)t2.month;
+   long month1 = (long)t1->month;
+   long month2 = (long)t2->month;
    long mdiff = month1-month2;
-   long day1 = (long)t1.day;
-   long day2 = (long)t2.day;
+   long day1 = (long)t1->day;
+   long day2 = (long)t2->day;
    long ddiff = day1-day2;
-   long hour1 = (long)t1.hour;
-   long hour2 = (long)t2.hour;
+   long hour1 = (long)t1->hour;
+   long hour2 = (long)t2->hour;
    long hdiff = hour1-hour2;
-   long min1 = (long)t1.minute;
-   long min2 = (long)t2.minute;
+   long min1 = (long)t1->minute;
+   long min2 = (long)t2->minute;
    long mindiff = min1-min2;
-   long s1 = (long)t1.second;
-   long s2 = (long)t2.second;
+   long s1 = (long)t1->second;
+   long s2 = (long)t2->second;
    long secdiff = s1-s2;
    long minsecs = (long)60;
    long hoursecs = (long)60*60;

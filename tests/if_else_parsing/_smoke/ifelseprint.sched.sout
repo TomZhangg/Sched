@@ -3,7 +3,7 @@ SIf ((-)       typ: int, sx: 4 + (-)       typ: int, sx: 5 < (-)       typ: int,
 SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "reality"
+    typ: str, sx: reality
   )
 )}
 SElse
@@ -11,7 +11,7 @@ SElse
 SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "fantasy"
+    typ: str, sx: fantasy
   )
 )}
 
@@ -34,7 +34,7 @@ SIf (  typ: int, sx: SId(i) <   typ: int, sx: 1)
 SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "NOOO"
+    typ: str, sx: NOOO
   )
 )}
 SElse
@@ -44,7 +44,7 @@ SIf (    typ: int, sx: SId(i) +     typ: int, sx: 1 <=   typ: int, sx: 2)
 SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "yay"
+    typ: str, sx: yay
   )
 )}
 SElse
@@ -52,7 +52,7 @@ SElse
 SExpr(
   typ: void, sx: SCall(print)
     SExpr List:
-    typ: str, sx: "boo"
+    typ: str, sx: boo
   )
 )}
 }
