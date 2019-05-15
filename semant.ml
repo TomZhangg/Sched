@@ -583,6 +583,13 @@ let pt_decl = SFunc({
   sbody = [];
 })
 
+let t_diff = SFunc({
+  styp = Int;
+  sfname = "t_diff";
+  sformals = [Bind(Time, "t1"); Bind(Time, "t2")];
+  sbody = [];
+})
+
 
 let st1 = StringMap.add "print" print_decl StringMap.empty
 let st2 = StringMap.add "Event" event_decl st1

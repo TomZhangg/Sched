@@ -109,6 +109,22 @@ let translate sprogram =
   let arr_contains_f = L.declare_function "arr_contains" arr_contains_t the_module in
 	let time_init_t = L.function_type time_t [| i32_t; i32_t; i32_t; i32_t; i32_t; i32_t |] in
   let time_init_f = L.declare_function "time_init" time_init_t the_module in
+	let time_diff_t = L.function_type i32_t [| time_t; time_t |] in
+	let time_diff_f = L.declare_function "t_diff" time_diff_t the_module in
+
+	let time_gt_t = L.function_type i1_t [| time_t; time_t |] in
+	let time_gt_f = L.declare_function "t_gt" time_gt_t the_module in
+	let time_ge_t = L.function_type i1_t [| time_t; time_t |] in
+	let time_ge_f = L.declare_function "t_ge" time_ge_t the_module in
+	let time_lt_t = L.function_type i1_t [| time_t; time_t |] in
+	let time_lt_f = L.declare_function "t_lt" time_lt_t the_module in
+	let time_le_t = L.function_type i1_t [| time_t; time_t |] in
+	let time_le_f = L.declare_function "t_le" time_le_t the_module in
+	let time_eq_t = L.function_type i1_t [| time_t; time_t |] in
+	let time_eq_f = L.declare_function "t_eq" time_eq_t the_module in
+	let time_neq_t = L.function_type i1_t [| time_t; time_t |] in
+	let time_neq_f = L.declare_function "t_neq" time_eq_t the_module in
+
 	let print_time_t = L.function_type void_t [|time_t|] in
 	let print_time_f = L.declare_function "print_time" print_time_t the_module in
 
@@ -124,6 +140,7 @@ let translate sprogram =
 	st.scope <- StringMap.add "print" printf_func st.scope;
 	st.scope <- StringMap.add "time_init" time_init_f st.scope;
 	st.scope <- StringMap.add "print_time" print_time_f st.scope;
+	st.scope <- StringMap.add "t_diff" time_diff_f st.scope;
   let the_state:state = {namespace=st;
                          func=main_func;
                          b=main_builder} in
@@ -179,28 +196,38 @@ let translate sprogram =
     | (A.Bool, SBinop (e1, op, e2)) ->
          	  let e1' = sxpr the_state e1
          	  and e2' = sxpr the_state e2 in
-         	  (match op with
-         	  | A.And     -> L.build_and
-         	  | A.Or      -> L.build_or
-         	  | A.Equal   -> ( match e1 with
-                  	  (A.Int, _) -> L.build_icmp L.Icmp.Eq
-                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Oeq )
-         	  | A.Neq     -> ( match e1 with
-                  	  (A.Int, _) -> L.build_icmp L.Icmp.Ne
-                        | (A.Float, _) -> L.build_fcmp L.Fcmp.One )
-		  			| A.Less    -> ( match e1 with
-                  	  (A.Int, _) -> L.build_icmp L.Icmp.Slt
-                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Olt )
-         	  | A.Leq     -> ( match e1 with
-                  	  (A.Int, _) -> L.build_icmp L.Icmp.Sle
-                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Ole )
-         	  | A.Greater -> ( match e1 with
-                  	  (A.Int, _) -> L.build_icmp L.Icmp.Sgt
-                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Ogt )
-         	  | A.Geq     -> ( match e1 with
-                  	  (A.Int, _) -> L.build_icmp L.Icmp.Sge
-                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Oge )
-       	    ) e1' e2' "tmp" builder
+						(match e1 with
+							(A.Time,_)->
+							(match op with
+		         	  | A.Equal   -> L.build_call  time_eq_f [|e1';e2'|] "tmp" builder
+		         	  | A.Neq     -> L.build_call  time_neq_f [|e1';e2'|] "tmp" builder
+				  			| A.Less    -> L.build_call  time_lt_f [|e1';e2'|] "tmp" builder
+		         	  | A.Leq     -> L.build_call  time_le_f [|e1';e2'|] "tmp" builder
+		         	  | A.Greater -> L.build_call  time_gt_f [|e1';e2'|] "tmp" builder
+		         	  | A.Geq     -> L.build_call  time_ge_f [|e1';e2'|] "tmp" builder)
+						| _ ->
+	         	  (match op with
+	         	  | A.And     -> L.build_and
+	         	  | A.Or      -> L.build_or
+	         	  | A.Equal   -> ( match e1 with
+	                  	  (A.Int, _) -> L.build_icmp L.Icmp.Eq
+	                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Oeq)
+	         	  | A.Neq     -> ( match e1 with
+	                  	  (A.Int, _) -> L.build_icmp L.Icmp.Ne
+	                        | (A.Float, _) -> L.build_fcmp L.Fcmp.One)
+			  			| A.Less    -> ( match e1 with
+	                  	  (A.Int, _) -> L.build_icmp L.Icmp.Slt
+	                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Olt)
+	         	  | A.Leq     -> ( match e1 with
+	                  	  (A.Int, _) -> L.build_icmp L.Icmp.Sle
+	                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Ole)
+	         	  | A.Greater -> ( match e1 with
+	                  	  (A.Int, _) -> L.build_icmp L.Icmp.Sgt
+	                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Ogt)
+	         	  | A.Geq     -> ( match e1 with
+	                  	  (A.Int, _) -> L.build_icmp L.Icmp.Sge
+	                        | (A.Float, _) -> L.build_fcmp L.Fcmp.Oge)
+	       	    ) e1' e2' "tmp" builder)
     | (A.Int, SBinop (e1, op, e2)) ->
      	  let e1' = sxpr the_state e1
      	  and e2' = sxpr the_state e2 in

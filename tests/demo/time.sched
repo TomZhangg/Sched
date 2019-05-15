@@ -11,6 +11,15 @@ print("bind and assign declaration");
 time b = <2000-09-10T10:10:10>;
 print_time(b);
 
+time x = <1000-00-00>;
+time z = <2000-00-00>;
+
+print("time comparison between times");
+
+bool l;
+l = x > z;
+printb(l);
+
 {
 	time c;
 	c = <2001-10-19>;
@@ -34,17 +43,14 @@ print_time(b);
 	bool d;
 }
 
-time myfunc1(int a,int s,int d){
+time myfunc(int a,int s,int d){
 	time t;
 	t = <2019-05-15>;
 	return t;
 }
-time myfunc(int b){
-	return <0000-00-00>;
-}
-b = myfunc(1);
+
 print_time(b);
 time t = <2000-00-00>;
-t = myfunc1(3,3,4);
+t = myfunc(3,3,4);
 print_time(t);
 

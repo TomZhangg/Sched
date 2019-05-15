@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 /*
  =====================================================
@@ -45,7 +46,13 @@ array_element* arr_set(array *l, void *data, int index);
 int32_t arr_contains(array *l, void *data);
 int32_t arr_length(array *l);
 time* time_init(int y, int mo, int d, int h, int mi, int s);
-int32_t compare(time t1, time t2);
+bool t_gt(time t1, time t2);
+bool t_ge(time t1, time t2);
+bool t_lt(time t1, time t2);
+bool t_le(time t1, time t2);
+bool t_eq(time t1, time t2);
+bool t_neq(time t1, time t2);
+int32_t t_diff(time t1, time t2);
 
 
 /*
@@ -160,7 +167,7 @@ array* arr_set_contains_struct(array *a) {
   =====================================================
   */
 
- int32_t compare(time t1, time t2){
+ int32_t t_diff(time t1, time t2){
    int year1 = t1.year;
    int year2 = t2.year;
    int yeardiff = year1-year2;
@@ -179,8 +186,54 @@ array* arr_set_contains_struct(array *a) {
    int s1 = t1.second;
    int s2 = t2.second;
    int secdiff = s1-s2;
-   return 0;
+   return (((yeardiff * 12 + mdiff) * 30 + ddiff) * 24 + hdiff) * 3600;
  }
+
+bool t_gt(time t1, time t2){
+  int d = t_diff(t1,t2);
+  if (d > 0){
+    return 1;
+  }else{
+    return 0;
+  }
+}
+bool t_ge(time t1, time t2){
+  int d = t_diff(t1,t2);
+  if (d >= 0){
+    return 1;
+  }else{
+    return 0;
+  }
+}
+bool t_lt(time t1, time t2){
+  int d = t_diff(t1,t2);
+  if (d < 0){
+    return 1;
+  }else{
+    return 0;
+  }
+}
+bool t_le(time t1, time t2){
+  int d = t_diff(t1,t2);
+  if (d <= 0){
+    return 1;
+  }else{
+    return 0;
+  }
+}
+bool t_eq(time t1, time t2){
+  int d = t_diff(t1,t2);
+  if (d == 0){
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
+bool t_neq(time t1, time t2){
+  bool r = t_eq(t1,t2);
+  return !r;
+}
 
 void print_time(time* t1){
   printf("<%d-%d-%dT%d:%d:%d>\n",t1->year,t1->month,t1->day,t1->hour,t1->minute,t1->second);
